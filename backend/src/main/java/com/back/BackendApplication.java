@@ -1,4 +1,4 @@
-package back.com;
+package com1.com;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
