@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -139,5 +140,37 @@ class ProductControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.resultCode").value("400-BAD-REQUEST"))
                 .andExpect(jsonPath("$.msg").value("상품명은 2자 이상 100자 이하여야 합니다"));
+    }
+
+    @Test
+    @DisplayName("상품 조회 성공")
+    void t5() throws Exception {
+        Product p1 = new Product("커피1", 4000, "커피콩", 0, "img.png", 10, LocalDateTime.now());
+        Product p2 = new Product("커피2", 3000, "커피콩", 0, "img.png", 15, LocalDateTime.now());
+        productRepository.save(p1);
+        productRepository.save(p2);
+
+        mvc.perform(get("/products"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-OK"))
+                .andExpect(jsonPath("$.msg").value("상품 조회 성공"))
+                .andExpect(jsonPath("$.data.length()").value(2))
+                .andExpect(jsonPath("$.data[0].productName").value("커피1"))
+                .andExpect(jsonPath("$.data[1].productName").value("커피2"));
+    }
+
+    @Test
+    @DisplayName("전체 상품 조회 - 상품 없음")
+    void t6() throws Exception {
+        // 데이터 없이 테스트 -> 상품 저장 안 함
+
+        mvc.perform(get("/products"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-OK"))
+                .andExpect(jsonPath("$.msg").value("상품 조회 성공"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data.length()").value(0));
     }
 }

@@ -1,5 +1,6 @@
 package com.back.teamcoffee.domain.product.dto;
 
+import com.back.teamcoffee.domain.product.entity.Product;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -26,4 +27,17 @@ public record ProductDto(
         @Min(value = 0, message = "재고는 0 이상이어야 합니다")
         int stock,
         LocalDateTime createdAt
-) {}
+) {
+        public ProductDto(Product product) {
+                this(
+                        product.getProductId(),
+                        product.getProductName(),
+                        product.getPrice(),
+                        product.getDescription(),
+                        product.getOrderCount(),
+                        product.getProductImage(),
+                        product.getStock(),
+                        product.getCreatedAt()
+                );
+        }
+}

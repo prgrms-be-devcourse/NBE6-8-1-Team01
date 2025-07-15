@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -39,5 +40,15 @@ public class ProductService {
         );
 
         return RsData.of("201-CREATED", "상품 등록 성공", resultDto);
+    }
+
+    public RsData<List<ProductDto>> getProductList() {
+        List<Product> products = productRepository.findAll();
+
+        List<ProductDto> dtoList = products.stream()
+                .map(ProductDto::new)
+                .toList();
+
+        return RsData.of("200-OK", "상품 조회 성공", dtoList);
     }
 }

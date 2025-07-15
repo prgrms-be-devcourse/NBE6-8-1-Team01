@@ -8,8 +8,6 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 public class Product {
 
     @Id
@@ -35,4 +33,15 @@ public class Product {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Builder
+    public Product(String productName, int price, String description, int orderCount, String productImage, int stock, LocalDateTime createdAt) {
+        this.productName = productName;
+        this.price = price;
+        this.description = description;
+        this.orderCount = orderCount;
+        this.productImage = productImage;
+        this.stock = stock;
+        this.createdAt = createdAt;
+    }
 }
