@@ -1,11 +1,11 @@
 package com.back.teamcoffee.domain.user.entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+
+import java.time.LocalDateTime;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
@@ -15,15 +15,18 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private int id;
     private String name;
     @NotBlank
+    @Column(name = "email", unique = true)
     private String email;
-
+    private String address;
     private String password;
-    private String role;
+    private LocalDateTime created_at;
+    private UserRole role;
 
 }

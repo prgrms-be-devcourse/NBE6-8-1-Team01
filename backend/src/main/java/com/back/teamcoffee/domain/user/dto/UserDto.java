@@ -1,34 +1,34 @@
 package com.back.teamcoffee.domain.user.dto;
 
+import com.back.teamcoffee.domain.user.entity.User;
+import com.back.teamcoffee.domain.user.entity.UserRole;
+import jakarta.validation.constraints.NotBlank;
+
 public record UserDto(
         int id,
+        @NotBlank
         String name,
+        @NotBlank
         String email,
-        String role
+
+        UserRole role
 ) {
 
-    public UserDto(int id, String name, String email, String role) {
+    public UserDto(int id, String name, String email, UserRole role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.role = role;
     }
 
-    public UserDto of(int id, String name, String email, String role) {
-        return new UserDto(id, name, email, role);
-    }
+      public static UserDto from(User user) {
 
-    public UserDto of(int id, String name, String email) {
-        return new UserDto(id, name, email, "USER");
-    }
-    public UserDto of(int id, String name) {
-        return new UserDto(id, name, null, "USER");
-    }
-    public UserDto of(int id) {
-        return new UserDto(id, null, null, "USER");
-    }
-    public UserDto from(int id, String name, String email, String role) {
-        return new UserDto(id, name, email, role);
+        return new UserDto(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getRole()
+        );
     }
 
 }
