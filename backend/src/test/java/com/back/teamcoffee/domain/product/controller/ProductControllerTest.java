@@ -104,7 +104,7 @@ class ProductControllerTest {
                 4000,
                 "시원한 커피",
                 0,
-                "img/coldbrew.png",
+                "img.png",
                 -5,
                 LocalDateTime.now()
         );
@@ -116,5 +116,28 @@ class ProductControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.resultCode").value("400-BAD-REQUEST"))
                 .andExpect(jsonPath("$.msg").value("재고는 0 이상이어야 합니다"));
+    }
+
+    @Test
+    @DisplayName("상품 등록 실패 - 상품명 너무 짧은 경우")
+    void t4() throws Exception {
+        ProductDto dto = new ProductDto(
+                null,
+                "A",
+                3500,
+                "간단한 설명",
+                0,
+                "img.png",
+                20,
+                LocalDateTime.now()
+        );
+
+        mvc.perform(post("/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.resultCode").value("400-BAD-REQUEST"))
+                .andExpect(jsonPath("$.msg").value("상품명은 2자 이상 100자 이하여야 합니다"));
     }
 }
