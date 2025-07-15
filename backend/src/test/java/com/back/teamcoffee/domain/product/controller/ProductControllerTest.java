@@ -74,25 +74,47 @@ class ProductControllerTest {
     @Test
     @DisplayName("상품 등록 실패 - 상품명 누락")
     void t2() throws Exception {
-        String invalidJson = """
-            {
-                "productId": null,
-                "productName": "",
-                "price": 4500,
-                "description": "커피콩",
-                "orderCount": 0,
-                "productImage": "img.png",
-                "stock": 10,
-                "createdAt": "2025-07-15T12:29:55"
-            }
-            """;
+
+        ProductDto dto = new ProductDto(
+                null,
+                "",
+                4500,
+                "커피콩",
+                0,
+                "img.png",
+                -5,
+                LocalDateTime.now()
+        );
 
         mvc.perform(post("/products")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(invalidJson))
+                        .content(objectMapper.writeValueAsString(dto)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.resultCode").value("400-BAD-REQUEST"))
                 .andExpect(jsonPath("$.msg").exists());
+    }
+
+    @Test
+    @DisplayName("상품 등록 실패 - 재고가 음수일 경우")
+    void t3() throws Exception {
+        ProductDto dto = new ProductDto(
+                null,
+                "콜드브루",
+                4000,
+                "시원한 커피",
+                0,
+                "img/coldbrew.png",
+                -5,
+                LocalDateTime.now()
+        );
+
+        mvc.perform(post("/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.resultCode").value("400-BAD-REQUEST"))
+                .andExpect(jsonPath("$.msg").value("재고는 0 이상이어야 합니다"));
     }
 }
