@@ -3,6 +3,7 @@ package com.back.teamcoffee.domain.product.controller;
 import com.back.teamcoffee.domain.product.dto.ProductDto;
 import com.back.teamcoffee.domain.product.service.ProductService;
 import com.back.teamcoffee.global.rsdata.RsData;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +18,7 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    public ResponseEntity<RsData<ProductDto>> createProduct(@RequestBody ProductDto productDto) {
+    public ResponseEntity<RsData<ProductDto>> createProduct(@Valid @RequestBody ProductDto productDto) {
         RsData<ProductDto> createdProduct = productService.createProduct(productDto);
         return ResponseEntity.status(201).body(createdProduct);
     }

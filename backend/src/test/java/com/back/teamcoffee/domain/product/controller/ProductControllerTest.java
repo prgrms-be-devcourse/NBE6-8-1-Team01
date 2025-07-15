@@ -70,4 +70,29 @@ class ProductControllerTest {
         assertThat(saved).isPresent();
         assertThat(saved.get().getPrice()).isEqualTo(5000);
     }
+
+    @Test
+    @DisplayName("상품 등록 실패 - 상품명 누락")
+    void t2() throws Exception {
+        String invalidJson = """
+            {
+                "productId": null,
+                "productName": "",
+                "price": 4500,
+                "description": "커피콩",
+                "orderCount": 0,
+                "productImage": "img.png",
+                "stock": 10,
+                "createdAt": "2025-07-15T12:29:55"
+            }
+            """;
+
+        mvc.perform(post("/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidJson))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.resultCode").value("400-BAD-REQUEST"))
+                .andExpect(jsonPath("$.msg").exists());
+    }
 }
