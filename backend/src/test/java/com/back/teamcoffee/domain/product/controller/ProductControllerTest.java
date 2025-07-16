@@ -39,6 +39,11 @@ class ProductControllerTest {
     @Autowired
     private ProductRepository productRepository;
 
+    private Product saveProduct(String name, int price, int stock) {
+        Product product = new Product(name, price, "커피콩", 0, "img.png", stock, LocalDateTime.now());
+        return productRepository.save(product);
+    }
+
     private List<Product> saveSampleProducts() {
         Product p1 = new Product("커피1", 4000, "커피콩", 0, "img.png", 10, LocalDateTime.now());
         Product p2 = new Product("커피2", 3000, "커피콩", 0, "img.png", 15, LocalDateTime.now());
@@ -156,8 +161,7 @@ class ProductControllerTest {
     @Test
     @DisplayName("상품 삭제 성공")
     void t7() throws Exception {
-        Product product = new Product("커피", 4000, "커피콩", 0, "img.png", 10, LocalDateTime.now());
-        productRepository.save(product);
+        Product product = saveProduct("커피", 4000, 10);
 
         mvc.perform(delete("/products/{id}", product.getProductId()))
                 .andDo(print())
@@ -208,5 +212,29 @@ class ProductControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.resultCode").value("404-NOT-FOUND"))
                 .andExpect(jsonPath("$.msg").value("존재하지 않는 상품입니다."));
+    }
+
+    @Test
+    @DisplayName("상품 정보 수정 성공")
+    void t11() throws Exception {
+        Product product = saveProduct("커피", 4000, 10);
+
+        ProductDto updateDto = new ProductDto(
+                product.getProductId(), "수정커피", 4500,
+                "수정 커피콩", 0, "new_img.png", 20,
+                LocalDateTime.now()
+        );
+
+        mvc.perform(put("/products/{id}", product.getProductId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDto)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-OK"))
+                .andExpect(jsonPath("$.msg").value("상품 정보 수정 성공"))
+                .andExpect(jsonPath("$.data.productName").value("수정커피"))
+                .andExpect(jsonPath("$.data.price").value(4500))
+                .andExpect(jsonPath("$.data.description").value("수정 커피콩"))
+                .andExpect(jsonPath("$.data.productImage").value("new_img.png"));
     }
 }

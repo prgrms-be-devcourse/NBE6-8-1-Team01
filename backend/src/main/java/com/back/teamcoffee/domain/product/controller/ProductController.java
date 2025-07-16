@@ -43,4 +43,13 @@ public class ProductController {
         RsData<Void> response = productService.deleteProduct(id);
         return ResponseEntity.ok(response);
     }
+
+    // 상품 수정
+    @PutMapping("/{id}")
+    public ResponseEntity<RsData<ProductDto>> updateProduct(
+            @PathVariable Long id,
+            @Valid @RequestBody ProductDto productDto) {
+        RsData<ProductDto> updatedProduct = productService.updateProduct(id, productDto);
+        return ResponseEntity.ok(updatedProduct);
+    }
 }

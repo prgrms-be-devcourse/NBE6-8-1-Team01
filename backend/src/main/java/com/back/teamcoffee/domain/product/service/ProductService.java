@@ -77,4 +77,35 @@ public class ProductService {
 
         return RsData.of("200-OK", "상품 조회 성공", dto);
     }
+
+    public RsData<ProductDto> updateProduct(Long id, ProductDto productDto) {
+        Optional<Product> productOpt = productRepository.findById(id);
+
+        if (productOpt.isEmpty()) {
+            throw new DataNotFoundException("존재하지 않는 상품입니다.");
+        }
+
+        Product product = productOpt.get();
+        product.setProductName(productDto.productName());
+        product.setPrice(productDto.price());
+        product.setDescription(productDto.description());
+        product.setOrderCount(productDto.orderCount());
+        product.setProductImage(productDto.productImage());
+        product.setStock(productDto.stock());
+
+        Product updatedProduct = productRepository.save(product);
+
+        ProductDto updatedDto = new ProductDto(
+                updatedProduct.getProductId(),
+                updatedProduct.getProductName(),
+                updatedProduct.getPrice(),
+                updatedProduct.getDescription(),
+                updatedProduct.getOrderCount(),
+                updatedProduct.getProductImage(),
+                updatedProduct.getStock(),
+                updatedProduct.getCreatedAt()
+        );
+
+        return RsData.of("200-OK", "상품 정보 수정 성공", updatedDto);
+    }
 }
