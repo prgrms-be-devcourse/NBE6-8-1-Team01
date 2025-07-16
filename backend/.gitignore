@@ -36,8 +36,17 @@ out/
 ### VS Code ###
 .vscode/
 
-# jwt 설정파일
-/src/main/resources/jwt/
+### IntelliJ IDEA ###
+.idea/
+*.iml
+*.ipr
+*.iws
 
-# jwt 코드 파일
-/src/main/java/com/back/global/jwt/
+### Claude ###
+CLAUDE.md
+todo.md
+1.png
+
+#Custom
+db_dev.trace.db
+db_dev.mv.db
