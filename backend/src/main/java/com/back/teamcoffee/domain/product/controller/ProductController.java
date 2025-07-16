@@ -30,5 +30,10 @@ public class ProductController {
         return ResponseEntity.ok(productList);
     }
 
-
+    // 상품 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<RsData<Void>> deleteProduct(@PathVariable Long id) {
+        RsData<Void> response = productService.deleteProduct(id);
+        return ResponseEntity.ok(response);
+    }
 }

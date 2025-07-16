@@ -10,6 +10,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+
+import org.springframework.transaction.annotation.Transactional;
 import com.back.teamcoffee.domain.wishlist.dto.WishListCreateDto;
 import com.back.teamcoffee.domain.wishlist.dto.WishListDto;
 import com.back.teamcoffee.global.rsdata.RsData;
@@ -19,6 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.*;
+import org.mockito.Mockito;
 
 @ActiveProfiles("test")
 @SpringBootTest
