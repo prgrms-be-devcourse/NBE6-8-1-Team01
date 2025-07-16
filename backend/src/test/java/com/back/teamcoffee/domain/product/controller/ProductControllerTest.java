@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,18 +39,18 @@ class ProductControllerTest {
     @Autowired
     private ProductRepository productRepository;
 
+    private List<Product> saveSampleProducts() {
+        Product p1 = new Product("커피1", 4000, "커피콩", 0, "img.png", 10, LocalDateTime.now());
+        Product p2 = new Product("커피2", 3000, "커피콩", 0, "img.png", 15, LocalDateTime.now());
+        return productRepository.saveAll(List.of(p1, p2));
+    }
+
     @Test
     @DisplayName("상품 등록 성공 + DB 확인")
     void t1() throws Exception {
-
         ProductDto dto = new ProductDto(
-                null,
-                "Columbia Narino",
-                5000,
-                "커피콩",
-                0,
-                "img.png",
-                30,
+                null, "Columbia Narino", 5000,
+                "커피콩", 0, "img.png", 30,
                 LocalDateTime.now()
         );
 
@@ -74,15 +75,9 @@ class ProductControllerTest {
     @Test
     @DisplayName("상품 등록 실패 - 상품명 누락")
     void t2() throws Exception {
-
         ProductDto dto = new ProductDto(
-                null,
-                "",
-                4500,
-                "커피콩",
-                0,
-                "img.png",
-                -5,
+                null, "", 4500,
+                "커피콩", 0, "img.png", -5,
                 LocalDateTime.now()
         );
 
@@ -99,13 +94,8 @@ class ProductControllerTest {
     @DisplayName("상품 등록 실패 - 재고가 음수일 경우")
     void t3() throws Exception {
         ProductDto dto = new ProductDto(
-                null,
-                "콜드브루",
-                4000,
-                "시원한 커피",
-                0,
-                "img.png",
-                -5,
+                null, "콜드브루", 4000,
+                "시원한 커피", 0, "img.png", -5,
                 LocalDateTime.now()
         );
 
@@ -122,13 +112,8 @@ class ProductControllerTest {
     @DisplayName("상품 등록 실패 - 상품명 너무 짧은 경우")
     void t4() throws Exception {
         ProductDto dto = new ProductDto(
-                null,
-                "A",
-                3500,
-                "간단한 설명",
-                0,
-                "img.png",
-                20,
+                null, "A", 3500,
+                "간단한 설명", 0, "img.png", 20,
                 LocalDateTime.now()
         );
 
@@ -144,10 +129,7 @@ class ProductControllerTest {
     @Test
     @DisplayName("상품 조회 성공")
     void t5() throws Exception {
-        Product p1 = new Product("커피1", 4000, "커피콩", 0, "img.png", 10, LocalDateTime.now());
-        Product p2 = new Product("커피2", 3000, "커피콩", 0, "img.png", 15, LocalDateTime.now());
-        productRepository.save(p1);
-        productRepository.save(p2);
+        saveSampleProducts();
 
         mvc.perform(get("/products"))
                 .andDo(print())
@@ -162,8 +144,6 @@ class ProductControllerTest {
     @Test
     @DisplayName("전체 상품 조회 - 상품 없음")
     void t6() throws Exception {
-        // 데이터 없이 테스트 -> 상품 저장 안 함
-
         mvc.perform(get("/products"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -189,10 +169,7 @@ class ProductControllerTest {
     @Test
     @DisplayName("상품 삭제 실패 - 존재하지 않는 상품 ID")
     void t8() throws Exception {
-        Product p1 = new Product("커피1", 4000, "커피콩", 0, "img.png", 10, LocalDateTime.now());
-        Product p2 = new Product("커피2", 3000, "커피콩", 0, "img.png", 15, LocalDateTime.now());
-        productRepository.save(p1);
-        productRepository.save(p2);
+        saveSampleProducts();
 
         long nonexistentId = 1000;
 
@@ -206,10 +183,8 @@ class ProductControllerTest {
     @Test
     @DisplayName("상품 상세 조회 성공 - ID로 조회")
     void t9() throws Exception {
-        Product p1 = new Product("커피1", 4000, "커피콩", 0, "img.png", 10, LocalDateTime.now());
-        Product p2 = new Product("커피2", 3000, "커피콩", 0, "img.png", 15, LocalDateTime.now());
-        productRepository.save(p1);
-        productRepository.save(p2);
+        List<Product> products = saveSampleProducts();
+        Product p2 = products.get(1);
 
         mvc.perform(get("/products/{id}", p2.getProductId()))
                 .andDo(print())
@@ -223,10 +198,7 @@ class ProductControllerTest {
     @Test
     @DisplayName("상품 상세 조회 실패 - 존재하지 않는 상품 ID")
     void t10() throws Exception {
-        Product p1 = new Product("커피1", 4000, "커피콩", 0, "img.png", 10, LocalDateTime.now());
-        Product p2 = new Product("커피2", 3000, "커피콩", 0, "img.png", 15, LocalDateTime.now());
-        productRepository.save(p1);
-        productRepository.save(p2);
+        saveSampleProducts();
 
         long nonexistentId = 1000;
 
