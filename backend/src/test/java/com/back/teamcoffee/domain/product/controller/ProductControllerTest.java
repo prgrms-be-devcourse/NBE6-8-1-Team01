@@ -18,11 +18,10 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -172,5 +171,18 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.msg").value("상품 조회 성공"))
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data.length()").value(0));
+    }
+
+    @Test
+    @DisplayName("상품 삭제 성공")
+    void t7() throws Exception {
+        Product product = new Product("커피", 4000, "커피콩", 0, "img.png", 10, LocalDateTime.now());
+        productRepository.save(product);
+
+        mvc.perform(delete("/products/{id}", product.getProductId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-OK"))
+                .andExpect(jsonPath("$.msg").value("상품 삭제 성공"));
     }
 }

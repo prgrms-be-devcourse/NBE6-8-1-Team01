@@ -51,4 +51,9 @@ public class ProductService {
 
         return RsData.of("200-OK", "상품 조회 성공", dtoList);
     }
+
+    public RsData<Void> deleteProduct(Long id) {
+        productRepository.deleteById(id);
+        return RsData.of("200-OK", "상품 삭제 성공");
+    }
 }
