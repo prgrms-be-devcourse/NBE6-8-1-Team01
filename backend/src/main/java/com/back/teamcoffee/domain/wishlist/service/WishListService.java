@@ -2,6 +2,7 @@ package com.back.teamcoffee.domain.wishlist.service;
 
 import com.back.teamcoffee.domain.wishlist.dto.WishListCreateDto;
 import com.back.teamcoffee.domain.wishlist.dto.WishListDto;
+import com.back.teamcoffee.domain.wishlist.dto.WishListUpdateDto;
 import com.back.teamcoffee.domain.wishlist.entity.WishList;
 import com.back.teamcoffee.domain.wishlist.repository.WishListRepository;
 import com.back.teamcoffee.global.rsdata.RsData;
@@ -20,8 +21,9 @@ public class WishListService {
 
     public RsData<WishListDto> create(String email, WishListCreateDto wishListCreateDto) {
         WishList wishList = new WishList();
-        wishList.setProductId(wishListCreateDto.getProductId());
+        wishList.setProductId(wishListCreateDto.productId());
         wishList.setEmail(email);
+        wishList.setQuantity(wishListCreateDto.quantity());
 
         WishList saved = wishListRepository.save(wishList);
 
@@ -30,7 +32,8 @@ public class WishListService {
                 saved.getProductId(),
                 "더미 상품 1",
                 5000,
-                saved.getEmail()
+                saved.getEmail(),
+                saved.getQuantity()
         );
                 return RsData.of("201-1", "위시리스트에 상품이 추가되었습니다.", wishListDto);
     }
@@ -44,15 +47,7 @@ public class WishListService {
         return RsData.of("200-1", "위시리스트 조회 성공", wishListDtos);
             }
 
-        private WishListDto toDto(WishList wishList) {
-            return new WishListDto(
-                    wishList.getWishId(),
-                    wishList.getProductId(),
-                    "더미 상품",
-                    5000,
-                    wishList.getEmail()
-            );
-    }
+
 
     public RsData<Void> deleteByEmailAndWishId(String email, Long wishId) {
 
@@ -66,5 +61,31 @@ public class WishListService {
 
         return RsData.of("200-1", "위시리스트가 삭제되었습니다.");
 
+    }
+
+
+    public RsData<WishListDto> updateWishListQuantity(String email, Long wishId, WishListUpdateDto wishListUpdateDto) {
+        Optional<WishList> found = wishListRepository.findByEmailAndWishId(email, wishId);
+
+        if(found.isEmpty()) {
+            return  RsData.error("404-1", "위시리스트가 존재하지 않습니다.");
+        }
+
+        WishList wishList = found.get();
+        wishList.setQuantity(wishListUpdateDto.quantity());
+        WishList updatedWishList = wishListRepository.save(wishList);
+
+        return RsData.of("200-1", "위시리스트 수량이 업데이트되었습니다.", toDto(updatedWishList));
+    }
+
+    private WishListDto toDto(WishList wishList) {
+        return new WishListDto(
+                wishList.getWishId(),
+                wishList.getProductId(),
+                "더미 상품",
+                5000,
+                wishList.getEmail(),
+                wishList.getQuantity()
+        );
     }
 }

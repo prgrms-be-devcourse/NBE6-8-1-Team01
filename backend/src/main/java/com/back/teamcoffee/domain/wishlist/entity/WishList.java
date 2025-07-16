@@ -23,4 +23,7 @@ public class WishList {
 
     @Column(name = "email", nullable = false, length = 50)
             private String email;
+    
+    @Column(name = "quantity", nullable = false)
+    private int quantity;
 }

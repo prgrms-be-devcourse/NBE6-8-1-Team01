@@ -1,16 +1,15 @@
 package com.back.teamcoffee.domain.wishlist.controller;
 
 import com.back.teamcoffee.domain.wishlist.service.WishListService;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
 import com.back.teamcoffee.domain.wishlist.dto.WishListCreateDto;
 import com.back.teamcoffee.domain.wishlist.dto.WishListDto;
 import com.back.teamcoffee.global.rsdata.RsData;
@@ -21,23 +20,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.*;
 
-@WebMvcTest(WishListController.class)
-@Import(WishListControllerTest.TestConfig.class)
+@ActiveProfiles("test")
+@SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
+@Transactional
 class WishListControllerTest {
     
     @Autowired
     private MockMvc mockMvc;
     
-    @Autowired
+    @MockBean
     private WishListService wishListService;
-    
-    static class TestConfig {
-        @Bean
-        public WishListService wishListService() {
-            return Mockito.mock(WishListService.class);
-        }
-    }
     
     @Test
     void 위시리스트_조회_테스트() throws Exception {
@@ -46,8 +39,8 @@ class WishListControllerTest {
         
         // Mock 응답 데이터 준비 (여러 개의 위시리스트)
         List<WishListDto> mockList = List.of(
-                new WishListDto(1L, 1L, "아메리카노", 4500, email),
-                new WishListDto(2L, 2L, "카페라떼", 5000, email)
+                new WishListDto(1L, 1L, "아메리카노", 4500, email, 1),
+                new WishListDto(2L, 2L, "카페라떼", 5000, email, 2)
         );
         RsData<List<WishListDto>> mockRsData = RsData.of("200-1", "위시리스트 조회 성공", mockList);
         
@@ -73,12 +66,13 @@ class WishListControllerTest {
         String email = "test@coffee.com";
         String requestBody = """
             {
-                "productId": 1
+                "productId": 1,
+                "quantity": 2
             }
             """;
         
         // Mock 응답 데이터 준비
-        WishListDto mockDto = new WishListDto(1L, 1L, "더미 상품 1", 5000, email);
+        WishListDto mockDto = new WishListDto(1L, 1L, "더미 상품 1", 5000, email, 2);
         RsData<WishListDto> mockRsData = RsData.of("201-1", "위시리스트에 상품이 추가되었습니다.", mockDto);
         
         // Service Mock 설정
@@ -96,7 +90,8 @@ class WishListControllerTest {
                 .andExpect(jsonPath("$.data.productId").value(1))
                 .andExpect(jsonPath("$.data.productName").value("더미 상품 1"))
                 .andExpect(jsonPath("$.data.productPrice").value(5000))
-                .andExpect(jsonPath("$.data.email").value("test@coffee.com"));
+                .andExpect(jsonPath("$.data.email").value("test@coffee.com"))
+                .andExpect(jsonPath("$.data.quantity").value(2));
     }
     
     @Test
