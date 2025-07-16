@@ -192,6 +192,7 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.resultCode").value("200-OK"))
                 .andExpect(jsonPath("$.data.productId").value(p2.getProductId()))
                 .andExpect(jsonPath("$.data.productName").value("커피2"))
+                .andExpect(jsonPath("$.data.description").value("커피콩"))
                 .andExpect(jsonPath("$.data.price").value(3000));
     }
 
