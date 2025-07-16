@@ -50,3 +50,5 @@ todo.md
 #Custom
 db_dev.trace.db
 db_dev.mv.db
+
+.env
