@@ -42,8 +42,6 @@ out/
 
 # jwt 코드 파일
 /src/main/java/com/back/global/jwt/
-=======
 ## Custom ##
 db_dev.trace.db
 db_dev.mv.db
->>>>>>> e898113 (DB gitignore)
