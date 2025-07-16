@@ -36,8 +36,14 @@ out/
 ### VS Code ###
 .vscode/
 
+<<<<<<< HEAD
 # jwt 설정파일
 /src/main/resources/jwt/
 
 # jwt 코드 파일
 /src/main/java/com/back/global/jwt/
+=======
+## Custom ##
+db_dev.trace.db
+db_dev.mv.db
+>>>>>>> e898113 (DB gitignore)
