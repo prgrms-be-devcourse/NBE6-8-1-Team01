@@ -3,12 +3,14 @@ package com.back.teamcoffee.domain.product.service;
 import com.back.teamcoffee.domain.product.dto.ProductDto;
 import com.back.teamcoffee.domain.product.entity.Product;
 import com.back.teamcoffee.domain.product.repository.ProductRepository;
+import com.back.teamcoffee.global.exception.DataNotFoundException;
 import com.back.teamcoffee.global.rsdata.RsData;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -53,6 +55,12 @@ public class ProductService {
     }
 
     public RsData<Void> deleteProduct(Long id) {
+        Optional<Product> productOpt = productRepository.findById(id);
+
+        if (productOpt.isEmpty()) {
+            throw new DataNotFoundException("존재하지 않는 상품입니다.");
+        }
+
         productRepository.deleteById(id);
         return RsData.of("200-OK", "상품 삭제 성공");
     }
