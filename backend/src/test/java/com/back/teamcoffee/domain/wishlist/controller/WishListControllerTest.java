@@ -2,15 +2,14 @@ package com.back.teamcoffee.domain.wishlist.controller;
 
 import com.back.teamcoffee.domain.wishlist.service.WishListService;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import com.back.teamcoffee.domain.wishlist.dto.WishListCreateDto;
 import com.back.teamcoffee.domain.wishlist.dto.WishListDto;
 import com.back.teamcoffee.global.rsdata.RsData;
@@ -20,24 +19,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.*;
+import org.mockito.Mockito;
 
-@WebMvcTest(WishListController.class)
-@Import(WishListControllerTest.TestConfig.class)
+@ActiveProfiles("test")
+@SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
+@Transactional
 class WishListControllerTest {
     
     @Autowired
     private MockMvc mockMvc;
     
-    @Autowired
+    @MockBean
     private WishListService wishListService;
-    
-    static class TestConfig {
-        @Bean
-        public WishListService wishListService() {
-            return Mockito.mock(WishListService.class);
-        }
-    }
     
     @Test
     void 위시리스트_조회_테스트() throws Exception {
