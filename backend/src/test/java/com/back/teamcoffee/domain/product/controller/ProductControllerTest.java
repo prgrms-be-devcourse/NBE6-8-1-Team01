@@ -18,11 +18,10 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -172,5 +171,34 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.msg").value("상품 조회 성공"))
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data.length()").value(0));
+    }
+
+    @Test
+    @DisplayName("상품 삭제 성공")
+    void t7() throws Exception {
+        Product product = new Product("커피", 4000, "커피콩", 0, "img.png", 10, LocalDateTime.now());
+        productRepository.save(product);
+
+        mvc.perform(delete("/products/{id}", product.getProductId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-OK"))
+                .andExpect(jsonPath("$.msg").value("상품 삭제 성공"));
+    }
+
+    @Test
+    @DisplayName("상품 삭제 실패 - 존재하지 않는 상품 ID")
+    void t8() throws Exception {
+        Product p1 = new Product("커피1", 4000, "커피콩", 0, "img.png", 10, LocalDateTime.now());
+        Product p2 = new Product("커피2", 3000, "커피콩", 0, "img.png", 15, LocalDateTime.now());
+        productRepository.save(p1);
+        productRepository.save(p2);
+
+        long nonexistentId = 10;
+
+        mvc.perform(delete("/products/" + nonexistentId))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.resultCode").value("404-NOT-FOUND"))
+                .andExpect(jsonPath("$.msg").value("존재하지 않는 상품입니다."));
     }
 }
