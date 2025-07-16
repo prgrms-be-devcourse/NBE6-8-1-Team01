@@ -23,11 +23,18 @@ public class ProductController {
         return ResponseEntity.status(201).body(createdProduct);
     }
 
-    // 상품 조회
+    // 전체 상품 조회
     @GetMapping
     public ResponseEntity<RsData<List<ProductDto>>> getProductList() {
         RsData<List<ProductDto>> productList = productService.getProductList();
         return ResponseEntity.ok(productList);
+    }
+
+    // 상품 id로 상세 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<RsData<ProductDto>> getProductById(@PathVariable Long id) {
+        RsData<ProductDto> product = productService.getProductById(id);
+        return ResponseEntity.ok(product);
     }
 
     // 상품 삭제
