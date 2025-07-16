@@ -36,8 +36,7 @@ out/
 ### VS Code ###
 .vscode/
 
-# jwt 설정파일
-/src/main/resources/jwt/
+#Custom
+db_dev.trace.db
+db_dev.mv.db
 
-# jwt 코드 파일
-/src/main/java/com/back/global/jwt/

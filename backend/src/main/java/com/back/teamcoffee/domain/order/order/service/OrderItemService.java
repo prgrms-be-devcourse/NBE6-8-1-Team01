@@ -1,10 +1,8 @@
 package com.back.teamcoffee.domain.order.order.service;
 
 
-import com.back.teamcoffee.domain.order.order.dto.OrderDto;
 import com.back.teamcoffee.domain.order.order.entity.Order;
 import com.back.teamcoffee.domain.order.order.repository.OrderRepository;
-import com.back.teamcoffee.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +10,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class OrderService {
+public class OrderItemService {
   private final OrderRepository orderRepository;
 
   public Optional<Order> findByEmail(String email) {
