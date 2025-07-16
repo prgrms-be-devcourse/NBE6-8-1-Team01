@@ -36,6 +36,17 @@ out/
 ### VS Code ###
 .vscode/
 
+### IntelliJ IDEA ###
+.idea/
+*.iml
+*.ipr
+*.iws
+
+### Claude ###
+CLAUDE.md
+todo.md
+1.png
+
 #Custom
 db_dev.trace.db
 db_dev.mv.db
