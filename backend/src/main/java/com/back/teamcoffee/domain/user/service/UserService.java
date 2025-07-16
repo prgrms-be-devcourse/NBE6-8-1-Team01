@@ -56,4 +56,37 @@ public class UserService {
         );
 
     }
+
+    public RsData<LoginResultDto> login(UserLoginRequestDto req) {
+        User user = userRepository.findByEmail(req.email())
+                .orElse(null);
+        if (user == null) {
+            return RsData.of("404-NOT-FOUND", "존재하지 않는 이메일입니다.", null);
+        }
+
+        if(!passwordEncoder.matches(req.password(), user.getPassword())) {
+            return RsData.of("401-INVALID-PASSWORD", "비밀번호가 일치하지 않습니다.", null);
+        }
+
+        AuthTokensDto tokens = new AuthTokensDto(
+                jwt.createToken(user.getId(), user.getRole()),
+                jwt.createRefreshToken(user.getId(), user.getRole())
+        );
+
+        LoginResultDto result = new LoginResultDto(
+                new UserLoginResponseDto(
+                        user.getId(),
+                        user.getEmail(),
+                        user.getName(),
+                        user.getRole()
+                ),
+                tokens
+        );
+
+        return RsData.of(
+                "200-OK",
+                "로그인 성공",
+                result
+        );
+    }
 }

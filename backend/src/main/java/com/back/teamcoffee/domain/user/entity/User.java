@@ -2,6 +2,7 @@ package com.back.teamcoffee.domain.user.entity;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -23,6 +24,7 @@ public class User {
     private String name;
     @NotBlank
     @Column(name = "email", unique = true)
+    @Email
     private String email;
     private String address;
     private String password;

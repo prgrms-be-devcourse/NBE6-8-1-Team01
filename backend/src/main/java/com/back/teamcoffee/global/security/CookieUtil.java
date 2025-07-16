@@ -34,4 +34,11 @@ public class CookieUtil {
                 .findFirst()
                 .orElse(null);
     }
+
+    public static void deleteTokenCookies(HttpServletResponse response) {
+        Cookie accessCookie = buildCookie(ACCESS, "", 0);
+        Cookie refreshCookie = buildCookie(REFRESH, "", 0);
+        response.addCookie(accessCookie);
+        response.addCookie(refreshCookie);
+    }
 }
