@@ -4,4 +4,5 @@ public record LoginResultDto(
         UserLoginResponseDto user,
         AuthTokensDto token
 ) {
+
 }

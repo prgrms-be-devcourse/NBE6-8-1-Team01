@@ -5,6 +5,7 @@ import com.back.teamcoffee.domain.user.entity.User;
 import com.back.teamcoffee.domain.user.entity.UserRole;
 import com.back.teamcoffee.domain.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -31,6 +34,8 @@ public class UserControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
 
@@ -46,7 +51,7 @@ public class UserControllerTest {
         User user = User.builder()
                 .name(testUsername)
                 .email(testEmail)
-                .password(testPassword)
+                .password(passwordEncoder.encode(testPassword))
                 .role(UserRole.valueOf("USER"))
                 .build();
         userRepository.save(user);
@@ -87,6 +92,227 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.resultCode").value("409-EMAIL-EXISTS"))
                 .andExpect(jsonPath("$.msg").value("이미 존재하는 이메일입니다."));
 
+    }
+
+    @Test
+    @DisplayName("회원가입 실패 - 비밀번호 누락")
+    void t3() throws Exception {
+        UserLoginRequestDto req = new UserLoginRequestDto(
+                "testname",
+                "test@email.com",
+                ""
+        );
+
+        mockMvc.perform(post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.resultCode").value("400-BAD-REQUEST"))
+                .andExpect(jsonPath("$.msg").exists());
+    }
+
+    @Test
+    @DisplayName("회원가입 실패 - 이메일 형식 오류")
+    void t4() throws Exception {
+        UserLoginRequestDto req = new UserLoginRequestDto(
+                "testname",
+                "invalid-email",
+                "1234"
+        );
+
+        mockMvc.perform(post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.resultCode").value("400-BAD-REQUEST"))
+                .andExpect(jsonPath("$.msg").exists());
+    }
+
+
+    @Test
+    @DisplayName("회원가입 실패 - 이름 누락")
+    void t5() throws Exception {
+        UserLoginRequestDto req = new UserLoginRequestDto(
+                "",
+                "test@email.com",
+                "1234"
+        );
+        mockMvc.perform(post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.resultCode").value("400-BAD-REQUEST"))
+                .andExpect(jsonPath("$.msg").exists());
+    }
+
+    @Test
+    @DisplayName("회원가입 실패 - 비밀번호 길이 부족")
+    void t6() throws Exception {
+        UserLoginRequestDto req = new UserLoginRequestDto(
+                "testname",
+                "test@email.com",
+                "123"
+        );
+        mockMvc.perform(post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.resultCode").value("400-BAD-REQUEST"))
+                .andExpect(jsonPath("$.msg").value("비밀번호는 4자 이상이어야 합니다."));
+    }
+
+    @Test
+    @DisplayName("로그인 성공")
+    void t7() throws Exception {
+        UserLoginRequestDto req = new UserLoginRequestDto(
+                testUsername,
+                testEmail,
+                testPassword
+        );
+
+        mockMvc.perform(post("/users/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-OK"))
+                .andExpect(jsonPath("$.data.user.email").value(testEmail))
+                .andExpect(cookie().exists("AccessToken"))
+                .andExpect(cookie().exists("RefreshToken"));
+    }
+
+    @Test
+    @DisplayName("로그인 실패 - 잘못된 비밀번호")
+    void t8() throws Exception {
+        UserLoginRequestDto req = new UserLoginRequestDto(
+                testUsername,
+                testEmail,
+                "wrongpassword"
+        );
+
+        mockMvc.perform(post("/users/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.resultCode").value("401-INVALID-PASSWORD"))
+                .andExpect(jsonPath("$.msg").value("비밀번호가 일치하지 않습니다."));
+
+    }
+
+    @Test
+    @DisplayName("로그인 실패 - 존재하지 않는 이메일")
+    void t9() throws Exception {
+        UserLoginRequestDto req = new UserLoginRequestDto(
+                "nonexistentuser",
+                "test@Eamil.com",
+                "1234"
+        );
+        mockMvc.perform(post("/users/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.resultCode").value("404-NOT-FOUND"))
+                .andExpect(jsonPath("$.msg").value("존재하지 않는 이메일입니다."));
+
+    }
+
+    @Test
+    @DisplayName("로그인 실패 - 비밀번호 누락")
+    void t10() throws Exception {
+        UserLoginRequestDto req = new UserLoginRequestDto(
+                testUsername,
+                testEmail,
+                ""
+        );
+
+        mockMvc.perform(post("/users/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.resultCode").value("400-BAD-REQUEST"))
+                .andExpect(jsonPath("$.msg").exists());
+    }
+
+    @Test
+    @DisplayName("로그인 실패 - 이메일 형식 오류")
+    void t11() throws Exception {
+        UserLoginRequestDto req = new UserLoginRequestDto(
+                testUsername,
+                "invalid-email",
+                testPassword
+        );
+
+        mockMvc.perform(post("/users/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.resultCode").value("400-BAD-REQUEST"))
+                .andExpect(jsonPath("$.msg").exists());
+    }
+
+    @Test
+    @DisplayName("로그인 실패 - 이름 누락")
+    void t12() throws Exception {
+        UserLoginRequestDto req = new UserLoginRequestDto(
+                "",
+                testEmail,
+                testPassword
+        );
+
+        mockMvc.perform(post("/users/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.resultCode").value("400-BAD-REQUEST"))
+                .andExpect(jsonPath("$.msg").exists());
+    }
+
+    @Test
+    @DisplayName("로그인 실패 - 비밀번호 길이 부족")
+    void t13() throws Exception {
+        UserLoginRequestDto req = new UserLoginRequestDto(
+                testUsername,
+                testEmail,
+                "123"
+        );
+
+        mockMvc.perform(post("/users/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.resultCode").value("400-BAD-REQUEST"))
+                .andExpect(jsonPath("$.msg").value("비밀번호는 4자 이상이어야 합니다."));
+    }
+
+    @Test
+    @DisplayName("로그아웃 성공")
+    void t14() throws Exception {
+
+
+
+        // 로그인 후 쿠키 생성
+        UserLoginRequestDto req = new UserLoginRequestDto(
+                testUsername,
+                testEmail,
+                testPassword
+        );
+
+        MvcResult loginResult = mockMvc.perform(post("/users/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isOk())
+                .andExpect(cookie().exists("AccessToken"))
+                .andExpect(cookie().exists("RefreshToken"))
+                .andReturn();
+
+        Cookie accessToken = loginResult.getResponse().getCookie("AccessToken");
+        Cookie refreshToken = loginResult.getResponse().getCookie("RefreshToken");
+        // 로그아웃 요청
+        mockMvc.perform(post("/users/logout")
+                        .cookie(accessToken)
+                        .cookie(refreshToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-LOGOUT"))
+                .andExpect(jsonPath("$.msg").value("로그아웃 되었습니다."));
     }
 
 

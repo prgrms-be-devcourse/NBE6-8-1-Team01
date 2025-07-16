@@ -35,6 +35,26 @@ public class UserController {
                 .body(body);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<RsData<LoginResultDto>> login(
+            @Valid @RequestBody UserLoginRequestDto userLoginRequestDto,
+            HttpServletResponse response
+    ) {
+        RsData<LoginResultDto> body = userService.login(userLoginRequestDto);
+        if(body.data() != null) {
+            CookieUtil.addTokenCookies(body.data().token(), response);
+        }
+        return ResponseEntity
+                .status(body.statusCode())
+                .body(body);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<RsData<Void>> logout(HttpServletResponse response) {
+        CookieUtil.deleteTokenCookies(response);
+        return ResponseEntity.ok(RsData.of("200-LOGOUT", "로그아웃 되었습니다.", null));
+    }
+
 
 
 
