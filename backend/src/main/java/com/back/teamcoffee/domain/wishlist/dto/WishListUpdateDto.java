@@ -1,6 +1,5 @@
 package com.back.teamcoffee.domain.wishlist.dto;
 
-public record WishListCreateDto(
-    long productId,
+public record WishListUpdateDto(
     int quantity
 ) {}

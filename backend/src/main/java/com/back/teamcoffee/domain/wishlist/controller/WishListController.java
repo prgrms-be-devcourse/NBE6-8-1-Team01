@@ -2,7 +2,7 @@ package com.back.teamcoffee.domain.wishlist.controller;
 
 import com.back.teamcoffee.domain.wishlist.dto.WishListCreateDto;
 import com.back.teamcoffee.domain.wishlist.dto.WishListDto;
-import com.back.teamcoffee.domain.wishlist.entity.WishList;
+import com.back.teamcoffee.domain.wishlist.dto.WishListUpdateDto;
 import com.back.teamcoffee.domain.wishlist.service.WishListService;
 import com.back.teamcoffee.global.rsdata.RsData;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +31,16 @@ public class WishListController {
         RsData<List<WishListDto>> wishListDtos = wishListService.findAllByEmail(email);
         return ResponseEntity.ok(wishListDtos);
     }
+
+    @PutMapping("/{email}/{wishId}")
+    public ResponseEntity<RsData<WishListDto>> updateWishListQuantity(
+            @PathVariable String email,
+            @PathVariable Long wishId,
+            @RequestBody WishListUpdateDto wishListUpdateDto) {
+        RsData<WishListDto> result = wishListService.updateWishListQuantity(email, wishId, wishListUpdateDto);
+        return ResponseEntity.ok(result);
+    }
+
 
     @DeleteMapping("/{email}/{wishId}")
     public ResponseEntity<RsData<Void>> deleteWishList(
