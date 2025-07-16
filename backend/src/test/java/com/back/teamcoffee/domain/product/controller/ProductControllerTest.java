@@ -201,4 +201,22 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.resultCode").value("404-NOT-FOUND"))
                 .andExpect(jsonPath("$.msg").value("존재하지 않는 상품입니다."));
     }
+
+    @Test
+    @DisplayName("상품 상세 조회 성공 - ID로 조회")
+    void t9() throws Exception {
+        Product p1 = new Product("커피1", 4000, "커피콩", 0, "img.png", 10, LocalDateTime.now());
+        Product p2 = new Product("커피2", 3000, "커피콩", 0, "img.png", 15, LocalDateTime.now());
+        productRepository.save(p1);
+        productRepository.save(p2);
+
+        mvc.perform(get("/products/{id}", p2.getProductId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-OK"))
+                .andExpect(jsonPath("$.data.productId").value(p2.getProductId()))
+                .andExpect(jsonPath("$.data.productName").value("커피2"))
+                .andExpect(jsonPath("$.data.price").value(3000));
+    }
+
 }

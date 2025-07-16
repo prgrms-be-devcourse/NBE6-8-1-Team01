@@ -64,4 +64,17 @@ public class ProductService {
         productRepository.deleteById(id);
         return RsData.of("200-OK", "상품 삭제 성공");
     }
+
+    public RsData<ProductDto> getProductById(Long id) {
+        Optional<Product> productOpt = productRepository.findById(id);
+
+        if (productOpt.isEmpty()) {
+            throw new DataNotFoundException("존재하지 않는 상품입니다.");
+        }
+
+        Product product = productOpt.get();
+        ProductDto dto = new ProductDto(product);
+
+        return RsData.of("200-OK", "상품 조회 성공", dto);
+    }
 }
