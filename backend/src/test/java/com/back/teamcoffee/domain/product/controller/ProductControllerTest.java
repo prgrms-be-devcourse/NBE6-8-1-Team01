@@ -194,7 +194,7 @@ class ProductControllerTest {
         productRepository.save(p1);
         productRepository.save(p2);
 
-        long nonexistentId = 10;
+        long nonexistentId = 1000;
 
         mvc.perform(delete("/products/" + nonexistentId))
                 .andDo(print())
@@ -228,7 +228,7 @@ class ProductControllerTest {
         productRepository.save(p1);
         productRepository.save(p2);
 
-        long nonexistentId = 10;
+        long nonexistentId = 1000;
 
         mvc.perform(get("/products/" + nonexistentId))
                 .andDo(print())
