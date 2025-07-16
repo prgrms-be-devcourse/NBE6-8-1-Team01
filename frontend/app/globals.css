@@ -66,3 +66,36 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* 커피샵 커스텀 스타일 */
+@layer components {
+  /* 커피 테마 버튼 */
+  .coffee-button {
+    @apply bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-medium transition-all duration-200 hover:shadow-lg;
+  }
+  
+  /* 커피 카드 호버 효과 */
+  .coffee-card {
+    @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+  }
+  
+  /* 부드러운 애니메이션 */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  .float-animation {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  /* 커피 빈 회전 애니메이션 */
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  .spin-slow {
+    animation: spin-slow 20s linear infinite;
+  }
+}
