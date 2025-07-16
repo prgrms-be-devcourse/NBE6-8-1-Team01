@@ -46,3 +46,8 @@ out/
 CLAUDE.md
 todo.md
 1.png
+
+#Custom
+db_dev.trace.db
+db_dev.mv.db
+
