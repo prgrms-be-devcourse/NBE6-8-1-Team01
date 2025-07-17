@@ -10,10 +10,14 @@ import com.back.teamcoffee.domain.order.orderItem.entity.OrderItem;
 import com.back.teamcoffee.domain.order.orderItem.repository.OrderItemRepository;
 import com.back.teamcoffee.domain.product.entity.Product;
 import com.back.teamcoffee.domain.product.repository.ProductRepository;
+import com.back.teamcoffee.global.exception.DataNotFoundException;
 import com.back.teamcoffee.global.rsdata.RsData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -96,6 +100,10 @@ public class OrderService {
 
   public RsData<List<OrderDto>> findByEmail(String email) {
     List<Order> orders = orderRepository.findByEmail(email);
+    System.out.println("Order : " + orders);
+    if (orders.isEmpty()) {
+      throw new DataNotFoundException("주문을 찾을 수 없습니다.");
+    }
     List<OrderDto> dtoList = orders.stream()
         .map(OrderDto::new)
         .toList();
@@ -114,4 +122,57 @@ public class OrderService {
   }
 
 
+  public RsData<OrderDto> modifyOrder(OrderDto orderDto) {
+    System.out.println("OrderStatus: " + orderDto.orderStatus());
+    Optional<Order> optionalOrder = orderRepository.findById(orderDto.orderId());
+    if (optionalOrder.isEmpty()) {
+      return RsData.of("404-NOT_FOUND", "주문을 찾을 수 없습니다.", null);
+    }
+
+    Order order = optionalOrder.get();
+    System.out.println("Order Status: " + order.getOrderStatus());
+
+    order.modify(orderDto.orderStatus());
+
+    Order updatedOrder = orderRepository.save(order);
+    OrderDto updatedDto = new OrderDto(updatedOrder);
+
+    return RsData.of("200-OK", "주문 상태 변경 성공", updatedDto);
+  }
+
+  public RsData<OrderDto> deleteOrder(long orderId) {
+    Optional<Order> optionalOrder = orderRepository.findById(orderId);
+    if (optionalOrder.isEmpty()) {
+      return RsData.of("404-NOT_FOUND", "주문을 찾을 수 없습니다.", null);
+    }
+
+    Order order = optionalOrder.get();
+    orderRepository.delete(order);
+
+    OrderDto deletedDto = new OrderDto(order);
+    return RsData.of("200-OK", "주문 취소 성공", deletedDto);
+  }
+
+  public RsData<List<OrderDto>> findTodayOrders() {
+    ZoneId zoneKST = ZoneId.of("Asia/Seoul");
+
+    LocalDateTime todayAt2pm = LocalDate.now(zoneKST).atTime(14, 0);
+    LocalDateTime yesterdayAt2pm = todayAt2pm.minusDays(1);
+
+    List<Order> orders = orderRepository.findByCreatedAtBetween(yesterdayAt2pm, todayAt2pm);
+
+    orders.forEach(order -> {
+      System.out.println("Order ID: " + order.getOrderId() + ", Created At: " + order.getCreatedAt());
+    });
+
+    if (orders.isEmpty()) {
+      throw new DataNotFoundException("오늘 주문 내역이 없습니다.");
+    }
+
+    List<OrderDto> todayOrders = orders.stream()
+        .map(OrderDto::new)
+        .toList();
+
+    return RsData.of("200-OK", "오늘 주문 내역 조회 성공", todayOrders);
+  }
 }
