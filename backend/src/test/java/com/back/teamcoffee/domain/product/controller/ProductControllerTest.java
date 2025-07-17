@@ -258,4 +258,16 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.data[0].stock").doesNotExist())
                 .andExpect(jsonPath("$.data[0].category").doesNotExist());
     }
+
+    @Test
+    @DisplayName("상품 메뉴 조회 - 상품 없음")
+    void t13() throws Exception {
+        mvc.perform(get("/products/menu"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-OK"))
+                .andExpect(jsonPath("$.msg").value("상품 메뉴 조회 성공"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data.length()").value(0));
+    }
 }
