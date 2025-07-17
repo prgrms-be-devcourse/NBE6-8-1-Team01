@@ -73,7 +73,7 @@ function ProductCard({ product, index, viewMode }: { product: Product; index: nu
         className="group"
       >
         <Link href={`/products/${product.productId}`}>
-          <div className="bg-card rounded-2xl p-6 hover:shadow-2xl transition-all duration-500 flex gap-6 border border-border/50 hover:border-primary/50">
+          <div className="bg-white rounded-2xl p-6 hover:shadow-2xl transition-all duration-500 flex gap-6 border border-gray-200 hover:border-mediterranean-blue/50">
             <div className="relative w-48 h-48 rounded-xl overflow-hidden flex-shrink-0">
               <Image
                 src={product.productImage || "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&q=80"}
@@ -86,25 +86,25 @@ function ProductCard({ product, index, viewMode }: { product: Product; index: nu
             
             <div className="flex-1 flex justify-between">
               <div className="flex-1">
-                <h3 className="text-2xl font-bold text-white group-hover:text-gradient-gold transition-all mb-2">
+                <h3 className="text-2xl font-bold text-gray-800 group-hover:text-mediterranean-blue transition-all mb-2" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>
                   {product.productName}
                 </h3>
-                <p className="text-muted-foreground mb-4">{product.description}</p>
+                <p className="text-gray-600 mb-4" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>{product.description}</p>
                 
                 <div className="flex items-center gap-6 text-sm">
                   <div className="flex items-center gap-1">
-                    <Package className="w-4 h-4 text-yellow-500" />
-                    <span className="text-muted-foreground">재고: {product.stock}개</span>
+                    <Package className="w-4 h-4 text-mediterranean-terracotta" />
+                    <span className="text-gray-600 font-medium">재고: {product.stock}개</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <Eye className="w-4 h-4 text-yellow-500" />
-                    <span className="text-muted-foreground">조회: {product.orderCount}회</span>
+                    <Eye className="w-4 h-4 text-mediterranean-blue" />
+                    <span className="text-gray-600 font-medium">조회: {product.orderCount}회</span>
                   </div>
                 </div>
               </div>
               
               <div className="flex flex-col items-end justify-between">
-                <p className="text-3xl font-bold text-gradient-gold">
+                <p className="text-3xl font-bold text-mediterranean-blue" style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}>
                   ₩{product.price.toLocaleString()}
                 </p>
                 
@@ -113,15 +113,15 @@ function ProductCard({ product, index, viewMode }: { product: Product; index: nu
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={handleAddToWishlist}
-                    className="p-3 rounded-full glass hover:bg-white/20 transition-colors"
+                    className="p-3 rounded-full bg-white border border-gray-200 hover:bg-gray-50 transition-colors shadow-md"
                   >
-                    <Heart className="w-5 h-5 text-white hover:text-red-500 transition-colors" />
+                    <Heart className="w-5 h-5 text-gray-600 hover:text-red-500 transition-colors" />
                   </motion.button>
                   <motion.div
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <Button className="btn-premium rounded-full">
+                    <Button className="bg-mediterranean-blue hover:bg-mediterranean-blue/90 text-white rounded-full px-4 py-2 font-semibold shadow-lg hover:shadow-xl transition-all">
                       <ShoppingCart className="w-5 h-5" />
                       <span className="ml-2">담기</span>
                     </Button>
@@ -146,7 +146,7 @@ function ProductCard({ product, index, viewMode }: { product: Product; index: nu
       className="group"
     >
       <Link href={`/products/${product.productId}`}>
-        <div className="bg-card rounded-2xl overflow-hidden hover-lift h-full border border-border/50 hover:border-primary/50 transition-all">
+        <div className="bg-white rounded-2xl overflow-hidden hover-lift h-full border border-gray-200 hover:border-mediterranean-blue/50 transition-all shadow-lg hover:shadow-2xl">
           <div className="relative h-64 overflow-hidden">
             <Image
               src={product.productImage || "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&q=80"}
@@ -154,7 +154,7 @@ function ProductCard({ product, index, viewMode }: { product: Product; index: nu
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-110"
             />
-            <div className="overlay-gradient" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             
             {/* 호버 시 나타나는 오버레이 */}
             <AnimatePresence>
@@ -163,7 +163,7 @@ function ProductCard({ product, index, viewMode }: { product: Product; index: nu
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="absolute inset-0 bg-black/60 flex items-center justify-center gap-4"
+                  className="absolute inset-0 bg-black/50 flex items-center justify-center gap-4"
                 >
                   <motion.button
                     initial={{ scale: 0 }}
@@ -172,16 +172,16 @@ function ProductCard({ product, index, viewMode }: { product: Product; index: nu
                     whileHover={{ scale: 1.2 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={handleAddToWishlist}
-                    className="p-3 rounded-full glass hover:bg-white/20 transition-colors"
+                    className="p-3 rounded-full bg-white border border-gray-200 hover:bg-gray-50 transition-colors shadow-md"
                   >
-                    <Heart className="w-6 h-6 text-white" />
+                    <Heart className="w-6 h-6 text-white drop-shadow-md" />
                   </motion.button>
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 0.2 }}
                   >
-                    <Button className="btn-premium rounded-full">
+                    <Button className="bg-white text-mediterranean-blue hover:bg-mediterranean-blue hover:text-white rounded-full px-4 py-2 font-semibold transition-all">
                       <Eye className="w-5 h-5 mr-2" />
                       상세보기
                     </Button>
@@ -200,22 +200,22 @@ function ProductCard({ product, index, viewMode }: { product: Product; index: nu
           </div>
           
           <div className="p-6">
-            <h3 className="font-bold text-xl mb-2 text-white group-hover:text-gradient-gold transition-all">
+            <h3 className="font-bold text-xl mb-2 text-gray-800 group-hover:text-mediterranean-blue transition-all" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>
               {product.productName}
             </h3>
-            <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+            <p className="text-gray-600 text-sm mb-4 line-clamp-2" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>
               {product.description}
             </p>
             
             <div className="flex items-center justify-between">
-              <p className="text-2xl font-bold text-gradient-gold">
+              <p className="text-2xl font-bold text-mediterranean-blue" style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}>
                 ₩{product.price.toLocaleString()}
               </p>
               <motion.div
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Button size="icon" className="rounded-full bg-gradient-gold hover:shadow-glow">
+                <Button size="icon" className="rounded-full bg-mediterranean-blue hover:bg-mediterranean-blue/90 text-white shadow-md hover:shadow-lg transition-all">
                   <ShoppingCart className="w-4 h-4" />
                 </Button>
               </motion.div>
@@ -315,34 +315,47 @@ export default function ProductsPage() {
   })
 
   return (
-    <div className="min-h-screen bg-background text-foreground" ref={pageRef}>
+    <div className="min-h-screen bg-gradient-to-b from-background to-mediterranean-sky/5" ref={pageRef}>
       <Navigation />
       
-      {/* Hero Section - 크기 줄이고 심플하게 */}
-      <section className="relative py-16 bg-gradient-to-b from-card to-background">
+      {/* Hero Section - Mediterranean Style */}
+      <section className="relative py-20 bg-gradient-to-br from-mediterranean-sky/20 via-background to-mediterranean-sand/10">
         <div className="max-w-screen-xl mx-auto px-4 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold mb-3 text-white">
-            전체 원두
-          </h1>
-          <p className="text-muted-foreground">
-            프리미엄 스페셜티 커피 컬렉션
-          </p>
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-4xl md:text-5xl font-bold mb-4"
+            style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}
+          >
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-mediterranean-blue to-mediterranean-terracotta">
+              전체 원두 컬렉션
+            </span>
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-lg text-gray-700 font-medium"
+            style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}
+          >
+            지중해의 햇살을 담은 프리미엄 스페셜티 커피
+          </motion.p>
         </div>
       </section>
 
       {/* Breadcrumb */}
-      <div className="glass-dark border-b border-white/10">
+      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200">
         <div className="max-w-screen-xl mx-auto px-4 py-3">
           <nav className="flex" aria-label="Breadcrumb">
             <ol className="inline-flex items-center space-x-1 md:space-x-3">
               <li>
-                <Link href="/" className="text-white/60 hover:text-white transition-colors">
+                <Link href="/" className="text-gray-600 hover:text-mediterranean-blue transition-colors font-medium">
                   홈
                 </Link>
               </li>
-              <ChevronRight className="w-4 h-4 text-white/40" />
+              <ChevronRight className="w-4 h-4 text-gray-400" />
               <li aria-current="page">
-                <span className="text-white">전체 원두</span>
+                <span className="text-mediterranean-blue font-semibold">전체 원두</span>
               </li>
             </ol>
           </nav>
@@ -360,11 +373,11 @@ export default function ProductsPage() {
                 exit={{ x: -300, opacity: 0 }}
                 className="w-full lg:w-72 space-y-6"
               >
-                <div className="bg-card p-6 rounded-2xl border border-border/50">
+                <div className="bg-white p-6 rounded-2xl shadow-lg border border-mediterranean-blue/10">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="font-bold text-xl flex items-center gap-2">
-                      <Filter className="w-5 h-5 text-yellow-500" />
-                      <span className="text-gradient-gold">필터</span>
+                    <h3 className="font-bold text-xl flex items-center gap-2" style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}>
+                      <Filter className="w-5 h-5 text-mediterranean-terracotta" />
+                      <span className="text-mediterranean-blue">필터</span>
                     </h3>
                     <Button
                       variant="ghost"
@@ -378,7 +391,7 @@ export default function ProductsPage() {
                   
                   {/* Price Range */}
                   <div className="mb-8">
-                    <h4 className="text-sm font-medium mb-4 text-white">가격대</h4>
+                    <h4 className="text-sm font-semibold mb-4 text-gray-800" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>가격대</h4>
                     <Slider
                       value={priceRange}
                       onValueChange={setPriceRange}
@@ -386,7 +399,7 @@ export default function ProductsPage() {
                       step={1000}
                       className="mb-4"
                     />
-                    <div className="flex justify-between text-sm text-muted-foreground">
+                    <div className="flex justify-between text-sm text-gray-600 font-medium">
                       <span>₩{priceRange[0].toLocaleString()}</span>
                       <span>₩{priceRange[1].toLocaleString()}</span>
                     </div>
@@ -395,7 +408,7 @@ export default function ProductsPage() {
 
                   <Button 
                     variant="outline" 
-                    className="w-full glass border-white/20 text-white hover:bg-white/10"
+                    className="w-full border-2 border-mediterranean-blue text-mediterranean-blue hover:bg-mediterranean-blue hover:text-white font-semibold transition-all"
                     onClick={() => setPriceRange([0, 50000])}
                   >
                     필터 초기화
@@ -409,7 +422,7 @@ export default function ProductsPage() {
           <div className="flex-1">
             {/* Header - 더 심플하게 */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-              <p className="text-muted-foreground">
+              <p className="text-gray-700 font-medium" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>
                 총 {loading ? '...' : sortedProducts.length}개의 상품
               </p>
                 
@@ -481,11 +494,11 @@ export default function ProductsPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 className="text-center py-16"
               >
-                <Coffee className="w-20 h-20 mx-auto text-gray-600 mb-4" />
-                <p className="text-red-400 mb-4 text-xl">{error}</p>
+                <Coffee className="w-20 h-20 mx-auto text-mediterranean-blue/50 mb-4" />
+                <p className="text-red-500 mb-4 text-xl font-medium">{error}</p>
                 <Button 
                   onClick={() => window.location.reload()}
-                  className="btn-premium rounded-full"
+                  className="bg-mediterranean-blue hover:bg-mediterranean-blue/90 text-white rounded-full px-6 py-3 font-semibold shadow-lg hover:shadow-xl transition-all"
                 >
                   다시 시도
                 </Button>
