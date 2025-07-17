@@ -21,12 +21,15 @@ public class User {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private int id;
+    @NotBlank
     private String name;
     @NotBlank
     @Column(name = "email", unique = true)
     @Email
     private String email;
+    @NotBlank
     private String address;
+    @NotBlank
     private String password;
     @Column(updatable = false)
     private LocalDateTime created_at;

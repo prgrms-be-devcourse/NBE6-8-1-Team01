@@ -15,15 +15,18 @@ public record UserRegisterRequestDto(
         @NotBlank(message = "비밀번호는 필수입니다.")
         @Size(min = 4, message = "비밀번호는 4자 이상이어야 합니다.")
         String password,
+        @NotBlank(message = "주소는 필수입니다")
+        String address,
 
         UserRole role
 ) {
 
-    public UserRegisterRequestDto(String username, String email, String password, UserRole role) {
+    public UserRegisterRequestDto(String username, String email, String password,String address, UserRole role) {
 
         this.username = username;
         this.email = email;
         this.password = password;
+        this.address = address;
         this.role = role;
     }
 
@@ -34,6 +37,7 @@ public record UserRegisterRequestDto(
                 user.getName(),
                 user.getEmail(),
                 user.getPassword(),
+                user.getAddress(),
                 user.getRole()
         );
     }

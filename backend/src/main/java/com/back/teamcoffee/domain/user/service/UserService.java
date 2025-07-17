@@ -32,6 +32,7 @@ public class UserService {
                         .email(req.email())
                         .password(passwordEncoder.encode(req.password()))
                         .name(req.username())
+                        .address(req.address())
                         .role(role)
                         .build()
         );
@@ -72,4 +73,17 @@ public class UserService {
         LoginResultDto result = LoginResultDto.of(UserLoginResponseDto.from(user), tokens);
         return RsData.of(code, msg, result);
     }
+
+    private void CreateTestUser() {
+        User testUser = User.builder()
+                .email("admin@email.com")
+                .password(passwordEncoder.encode("admin1234"))
+                .name("관리자")
+                .role(UserRole.ADMIN)
+                .build();
+        if (!userRepository.existsByEmail(testUser.getEmail())) {
+            userRepository.save(testUser);
+        }
+
+        }
 }
