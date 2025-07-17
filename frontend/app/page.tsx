@@ -113,7 +113,8 @@ export default function HomePage() {
               </Link>
               <Link href="/signup">
                 <Button size="lg" variant="outline" className="border-2 border-mediterranean-blue text-mediterranean-blue hover:bg-mediterranean-blue/10 rounded-full px-8 py-6 text-lg font-semibold">
-                  회원가입하고 10% 할인받기
+                  <User className="mr-2 h-5 w-5" />
+                  회원가입하기
                 </Button>
               </Link>
             </div>
