@@ -2,17 +2,26 @@ package com.back.teamcoffee.global.baseresponse;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @Setter
-public class BaseResponse
+public abstract class BaseResponse extends RuntimeException
 {
-    private String message;
-    private int statusCode;
+    private final String resultCode;
+    private final HttpStatus statusCode;
 
-    public BaseResponse(String message, int statusCode) {
-        this.message = message;
+    protected BaseResponse(String resultCode, String message, HttpStatus statusCode) {
+        super(message);
+        this.resultCode = resultCode;
         this.statusCode = statusCode;
+    }
+
+    public String getResultCode() {
+        return resultCode;
+    }
+    public HttpStatus getStatusCode() {
+        return statusCode;
     }
 
 
