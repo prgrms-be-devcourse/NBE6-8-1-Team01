@@ -25,15 +25,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))  // CORS 설정 추가
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(reg -> reg
                         .requestMatchers("/users/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/products/**").hasAuthority(UserRole.ADMIN.name())
+                        .requestMatchers("/products/**").permitAll()  // 상품 조회는 모두 허용
                         .requestMatchers("/orders/modify/**").hasAuthority(UserRole.ADMIN.name())
                         .requestMatchers("/orders/**").permitAll()
+                        .requestMatchers("/api/v1/wishlists/**").authenticated()  // 위시리스트는 인증 필요
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

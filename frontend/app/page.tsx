@@ -1,149 +1,368 @@
 'use client'
 
+import { useState, useEffect, useRef } from "react"
+import { motion, useScroll, useTransform } from "framer-motion"
 import { Navigation } from "@/components/Navigation"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { 
+  ShoppingCart, 
+  Coffee, 
+  ArrowRight, 
+  Truck,
+  Shield,
+  Clock,
+  Sparkles,
+  Star,
+  User
+} from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { productApi } from '@/lib/api/products'
+import type { Product } from '@/lib/types'
+import { useToast } from "@/hooks/use-toast"
+import { CardContainer, CardBody, CardItem } from "@/components/ui/3d-card"
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
 
 export default function HomePage() {
-  const products = [
-    {
-      id: 1,
-      name: "시그니처 블렌드",
-      description: "남미와 아프리카 원두의 균형잡힌 블렌드로 매일 마시기 좋은 데일리 커피입니다.",
-      image: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=800&q=80",
-    },
-    {
-      id: 2,
-      name: "에티오피아 싱글 오리진",
-      description: "중남미와 인도네시아 원두의 풍부하고 복합적인 맛으로 특별한 날에 어울립니다.",
-      image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=800&q=80",
-    },
-    {
-      id: 3,
-      name: "콜드브루 컨센트레이트",
-      description: "남미와 인도네시아 원두의 부드럽고 친근한 맛으로 누구나 즐길 수 있습니다.",
-      image: "https://images.unsplash.com/photo-1611564494260-6f21b80af7ea?w=800&q=80",
-    },
-    {
-      id: 4,
-      name: "디카페인 다크 로스트",
-      description: "아프리카와 인도네시아 원두의 대담하고 독특한 맛으로 모험을 즐기는 분들께 추천합니다.",
-      image: "https://images.unsplash.com/photo-1514664030710-2638cfc7c3fc?w=800&q=80",
-    },
-  ]
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
+  const { toast } = useToast()
+  const featuresRef = useRef(null)
+
+  // GSAP Animations
+  useEffect(() => {
+    // Feature cards stagger animation
+    gsap.fromTo('.feature-card',
+      { opacity: 0, y: 50 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.2,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: featuresRef.current,
+          start: 'top 80%',
+          end: 'bottom 20%',
+        }
+      }
+    )
+  }, [])
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await productApi.getProducts()
+        if (response.resultCode === 'SUCCESS' && response.data.length > 0) {
+          setProducts(response.data.slice(0, 4))
+        }
+      } catch (error) {
+        console.error('상품 로딩 실패:', error)
+        toast({
+          title: "상품 로딩 실패",
+          description: "상품 정보를 불러올 수 없습니다.",
+          variant: "destructive"
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProducts()
+  }, [])
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-white overflow-x-hidden">
+    <div className="min-h-screen bg-background text-foreground">
       <Navigation />
       
-      <div className="px-4 md:px-10 lg:px-40 flex flex-1 justify-center py-5">
-        <div className="flex flex-col max-w-[960px] flex-1">
-          {/* Hero Section */}
-          <div className="relative">
-            <div
-              className="flex min-h-[480px] flex-col gap-6 bg-cover bg-center bg-no-repeat rounded-xl items-center justify-center p-8 md:p-16"
-              style={{
-                backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%), url("https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1600&q=80")`
-              }}
-            >
-              <div className="flex flex-col gap-4 text-center max-w-2xl">
-                <h1 className="text-white text-4xl md:text-5xl font-black leading-tight">
-                  호기심 가득한 커피 여정
-                </h1>
-                <p className="text-white text-base md:text-lg font-normal leading-relaxed">
-                  우리는 정성과 의도를 담아 커피를 소싱하고, 로스팅하며, 추출합니다. 
-                  커피에 대한 우리의 열정을 여러분과 나누고, 집에서 브루잉하는 즐거움을 
-                  발견할 수 있도록 돕는 것이 우리의 목표입니다.
-                </p>
-              </div>
+      {/* Hero Section - Mediterranean Style */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-mediterranean-sky via-background to-mediterranean-sand">
+        {/* Animated Background Shapes */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-mediterranean-blue/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-mediterranean-sand/30 rounded-full blur-3xl animate-pulse delay-1000" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-mediterranean-terracotta/10 to-mediterranean-blue/10 rounded-full blur-3xl animate-pulse delay-2000" />
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 py-20 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h1 className="text-6xl md:text-8xl font-black mb-6" style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif', letterSpacing: '-0.03em' }}>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-mediterranean-blue via-mediterranean-terracotta to-mediterranean-blue uppercase">
+                GRIDS & CIRCLES
+              </span>
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-700 mb-12 max-w-3xl mx-auto leading-relaxed" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>
+              지중해의 햇살을 담은 프리미엄 스페셜티 커피<br />
+              포지타노의 아침을 당신의 컵에 담아드립니다
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
               <Link href="/products">
-                <Button className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-6 text-base font-bold">
-                  원두 둘러보기
+                <Button size="lg" className="bg-mediterranean-blue hover:bg-mediterranean-blue/90 text-white rounded-full px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                  <Coffee className="mr-2 h-5 w-5" />
+                  커피 둘러보기
+                </Button>
+              </Link>
+              <Link href="/signup">
+                <Button size="lg" variant="outline" className="border-2 border-mediterranean-blue text-mediterranean-blue hover:bg-mediterranean-blue/10 rounded-full px-8 py-6 text-lg font-semibold">
+                  회원가입하고 10% 할인받기
+                </Button>
+              </Link>
+            </div>
+          </motion.div>
+
+          {/* 3D Cards for Featured Products */}
+          {products.length > 0 && (
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-20">
+              {products.slice(0, 4).map((product, index) => (
+                <motion.div
+                  key={product.productId}
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <CardContainer className="inter-var">
+                    <CardBody className="bg-white/80 backdrop-blur-md relative group/card hover:shadow-2xl hover:shadow-mediterranean-blue/[0.1] border-mediterranean-blue/[0.1] w-full h-auto rounded-xl p-6 border">
+                      <CardItem
+                        translateZ="50"
+                        className="text-xl font-bold text-gray-800"
+                      >
+                        {product.productName}
+                      </CardItem>
+                      <CardItem
+                        as="p"
+                        translateZ="60"
+                        className="text-gray-600 text-sm max-w-sm mt-2"
+                      >
+                        {product.description}
+                      </CardItem>
+                      <CardItem translateZ="100" className="w-full mt-4">
+                        <Image
+                          src={product.productImage || "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&q=80"}
+                          height="300"
+                          width="300"
+                          className="h-60 w-full object-cover rounded-xl group-hover/card:shadow-xl"
+                          alt={product.productName}
+                        />
+                      </CardItem>
+                      <div className="flex justify-between items-center mt-6">
+                        <CardItem
+                          translateZ={20}
+                          as="p"
+                          className="text-2xl font-bold text-mediterranean-blue"
+                        >
+                          ₩{product.price.toLocaleString()}
+                        </CardItem>
+                        <CardItem
+                          translateZ={20}
+                          as={Link}
+                          href={`/products/${product.productId}`}
+                          className="px-4 py-2 rounded-xl bg-mediterranean-blue text-white text-sm font-bold hover:bg-mediterranean-blue/90 transition-colors"
+                        >
+                          상세보기 →
+                        </CardItem>
+                      </div>
+                    </CardBody>
+                  </CardContainer>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Premium Features Section */}
+      <section ref={featuresRef} className="py-24 px-4 relative">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-mediterranean-blue to-mediterranean-terracotta">Why Grids & Circles</span>
+            </h2>
+            <p className="text-lg text-gray-700 font-medium" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>최고의 커피를 위한 우리의 약속</p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-8 perspective-1000">
+            <div className="feature-card card-3d">
+              <div className="glass-light p-8 rounded-2xl text-center hover-lift h-full shadow-lg hover:shadow-xl transition-all">
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-mediterranean-blue to-mediterranean-sky flex items-center justify-center shadow-lg">
+                  <Coffee className="w-10 h-10 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold mb-3 text-mediterranean-blue" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>프리미엄 원두</h3>
+                <p className="text-gray-700 text-base font-medium" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>전 세계 최고급 농장에서 직접 선별한 스페셜티 등급 원두만을 사용합니다</p>
+              </div>
+            </div>
+            
+            <div className="feature-card card-3d">
+              <div className="glass-light p-8 rounded-2xl text-center hover-lift h-full shadow-lg hover:shadow-xl transition-all">
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-mediterranean-terracotta to-mediterranean-sand flex items-center justify-center shadow-lg">
+                  <Truck className="w-10 h-10 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold mb-3 text-mediterranean-terracotta" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>신선한 배송</h3>
+                <p className="text-gray-700 text-base font-medium" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>로스팅 후 24시간 이내 배송으로 최상의 신선도를 보장합니다</p>
+              </div>
+            </div>
+            
+            <div className="feature-card card-3d">
+              <div className="glass-light p-8 rounded-2xl text-center hover-lift h-full shadow-lg hover:shadow-xl transition-all">
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-mediterranean-blue to-mediterranean-terracotta flex items-center justify-center shadow-lg">
+                  <Shield className="w-10 h-10 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold mb-3 text-mediterranean-blue" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>품질 보증</h3>
+                <p className="text-gray-700 text-base font-medium" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>Q-Grader 전문가의 엄격한 커핑을 통과한 원두만 제공합니다</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Premium Products Section */}
+      <section className="py-24 px-4 bg-gradient-to-b from-mediterranean-sky/10 via-background to-mediterranean-sand/10">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-mediterranean-terracotta to-mediterranean-blue">BEST SELLERS</span>
+            </h2>
+            <p className="text-lg text-gray-700 font-medium" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>커피 애호가들이 선택한 최고의 원두</p>
+          </motion.div>
+
+          {loading ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="bg-white rounded-2xl p-6 animate-pulse shadow-lg">
+                  <div className="h-64 bg-gray-200 rounded-xl mb-4" />
+                  <div className="h-6 bg-gray-200 rounded mb-2" />
+                  <div className="h-4 bg-gray-200 rounded w-2/3" />
+                </div>
+              ))}
+            </div>
+          ) : products.length === 0 ? (
+            <div className="text-center py-16">
+              <Coffee className="w-20 h-20 mx-auto text-mediterranean-blue/50 mb-4" />
+              <p className="text-xl text-gray-600 mb-6">아직 등록된 상품이 없습니다</p>
+              <p className="text-sm text-gray-500">곧 프리미엄 원두들을 만나보실 수 있습니다</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {products.map((product, index) => (
+                <motion.div
+                  key={product.productId}
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  whileHover={{ y: -10 }}
+                  className="group"
+                >
+                  <Link href={`/products/${product.productId}`}>
+                    <div className="bg-white rounded-2xl overflow-hidden hover-lift shadow-lg hover:shadow-2xl transition-all border border-gray-100">
+                      <div className="relative h-64 overflow-hidden">
+                        <Image
+                          src={product.productImage || "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&q=80"}
+                          alt={product.productName}
+                          fill
+                          className="object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        {product.stock < 10 && (
+                          <Badge className="absolute top-4 right-4 bg-red-600/90 backdrop-blur-sm">
+                            <Sparkles className="w-3 h-3 mr-1" />
+                            품절임박
+                          </Badge>
+                        )}
+                      </div>
+                      
+                      <div className="p-6">
+                        <h3 className="font-bold text-xl mb-2 text-gray-800 group-hover:text-mediterranean-blue transition-all">
+                          {product.productName}
+                        </h3>
+                        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                          {product.description}
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <p className="text-2xl font-bold text-mediterranean-blue">
+                            ₩{product.price.toLocaleString()}
+                          </p>
+                          <motion.div
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            <Button size="icon" className="rounded-full bg-mediterranean-blue hover:bg-mediterranean-blue/90 text-white shadow-md hover:shadow-lg transition-all">
+                              <ShoppingCart className="w-4 h-4" />
+                            </Button>
+                          </motion.div>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          )}
+
+          <motion.div 
+            className="text-center mt-12"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            <Link href="/products">
+              <Button variant="outline" size="lg" className="border-2 border-mediterranean-blue text-mediterranean-blue hover:bg-mediterranean-blue hover:text-white rounded-full group font-semibold transition-all">
+                전체 컬렉션 보기
+                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Call to Action Section */}
+      <section className="py-24 px-4 relative overflow-hidden bg-gradient-to-br from-mediterranean-sky/20 to-mediterranean-sand/20">
+        <motion.div 
+          className="max-w-4xl mx-auto text-center relative z-10"
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="bg-white rounded-3xl p-12 shadow-2xl border border-mediterranean-blue/10">
+            <Clock className="w-20 h-20 mx-auto mb-8 text-mediterranean-blue" />
+            <h2 className="text-4xl font-bold mb-6" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-mediterranean-blue to-mediterranean-terracotta">지금 바로 시작하세요</span>
+            </h2>
+            <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto leading-relaxed font-medium" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>
+              최고급 스페셜티 커피를 온라인으로 만나보세요.<br />
+              회원가입하고 첫 주문 시 특별 할인을 받으세요.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/products">
+                <Button size="lg" className="bg-mediterranean-blue hover:bg-mediterranean-blue/90 text-white rounded-full px-8 py-3 font-semibold shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 group">
+                  <ShoppingCart className="mr-2 h-5 w-5 group-hover:rotate-12 transition-transform" />
+                  쇼핑 시작하기
+                </Button>
+              </Link>
+              <Link href="/login">
+                <Button size="lg" variant="outline" className="border-2 border-mediterranean-blue text-mediterranean-blue hover:bg-mediterranean-blue hover:text-white rounded-full px-8 py-3 font-semibold transition-all">
+                  로그인
                 </Button>
               </Link>
             </div>
           </div>
-
-          {/* Best Sellers Section */}
-          <h2 className="text-gray-900 text-2xl font-bold px-4 pb-3 pt-8">베스트셀러</h2>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
-            {products.map((product) => (
-              <Link href={`/products/${product.id}`} key={product.id}>
-                <div className="flex flex-col gap-3 pb-3 cursor-pointer group">
-                  <div className="relative overflow-hidden">
-                    <div 
-                      className="w-full aspect-square bg-cover bg-center rounded-xl transition-transform duration-300 group-hover:scale-105"
-                      style={{ backgroundImage: `url("${product.image}")` }}
-                    />
-                  </div>
-                  <div className="px-1">
-                    <p className="text-gray-900 text-base font-medium">{product.name}</p>
-                    <p className="text-gray-600 text-sm font-normal mt-1">{product.description}</p>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-
-          <div className="flex px-4 py-6 justify-center">
-            <Link href="/products">
-              <Button variant="outline" className="px-8 py-2 text-gray-900 border-gray-200 hover:bg-gray-50">
-                모든 상품 보기
-              </Button>
-            </Link>
-          </div>
-
-          {/* Features Section */}
-          <div className="grid md:grid-cols-3 gap-8 px-4 py-12">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">당일 로스팅</h3>
-              <p className="text-gray-600 text-sm">오후 2시 이전 주문 시 당일 로스팅 후 익일 배송으로 최상의 신선도를 보장합니다.</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">직접 소싱</h3>
-              <p className="text-gray-600 text-sm">세계 각지의 농장과 직접 거래하여 최고 품질의 생두를 엄선합니다.</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">정성스런 로스팅</h3>
-              <p className="text-gray-600 text-sm">각 원두의 특성을 살리는 최적의 로스팅 프로파일로 최상의 맛을 구현합니다.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Footer */}
-      <footer className="bg-gray-50 border-t">
-        <div className="max-w-[960px] mx-auto px-5 py-10">
-          <div className="flex justify-center gap-8 mb-8">
-            <Link href="/products" className="text-gray-600 hover:text-gray-900 text-sm">전체 원두</Link>
-            <Link href="/cart" className="text-gray-600 hover:text-gray-900 text-sm">장바구니</Link>
-            <Link href="/login" className="text-gray-600 hover:text-gray-900 text-sm">로그인</Link>
-            <Link href="/signup" className="text-gray-600 hover:text-gray-900 text-sm">회원가입</Link>
-          </div>
-          <p className="text-center text-gray-500 text-sm">
-            © {new Date().getFullYear()} 그리드앤써클스. All rights reserved.
-          </p>
-        </div>
-      </footer>
+        </motion.div>
+      </section>
     </div>
   )
 }

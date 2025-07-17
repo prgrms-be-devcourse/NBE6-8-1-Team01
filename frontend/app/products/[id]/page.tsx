@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Navigation } from "@/components/Navigation"
 import { Button } from "@/components/ui/button"
 import { 
@@ -10,37 +10,93 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { ChevronRight, Star, Package, Truck, Coffee } from "lucide-react"
+import { Star, Package, Truck, Coffee, Heart } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { useParams } from "next/navigation"
+import { productApi, wishlistApi, type Product } from "@/lib/api"
 
 export default function ProductDetailPage() {
   const params = useParams()
+  const [product, setProduct] = useState<Product | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [quantity, setQuantity] = useState("1")
-  const [grindSize, setGrindSize] = useState("whole-bean")
+  const [addingToWishlist, setAddingToWishlist] = useState(false)
 
-  // 실제로는 ID로 상품 정보를 가져와야 함
-  const product = {
-    id: params.id,
-    name: "에티오피아 예가체프",
-    description: "에티오피아 예가체프 지역에서 재배된 이 원두는 탁월한 품질과 독특한 풍미로 유명합니다. 꼼꼼하게 선별된 원두를 정성스럽게 로스팅하여 자연스러운 단맛과 과일향을 살렸습니다.",
-    price: 24900,
-    origin: "에티오피아 예가체프",
-    process: "워시드 프로세스",
-    roastLevel: "미디움 라이트",
-    notes: ["꽃향", "레몬", "베르가못", "꿀"],
-    altitude: "1,850-2,100m",
-    variety: "에티오피아 헤어룸",
-    image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=800&q=80",
-    rating: 4.8,
-    reviewCount: 127,
-    inStock: true
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true)
+        const id = Array.isArray(params.id) ? params.id[0] : params.id
+        const response = await productApi.getProduct(Number(id))
+        setProduct(response.data)
+      } catch (err) {
+        setError('상품 정보를 불러오는데 실패했습니다.')
+        console.error('상품 상세 조회 에러:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (params.id) {
+      fetchProduct()
+    }
+  }, [params.id])
+
+  const handleAddToWishlist = async () => {
+    if (!product) return
+
+    try {
+      setAddingToWishlist(true)
+      // 실제로는 현재 로그인한 사용자 이메일을 가져와야 함
+      // 임시로 테스트 이메일 사용
+      const testEmail = "test@example.com"
+      
+      await wishlistApi.addToWishlist(testEmail, {
+        productId: product.productId,
+        quantity: Number(quantity)
+      })
+      
+      alert('위시리스트에 추가되었습니다!')
+    } catch (err: any) {
+      alert(err.message || '위시리스트 추가에 실패했습니다.')
+    } finally {
+      setAddingToWishlist(false)
+    }
   }
 
-  const handleAddToCart = () => {
-    console.log(`장바구니에 추가: ${product.name}, 수량: ${quantity}, 분쇄도: ${grindSize}`)
-    // TODO: 실제 장바구니 추가 로직
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navigation />
+        <div className="max-w-screen-xl mx-auto px-4 py-16">
+          <div className="grid lg:grid-cols-2 gap-8">
+            <div className="aspect-square bg-gray-200 rounded-xl animate-pulse" />
+            <div className="space-y-4">
+              <div className="h-8 bg-gray-200 rounded animate-pulse" />
+              <div className="h-6 bg-gray-200 rounded animate-pulse" />
+              <div className="h-6 bg-gray-200 rounded animate-pulse" />
+              <div className="h-10 bg-gray-200 rounded animate-pulse" />
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error || !product) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navigation />
+        <div className="max-w-screen-xl mx-auto px-4 py-16 text-center">
+          <p className="text-red-600 mb-4">{error || '상품을 찾을 수 없습니다.'}</p>
+          <Link href="/products">
+            <Button>상품 목록으로 돌아가기</Button>
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -54,17 +110,17 @@ export default function ProductDetailPage() {
             원두
           </Link>
           <span className="text-gray-600 text-sm">/</span>
-          <span className="text-gray-900 text-sm font-medium">{product.name}</span>
+          <span className="text-gray-900 text-sm font-medium">{product.productName}</span>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Product Image */}
-          <div className="aspect-[2/3] rounded-xl overflow-hidden">
+          <div className="aspect-square rounded-xl overflow-hidden">
             <Image
-              src={product.image}
-              alt={product.name}
+              src={product.productImage || "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=800&q=80"}
+              alt={product.productName}
               width={600}
-              height={900}
+              height={600}
               className="w-full h-full object-cover"
             />
           </div>
@@ -72,7 +128,7 @@ export default function ProductDetailPage() {
           {/* Product Info */}
           <div className="flex flex-col">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-              {product.name}
+              {product.productName}
             </h1>
             
             <p className="text-base text-gray-700 mb-6">
@@ -80,81 +136,20 @@ export default function ProductDetailPage() {
             </p>
 
             <div className="flex items-center gap-4 mb-6">
-              <div className="flex items-center">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`w-5 h-5 ${
-                      i < Math.floor(product.rating)
-                        ? "text-amber-400 fill-amber-400"
-                        : "text-gray-300"
-                    }`}
-                  />
-                ))}
-              </div>
               <span className="text-sm text-gray-600">
-                {product.rating} ({product.reviewCount}개 리뷰)
+                주문 수: {product.orderCount}회
+              </span>
+              <span className="text-sm text-gray-600">
+                재고: {product.stock}개
               </span>
             </div>
 
-            <p className="text-3xl font-bold text-gray-900 mb-8">
+            <p className="text-3xl font-bold text-amber-600 mb-8">
               ₩{product.price.toLocaleString()}
             </p>
 
-            {/* Product Details */}
-            <div className="grid grid-cols-2 gap-4 mb-8 pb-8 border-b">
-              <div>
-                <p className="text-sm text-gray-600">원산지</p>
-                <p className="text-base font-medium text-gray-900">{product.origin}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">가공방식</p>
-                <p className="text-base font-medium text-gray-900">{product.process}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">로스팅</p>
-                <p className="text-base font-medium text-gray-900">{product.roastLevel}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">재배고도</p>
-                <p className="text-base font-medium text-gray-900">{product.altitude}</p>
-              </div>
-            </div>
-
-            {/* Flavor Notes */}
-            <div className="mb-8">
-              <p className="text-sm text-gray-600 mb-3">테이스팅 노트</p>
-              <div className="flex flex-wrap gap-2">
-                {product.notes.map((note) => (
-                  <span
-                    key={note}
-                    className="px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-sm"
-                  >
-                    {note}
-                  </span>
-                ))}
-              </div>
-            </div>
-
             {/* Options */}
             <div className="space-y-4 mb-8">
-              <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">
-                  분쇄도 선택
-                </label>
-                <Select value={grindSize} onValueChange={setGrindSize}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="whole-bean">홀빈 (분쇄하지 않음)</SelectItem>
-                    <SelectItem value="french-press">프렌치프레스용 (굵게)</SelectItem>
-                    <SelectItem value="drip">드립용 (중간)</SelectItem>
-                    <SelectItem value="espresso">에스프레소용 (곱게)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-2 block">
                   수량
@@ -164,7 +159,7 @@ export default function ProductDetailPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {[1, 2, 3, 4, 5].map((num) => (
+                    {Array.from({ length: Math.min(product.stock, 10) }, (_, i) => i + 1).map((num) => (
                       <SelectItem key={num} value={num.toString()}>
                         {num}개
                       </SelectItem>
@@ -174,16 +169,35 @@ export default function ProductDetailPage() {
               </div>
             </div>
 
-            <Button
-              onClick={handleAddToCart}
-              className="w-full bg-amber-600 hover:bg-amber-700 text-white py-6 text-base font-semibold"
-              disabled={!product.inStock}
-            >
-              {product.inStock ? "장바구니 담기" : "품절"}
-            </Button>
+            {/* Action Buttons */}
+            <div className="flex gap-3 mb-8">
+              <Button
+                onClick={handleAddToWishlist}
+                variant="outline"
+                className="flex-1 border-amber-600 text-amber-600 hover:bg-amber-50"
+                disabled={product.stock <= 0 || addingToWishlist}
+              >
+                <Heart className="w-4 h-4 mr-2" />
+                {addingToWishlist ? "추가 중..." : "위시리스트"}
+              </Button>
+              
+              <Button
+                className="flex-2 bg-amber-600 hover:bg-amber-700 text-white"
+                disabled={product.stock <= 0}
+              >
+                {product.stock <= 0 ? "품절" : "장바구니 담기"}
+              </Button>
+            </div>
+
+            {/* Product Status */}
+            {product.stock <= 0 && (
+              <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-600 text-sm">현재 품절된 상품입니다.</p>
+              </div>
+            )}
 
             {/* Delivery Info */}
-            <div className="mt-8 space-y-3 text-sm text-gray-600">
+            <div className="space-y-3 text-sm text-gray-600">
               <div className="flex items-center gap-2">
                 <Truck className="w-4 h-4" />
                 <span>오후 2시 이전 주문 시 내일 도착</span>
@@ -200,9 +214,19 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Additional Info Tabs */}
+        {/* Additional Info */}
         <div className="mt-16 border-t pt-8">
           <div className="grid md:grid-cols-3 gap-8">
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-3">상품 정보</h3>
+              <div className="space-y-2 text-sm text-gray-600">
+                <p>• 상품ID: {product.productId}</p>
+                <p>• 등록일: {new Date(product.createdAt).toLocaleDateString()}</p>
+                <p>• 재고 수량: {product.stock}개</p>
+                <p>• 총 주문 수: {product.orderCount}회</p>
+              </div>
+            </div>
+
             <div>
               <h3 className="font-semibold text-gray-900 mb-3">추출 가이드</h3>
               <div className="space-y-2 text-sm text-gray-600">
@@ -220,16 +244,6 @@ export default function ProductDetailPage() {
                 <p>• 개봉 후 2주 이내 소비 권장</p>
                 <p>• 밀폐용기에 보관</p>
                 <p>• 냉동보관 가능 (1개월)</p>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-3">배송 정보</h3>
-              <div className="space-y-2 text-sm text-gray-600">
-                <p>• 주문 후 로스팅 진행</p>
-                <p>• 로스팅 후 24시간 숙성</p>
-                <p>• 특수 포장으로 신선도 유지</p>
-                <p>• 제주/도서지역 추가비용</p>
               </div>
             </div>
           </div>

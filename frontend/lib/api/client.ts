@@ -1,60 +1,39 @@
-import axios from 'axios';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
 
-// API 클라이언트 설정
-const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  withCredentials: true, // 쿠키 전송을 위해
-});
-
-// 요청 인터셉터
-apiClient.interceptors.request.use(
-  (config) => {
-    // JWT 토큰이 있으면 헤더에 추가
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+// 공통 API 호출 함수
+export async function apiCall<T>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const url = `${API_BASE_URL}${endpoint}`
+  
+  const config: RequestInit = {
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+    credentials: 'include', // 쿠키 포함 (JWT)
+    ...options,
   }
-);
 
-// 응답 인터셉터
-apiClient.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  async (error) => {
-    const originalRequest = error.config;
-
-    // 401 에러이고 재시도하지 않은 경우
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      
-      try {
-        // 리프레시 토큰으로 새 액세스 토큰 요청
-        const response = await apiClient.post('/auth/refresh');
-        const { accessToken } = response.data;
-        
-        localStorage.setItem('accessToken', accessToken);
-        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-        
-        return apiClient(originalRequest);
-      } catch (refreshError) {
-        // 리프레시 실패시 로그인 페이지로
-        localStorage.removeItem('accessToken');
-        window.location.href = '/login';
-        return Promise.reject(refreshError);
+  try {
+    const response = await fetch(url, config)
+    
+    if (!response.ok) {
+      // 401 에러시 로그인 페이지로 리다이렉트
+      if (response.status === 401) {
+        window.location.href = '/login'
+        return Promise.reject(new Error('인증이 필요합니다'))
       }
+      
+      const errorData = await response.json().catch(() => ({}))
+      throw new Error(errorData.msg || `HTTP ${response.status}`)
     }
-
-    return Promise.reject(error);
+    
+    const data = await response.json()
+    return data
+  } catch (error) {
+    console.error('API 호출 에러:', error)
+    throw error
   }
-);
-
-export default apiClient;
+}

@@ -1,0 +1,11 @@
+{
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "filesystem"
+  ],
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:ui.aceternity.com)"
+    ]
+  }
+}
