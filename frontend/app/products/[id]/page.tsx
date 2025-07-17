@@ -14,7 +14,12 @@ import { Star, Package, Truck, Coffee, Heart } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { useParams } from "next/navigation"
-import { productApi, wishlistApi, type Product } from "@/lib/api"
+import { productApi } from "@/lib/api/products"
+import type { Product } from "@/lib/types"
+import { useToast } from "@/hooks/use-toast"
+import { useWishlist } from "@/contexts/WishlistContext"
+import { useAuth } from "@/contexts/AuthContext"
+import { motion } from "framer-motion"
 
 export default function ProductDetailPage() {
   const params = useParams()
@@ -22,7 +27,9 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [quantity, setQuantity] = useState("1")
-  const [addingToWishlist, setAddingToWishlist] = useState(false)
+  const { toast } = useToast()
+  const { addToWishlist } = useWishlist()
+  const { isAuthenticated } = useAuth()
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -30,7 +37,11 @@ export default function ProductDetailPage() {
         setLoading(true)
         const id = Array.isArray(params.id) ? params.id[0] : params.id
         const response = await productApi.getProduct(Number(id))
-        setProduct(response.data)
+        if (response.resultCode === 'SUCCESS') {
+          setProduct(response.data)
+        } else {
+          throw new Error(response.msg)
+        }
       } catch (err) {
         setError('상품 정보를 불러오는데 실패했습니다.')
         console.error('상품 상세 조회 에러:', err)
@@ -46,38 +57,44 @@ export default function ProductDetailPage() {
 
   const handleAddToWishlist = async () => {
     if (!product) return
+    
+    if (!isAuthenticated) {
+      toast({
+        title: "로그인 필요",
+        description: "위시리스트에 추가하려면 로그인이 필요합니다.",
+        variant: "destructive"
+      })
+      return
+    }
 
     try {
-      setAddingToWishlist(true)
-      // 실제로는 현재 로그인한 사용자 이메일을 가져와야 함
-      // 임시로 테스트 이메일 사용
-      const testEmail = "test@example.com"
-      
-      await wishlistApi.addToWishlist(testEmail, {
-        productId: product.productId,
-        quantity: Number(quantity)
+      await addToWishlist(product.productId, Number(quantity))
+      toast({
+        title: "위시리스트에 추가됨",
+        description: `${product.productName}이(가) 위시리스트에 추가되었습니다.`,
       })
-      
-      alert('위시리스트에 추가되었습니다!')
-    } catch (err: any) {
-      alert(err.message || '위시리스트 추가에 실패했습니다.')
-    } finally {
-      setAddingToWishlist(false)
+    } catch (error) {
+      toast({
+        title: "추가 실패",
+        description: "위시리스트 추가에 실패했습니다.",
+        variant: "destructive"
+      })
     }
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-gradient-to-b from-background to-mediterranean-sky/5">
         <Navigation />
-        <div className="max-w-screen-xl mx-auto px-4 py-16">
+        <div className="max-w-screen-xl mx-auto px-4 md:px-10 lg:px-40 py-16">
           <div className="grid lg:grid-cols-2 gap-8">
-            <div className="aspect-square bg-gray-200 rounded-xl animate-pulse" />
+            <div className="aspect-square bg-gray-200 rounded-2xl animate-pulse shadow-lg" />
             <div className="space-y-4">
-              <div className="h-8 bg-gray-200 rounded animate-pulse" />
-              <div className="h-6 bg-gray-200 rounded animate-pulse" />
-              <div className="h-6 bg-gray-200 rounded animate-pulse" />
               <div className="h-10 bg-gray-200 rounded animate-pulse" />
+              <div className="h-6 bg-gray-200 rounded animate-pulse w-3/4" />
+              <div className="h-4 bg-gray-200 rounded animate-pulse w-1/2" />
+              <div className="h-12 bg-gray-200 rounded animate-pulse w-1/3" />
+              <div className="h-24 bg-gray-200 rounded animate-pulse" />
             </div>
           </div>
         </div>
@@ -87,7 +104,7 @@ export default function ProductDetailPage() {
 
   if (error || !product) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-gradient-to-b from-background to-mediterranean-sky/5">
         <Navigation />
         <div className="max-w-screen-xl mx-auto px-4 py-16 text-center">
           <p className="text-red-600 mb-4">{error || '상품을 찾을 수 없습니다.'}</p>
@@ -100,62 +117,82 @@ export default function ProductDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-b from-background to-mediterranean-sky/5">
       <Navigation />
       
       <div className="max-w-screen-xl mx-auto px-4 md:px-10 lg:px-40 py-5">
         {/* Breadcrumb */}
-        <div className="flex flex-wrap gap-2 py-4">
-          <Link href="/products" className="text-gray-600 hover:text-gray-900 text-sm">
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-wrap gap-2 py-6"
+        >
+          <Link href="/products" className="text-gray-600 hover:text-mediterranean-blue text-sm font-medium transition-colors">
             원두
           </Link>
-          <span className="text-gray-600 text-sm">/</span>
-          <span className="text-gray-900 text-sm font-medium">{product.productName}</span>
-        </div>
+          <span className="text-gray-400">/</span>
+          <span className="text-mediterranean-blue text-sm font-semibold">{product.productName}</span>
+        </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Product Image */}
-          <div className="aspect-square rounded-xl overflow-hidden">
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="aspect-square rounded-2xl overflow-hidden shadow-2xl"
+          >
             <Image
               src={product.productImage || "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=800&q=80"}
               alt={product.productName}
               width={600}
               height={600}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
             />
-          </div>
+          </motion.div>
 
           {/* Product Info */}
-          <div className="flex flex-col">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+          <motion.div 
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col"
+          >
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>
               {product.productName}
             </h1>
             
-            <p className="text-base text-gray-700 mb-6">
+            <p className="text-lg text-gray-700 mb-6 leading-relaxed" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>
               {product.description}
             </p>
 
-            <div className="flex items-center gap-4 mb-6">
-              <span className="text-sm text-gray-600">
-                주문 수: {product.orderCount}회
-              </span>
-              <span className="text-sm text-gray-600">
-                재고: {product.stock}개
-              </span>
+            <div className="flex items-center gap-6 mb-6">
+              <div className="flex items-center gap-2">
+                <Package className="w-5 h-5 text-mediterranean-terracotta" />
+                <span className="text-gray-700 font-medium">
+                  주문 수: {product.orderCount}회
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Coffee className="w-5 h-5 text-mediterranean-blue" />
+                <span className="text-gray-700 font-medium">
+                  재고: {product.stock}개
+                </span>
+              </div>
             </div>
 
-            <p className="text-3xl font-bold text-amber-600 mb-8">
+            <p className="text-4xl font-bold text-mediterranean-blue mb-8" style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}>
               ₩{product.price.toLocaleString()}
             </p>
 
             {/* Options */}
             <div className="space-y-4 mb-8">
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">
+                <label className="text-sm font-semibold text-gray-800 mb-2 block" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>
                   수량
                 </label>
                 <Select value={quantity} onValueChange={setQuantity}>
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className="w-full bg-white border-gray-300">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -174,15 +211,16 @@ export default function ProductDetailPage() {
               <Button
                 onClick={handleAddToWishlist}
                 variant="outline"
-                className="flex-1 border-amber-600 text-amber-600 hover:bg-amber-50"
-                disabled={product.stock <= 0 || addingToWishlist}
+                className="flex-1 border-2 border-mediterranean-terracotta text-mediterranean-terracotta hover:bg-mediterranean-terracotta hover:text-white font-semibold transition-all"
+                disabled={product.stock <= 0}
               >
                 <Heart className="w-4 h-4 mr-2" />
-                {addingToWishlist ? "추가 중..." : "위시리스트"}
+                위시리스트
               </Button>
               
               <Button
-                className="flex-2 bg-amber-600 hover:bg-amber-700 text-white"
+                onClick={handleAddToWishlist}
+                className="flex-[2] bg-mediterranean-blue hover:bg-mediterranean-blue/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all"
                 disabled={product.stock <= 0}
               >
                 {product.stock <= 0 ? "품절" : "장바구니 담기"}
@@ -237,9 +275,9 @@ export default function ProductDetailPage() {
               </div>
             </div>
 
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-3">보관 방법</h3>
-              <div className="space-y-2 text-sm text-gray-600">
+            <div className="bg-white p-6 rounded-2xl shadow-lg">
+              <h3 className="font-bold text-xl text-mediterranean-blue mb-4" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>보관 방법</h3>
+              <div className="space-y-2 text-sm text-gray-700" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>
                 <p>• 직사광선을 피해 서늘한 곳에 보관</p>
                 <p>• 개봉 후 2주 이내 소비 권장</p>
                 <p>• 밀폐용기에 보관</p>
@@ -247,7 +285,7 @@ export default function ProductDetailPage() {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   )

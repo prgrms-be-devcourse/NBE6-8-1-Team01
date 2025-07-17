@@ -276,7 +276,7 @@ export default function ProductsPage() {
         if (response.resultCode === 'SUCCESS') {
           setProducts(response.data)
         } else {
-          throw new Error(response.msg)
+          throw new Error(response.msg || '상품 조회 실패')
         }
       } catch (err: any) {
         setError('상품을 불러오는데 실패했습니다.')
