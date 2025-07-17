@@ -25,12 +25,4 @@ public record UserLoginResponseDto(
         );
     }
 
-    public static UserLoginResponseDto from(UserRegisterRequestDto userRegisterRequestDto) {
-        return new UserLoginResponseDto(
-                userRegisterRequestDto.email(),
-                userRegisterRequestDto.username(),
-                userRegisterRequestDto.role()
-        );
-    }
-
 }

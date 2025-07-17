@@ -1,6 +1,5 @@
 package com.back.teamcoffee.domain.user.dto;
 
-import com.back.teamcoffee.domain.user.entity.User;
 import com.back.teamcoffee.domain.user.entity.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -28,18 +27,6 @@ public record UserRegisterRequestDto(
         this.password = password;
         this.address = address;
         this.role = role;
-    }
-
-      public static UserRegisterRequestDto from(User user) {
-
-        return new UserRegisterRequestDto(
-
-                user.getName(),
-                user.getEmail(),
-                user.getPassword(),
-                user.getAddress(),
-                user.getRole()
-        );
     }
 
 }

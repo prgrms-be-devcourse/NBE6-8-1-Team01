@@ -32,25 +32,14 @@ public class ProductService {
 
         Product saved = productRepository.save(product);
 
-        ProductDto resultDto = new ProductDto(
-                saved.getProductId(),
-                saved.getProductName(),
-                saved.getPrice(),
-                saved.getDescription(),
-                saved.getOrderCount(),
-                saved.getProductImage(),
-                saved.getStock(),
-                saved.getCreatedAt()
-        );
-
-        return RsData.of("201-CREATED", "상품 등록 성공", resultDto);
+        return RsData.of("201-CREATED", "상품 등록 성공", ProductDto.from(saved));
     }
 
     public RsData<List<ProductDto>> getProductList() {
         List<Product> products = productRepository.findAll();
 
         List<ProductDto> dtoList = products.stream()
-                .map(ProductDto::new)
+                .map(ProductDto::from)
                 .toList();
 
         return RsData.of("200-OK", "상품 조회 성공", dtoList);
@@ -75,9 +64,8 @@ public class ProductService {
         }
 
         Product product = productOpt.get();
-        ProductDto dto = new ProductDto(product);
 
-        return RsData.of("200-OK", "상품 조회 성공", dto);
+        return RsData.of("200-OK", "상품 조회 성공", ProductDto.from(product));
     }
 
     public RsData<ProductDto> updateProduct(Long id, ProductDto productDto) {
@@ -97,18 +85,7 @@ public class ProductService {
 
         Product updatedProduct = productRepository.save(product);
 
-        ProductDto updatedDto = new ProductDto(
-                updatedProduct.getProductId(),
-                updatedProduct.getProductName(),
-                updatedProduct.getPrice(),
-                updatedProduct.getDescription(),
-                updatedProduct.getOrderCount(),
-                updatedProduct.getProductImage(),
-                updatedProduct.getStock(),
-                updatedProduct.getCreatedAt()
-        );
-
-        return RsData.of("200-OK", "상품 정보 수정 성공", updatedDto);
+        return RsData.of("200-OK", "상품 정보 수정 성공", ProductDto.from(updatedProduct));
     }
 
     public RsData<List<ProductMenuDto>> getMenu() {

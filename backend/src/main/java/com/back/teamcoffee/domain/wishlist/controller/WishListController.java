@@ -17,6 +17,7 @@ import java.util.List;
 public class WishListController {
     private final WishListService wishListService;
 
+    // 위시리스트 생성
     @PostMapping("/{email}")
     public ResponseEntity<RsData<WishListDto>> createWishList(
             @PathVariable String email,
@@ -25,6 +26,7 @@ public class WishListController {
         return ResponseEntity.status(201).body(wishListDto);
     }
 
+    // 위시리스트 조회
     @GetMapping("/{email}")
     public ResponseEntity<RsData<List<WishListDto>>> getWishLists(
             @PathVariable String email) {
@@ -32,6 +34,7 @@ public class WishListController {
         return ResponseEntity.ok(wishListDtos);
     }
 
+    // 위시리스트 상품 수량 변경
     @PutMapping("/{email}/{wishId}")
     public ResponseEntity<RsData<WishListDto>> updateWishListQuantity(
             @PathVariable String email,
@@ -41,7 +44,7 @@ public class WishListController {
         return ResponseEntity.ok(result);
     }
 
-
+    // 위시리스트 삭제
     @DeleteMapping("/{email}/{wishId}")
     public ResponseEntity<RsData<Void>> deleteWishList(
             @PathVariable String email,

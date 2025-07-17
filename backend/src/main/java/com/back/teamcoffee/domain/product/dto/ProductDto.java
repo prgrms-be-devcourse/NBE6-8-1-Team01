@@ -28,8 +28,8 @@ public record ProductDto(
         int stock,
         LocalDateTime createdAt
 ) {
-        public ProductDto(Product product) {
-                this(
+        public static ProductDto from(Product product) {
+                return new ProductDto(
                         product.getProductId(),
                         product.getProductName(),
                         product.getPrice(),

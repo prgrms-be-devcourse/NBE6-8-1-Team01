@@ -10,15 +10,4 @@ public record UserLoginRequestDto(
         @NotBlank(message = "이메일은 필수입니다") @Email String email,
         @NotBlank(message = "비밀번호는 필수입니다.")@Size(min = 4, message = "비밀번호는 4자 이상이어야 합니다.") String password,
         UserRole role
-) {
-
-    public UserLoginRequestDto from(UserRegisterRequestDto userRegisterRequestDto) {
-
-        return new UserLoginRequestDto(
-                userRegisterRequestDto.username(),
-                userRegisterRequestDto.email(),
-                userRegisterRequestDto.password(),
-                userRegisterRequestDto.role()
-        );
-    }
-}
+) {}
