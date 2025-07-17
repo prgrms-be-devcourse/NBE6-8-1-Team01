@@ -237,4 +237,25 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.data.description").value("수정 커피콩"))
                 .andExpect(jsonPath("$.data.productImage").value("new_img.png"));
     }
+
+    @Test
+    @DisplayName("상품 메뉴 조회 성공")
+    void t12() throws Exception {
+        List<Product> products = saveSampleProducts();
+        Product p1 = products.get(0);
+
+        mvc.perform(get("/products/menu"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-OK"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data.length()").value(2))
+                .andExpect(jsonPath("$.data[0].productId").value(p1.getProductId()))
+                .andExpect(jsonPath("$.data[0].productName").value("커피1"))
+                .andExpect(jsonPath("$.data[0].price").value(4000))
+                .andExpect(jsonPath("$.data[0].description").value("커피콩"))
+                .andExpect(jsonPath("$.data[0].imgUrl").value("img.png"))
+                .andExpect(jsonPath("$.data[0].stock").doesNotExist())
+                .andExpect(jsonPath("$.data[0].category").doesNotExist());
+    }
 }
