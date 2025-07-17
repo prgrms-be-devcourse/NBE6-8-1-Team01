@@ -5,5 +5,8 @@ public record AuthTokensDto(
         String refreshToken
 ) {
 
+    public static AuthTokensDto of(String accessToken, String refreshToken) {
+        return new AuthTokensDto(accessToken, refreshToken);
+    }
 
 }
