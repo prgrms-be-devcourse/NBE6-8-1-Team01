@@ -74,16 +74,4 @@ public class UserService {
         return RsData.of(code, msg, result);
     }
 
-    private void CreateTestUser() {
-        User testUser = User.builder()
-                .email("admin@email.com")
-                .password(passwordEncoder.encode("admin1234"))
-                .name("관리자")
-                .role(UserRole.ADMIN)
-                .build();
-        if (!userRepository.existsByEmail(testUser.getEmail())) {
-            userRepository.save(testUser);
-        }
-
-        }
 }
