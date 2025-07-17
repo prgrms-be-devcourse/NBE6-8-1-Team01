@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
+    // 회원가입
     @PostMapping
     public ResponseEntity<RsData<LoginResultDto>> register(
             @Valid @RequestBody UserRegisterRequestDto userRegisterRequestDto,
@@ -34,6 +35,7 @@ public class UserController {
                 .body(body);
     }
 
+    // 로그인
     @PostMapping("/login")
     public ResponseEntity<RsData<LoginResultDto>> login(
             @Valid @RequestBody UserLoginRequestDto userLoginRequestDto,
@@ -48,13 +50,14 @@ public class UserController {
                 .body(body);
     }
 
+    // 로그아웃
     @PostMapping("/logout")
     public ResponseEntity<RsData<Void>> logout(HttpServletResponse response) {
         CookieUtil.deleteTokenCookies(response);
         return ResponseEntity.ok(RsData.of("200-LOGOUT", "로그아웃 되었습니다.", null));
     }
 
-
+    // 회원 탈퇴
     @DeleteMapping
     public ResponseEntity<RsData<Void>> deleteUser(
             @Email @RequestParam String email
@@ -62,7 +65,5 @@ public class UserController {
         userService.deleteuser(email);
         return ResponseEntity.ok(RsData.of("200-DELETED", "회원 탈퇴가 완료되었습니다.", null));
     }
-
-
 
 }
