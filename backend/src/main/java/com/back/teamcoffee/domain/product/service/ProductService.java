@@ -1,6 +1,7 @@
 package com.back.teamcoffee.domain.product.service;
 
 import com.back.teamcoffee.domain.product.dto.ProductDto;
+import com.back.teamcoffee.domain.product.dto.ProductMenuDto;
 import com.back.teamcoffee.domain.product.entity.Product;
 import com.back.teamcoffee.domain.product.repository.ProductRepository;
 import com.back.teamcoffee.global.exception.DataNotFoundException;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -107,5 +109,15 @@ public class ProductService {
         );
 
         return RsData.of("200-OK", "상품 정보 수정 성공", updatedDto);
+    }
+
+    public RsData<List<ProductMenuDto>> getMenu() {
+        List<Product> products = productRepository.findAll();
+
+        List<ProductMenuDto> result = products.stream()
+                .map(ProductMenuDto::from)
+                .collect(Collectors.toList());
+
+        return RsData.of("200-OK", "상품 메뉴 조회 성공", result);
     }
 }

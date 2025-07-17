@@ -1,6 +1,7 @@
 package com.back.teamcoffee.domain.product.controller;
 
 import com.back.teamcoffee.domain.product.dto.ProductDto;
+import com.back.teamcoffee.domain.product.dto.ProductMenuDto;
 import com.back.teamcoffee.domain.product.service.ProductService;
 import com.back.teamcoffee.global.rsdata.RsData;
 import jakarta.validation.Valid;
@@ -51,5 +52,12 @@ public class ProductController {
             @Valid @RequestBody ProductDto productDto) {
         RsData<ProductDto> updatedProduct = productService.updateProduct(id, productDto);
         return ResponseEntity.ok(updatedProduct);
+    }
+
+    // 상품 메뉴 조회
+    @GetMapping("/menu")
+    public ResponseEntity<RsData<List<ProductMenuDto>>> getMenu() {
+        RsData<List<ProductMenuDto>> menu = productService.getMenu();
+        return ResponseEntity.ok(menu);
     }
 }
