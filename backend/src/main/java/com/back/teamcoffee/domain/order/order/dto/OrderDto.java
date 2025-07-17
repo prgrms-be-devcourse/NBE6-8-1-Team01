@@ -2,9 +2,10 @@ package com.back.teamcoffee.domain.order.order.dto;
 
 
 import com.back.teamcoffee.domain.order.order.entity.Order;
-import com.back.teamcoffee.domain.user.entity.User;
+import com.back.teamcoffee.domain.order.orderItem.entity.OrderItem;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record OrderDto(
     long orderId,
@@ -16,7 +17,8 @@ public record OrderDto(
     LocalDateTime createDate,
     boolean deliveryStatus,
     String orderStatus,
-    String email
+    String email,
+    List<OrderItem> orderItems
 ) {
   public OrderDto(Order order) {
     this(
@@ -29,7 +31,8 @@ public record OrderDto(
         order.getCreatedAt(),
         order.isDeliveryStatus(),
         order.getOrderStatus(),
-        order.getEmail()
+        order.getEmail(),
+        order.getOrderItems()
     );
   }
 }

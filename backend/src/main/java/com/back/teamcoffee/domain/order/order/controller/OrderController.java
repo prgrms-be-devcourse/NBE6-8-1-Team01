@@ -1,20 +1,18 @@
 package com.back.teamcoffee.domain.order.order.controller;
 
 import com.back.teamcoffee.domain.order.order.dto.OrderDto;
-import com.back.teamcoffee.domain.order.order.entity.Order;
+import com.back.teamcoffee.domain.order.order.dto.OrderWriteReqBody;
 import com.back.teamcoffee.domain.order.order.service.OrderService;
-import com.back.teamcoffee.domain.user.entity.User;
+import com.back.teamcoffee.global.rsdata.RsData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/orders")
@@ -22,56 +20,45 @@ import java.util.Optional;
 @Tag(name = "OrderController", description = "API 오더 컨트롤러")
 public class OrderController {
   private final OrderService orderService;
-  // 주문 생성 request body
-  record OrderWriteReqBody(
-      @NotBlank
-      @Size(min = 1, max = 100)
-      String userId,
-      @NotBlank
-      @Size(min = 1, max = 100)
-      int orderCount,
-      @NotBlank
-      @Size(min = 2, max = 100)
-      String productName,
-      @NotBlank
-      int totalPrice,
-      @NotBlank
-      @Size(min = 2, max = 300)
-      String address,
-      @NotBlank
-      @Size(min = 5, max = 50)
-      String email
-  ) {
-  }
+
+  // 요청 예시
+  //{
+  //  "products": [
+  //    { "productId": "1", "productCount": 2 },
+  //    { "productId": "2", "productCount": 1 }
+  //  ],
+  //  "userEmail": "test@example.com"
+  //}
+
+
   // 주문 생성
-  @PostMapping
+  @PostMapping("/write")
   @Transactional
   @Operation(summary = "주문 생성")
-  public OrderDto createOrder(@Valid @RequestBody OrderWriteReqBody orderWriteReqBody) {
-    // 주문 저장
-    Order savedOrder = orderService.write(orderWriteReqBody.userId(),
-                                         orderWriteReqBody.orderCount(),
-                                         orderWriteReqBody.productName(),
-                                         orderWriteReqBody.totalPrice(),
-                                         orderWriteReqBody.address(),
-                                         orderWriteReqBody.email());
-
-    // 저장된 주문을 OrderDto로 변환하여 반환
-    return new OrderDto(savedOrder);
+  public ResponseEntity<RsData<OrderDto>> orderWrite(@Valid @RequestBody OrderWriteReqBody orderWriteReqBody) {
+    RsData<OrderDto> order = orderService.write(orderWriteReqBody);
+    return ResponseEntity.status(201).body(order);
   }
 
   // 이메일로 주문내역 조회
-  @GetMapping("/{email}")
+  @GetMapping("/lists/{email}")
   @Transactional(readOnly = true)
   @Operation(summary = "이메일로 주문 내역 조회")
-  public List<OrderDto> getOrdersByEmail(String email) {
-    Optional<Order> orders = orderService.findByEmail(email);
+  public ResponseEntity<RsData<List<OrderDto>>> getOrderListByEmail(@PathVariable String email) {
+    RsData<List<OrderDto>> orders = orderService.findByEmail(email);
 
-    return orders.stream()
-                 .map(OrderDto::new) // OrderDto로 변환
-                 .toList();
+    return ResponseEntity.ok(orders);
   }
+
   // 주문 내역 단건 조회
+  @GetMapping("/lists/{orderId}")
+  @Transactional(readOnly = true)
+  @Operation(summary = "주문 내역 단건 조회")
+  public ResponseEntity<RsData<OrderDto>> getOrderById(@PathVariable long orderId) {
+    RsData<OrderDto> order = orderService.findById(orderId);
+    return ResponseEntity.ok(order);
+  }
+
 
 
 
