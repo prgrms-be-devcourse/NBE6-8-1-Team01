@@ -1,17 +1,21 @@
 package com.back.teamcoffee.domain.order.order.entity;
 
-import com.back.teamcoffee.domain.user.entity.User;
+import com.back.teamcoffee.domain.order.orderItem.entity.OrderItem;
+import com.back.teamcoffee.domain.product.entity.Product;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.service.spi.ServiceException;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-import static jakarta.persistence.GenerationType.IDENTITY;
-import static lombok.AccessLevel.PROTECTED;
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.CascadeType.REMOVE;
+import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
@@ -27,7 +31,7 @@ public class Order {
 
   private int orderCount;
 
-  @Column(length = 20)
+  @Column(length = 100)
   private String productName;
 
   private int totalPrice;
@@ -35,6 +39,7 @@ public class Order {
   @Column(length = 300)
   private String address;
 
+  @CreatedDate
   private LocalDateTime createdAt;
 
   private boolean deliveryStatus;
@@ -42,11 +47,16 @@ public class Order {
   @Column(length = 20)
   private String orderStatus;
 
-  private Long productId;
+  private int productId;
 
   @Column(length = 50)
   private String email;
 
+  @OneToMany(mappedBy = "order", fetch = LAZY, cascade = {PERSIST, REMOVE}, orphanRemoval = true)
+  @JsonManagedReference
+  private List<OrderItem> orderItems = new ArrayList<>();
+
+  @Builder
   public Order(String user, int orderCount, String productName, int totalPrice, String address, String email) {
     this.userId = user;
     this.orderCount = orderCount;
@@ -58,9 +68,15 @@ public class Order {
     this.orderStatus = "주문 접수"; // 기본 주문 상태
   }
 
+  public void addOrderItem(OrderItem orderItem) {
+    orderItems.add(orderItem);
+  }
+
   private void modify(String orderStatus, boolean deliveryStatus) {
     this.orderStatus = orderStatus;
     this.deliveryStatus = deliveryStatus;
   }
+
+
 
 }
