@@ -70,6 +70,7 @@ public class OrderControllerTest {
         .email("test@example.com")
         .password("password")
         .name("testuser")
+        .address("서울시 강남구 역삼동 123-45")
         .role(UserRole.USER)
         .build();
     userRepository.save(user);
