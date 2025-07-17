@@ -4,10 +4,13 @@ import com.back.teamcoffee.domain.user.dto.*;
 import com.back.teamcoffee.domain.user.entity.User;
 import com.back.teamcoffee.domain.user.entity.UserRole;
 import com.back.teamcoffee.domain.user.repository.UserRepository;
+import com.back.teamcoffee.global.exception.DataNotFoundException;
+import com.back.teamcoffee.global.exception.EmailExistException;
 import com.back.teamcoffee.global.rsdata.RsData;
 import com.back.teamcoffee.global.security.JwtTokenProvider;
 import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +24,7 @@ public class UserService {
 
     public RsData<LoginResultDto> register(UserRegisterRequestDto req) {
         if(userRepository.findByEmail(req.email()).isPresent()) {
-            return RsData.of("409-EMAIL-EXISTS", "이미 존재하는 이메일입니다.", null);
+            throw new EmailExistException(req.email());
         }
         UserRole role = req.role() != null ? req.role() : UserRole.USER;
         User user = userRepository.save(
@@ -40,12 +43,12 @@ public class UserService {
         User user = userRepository.findByEmail(req.email())
                 .orElse(null);
         if (user == null) {
-            return RsData.of("404-NOT-FOUND", "존재하지 않는 이메일입니다.", null);
+            throw new DataNotFoundException("사용자를 찾을 수 없습니다.");
         }
 
         if(!passwordEncoder.matches(req.password(), user.getPassword())) {
-            return RsData.of("401-INVALID-PASSWORD", "비밀번호가 일치하지 않습니다.", null);
-        }
+            throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
+               }
 
 
         return successResult("200-OK", "로그인 성공", user);
