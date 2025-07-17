@@ -31,6 +31,7 @@ export async function apiCall<T>(
     }
     
     const data = await response.json()
+    console.log(`API 응답 [${endpoint}]:`, data)
     return data
   } catch (error) {
     console.error('API 호출 에러:', error)

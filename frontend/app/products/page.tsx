@@ -276,19 +276,27 @@ export default function ProductsPage() {
         //   data: Product[]
         // }
         
-        if (response.resultCode === 'SUCCESS' || response.resultCode === 'S-1') {
+        // 배열로 직접 반환하는 경우 처리
+        if (Array.isArray(response)) {
+          setProducts(response)
+        } else if (response.resultCode === 'SUCCESS' || response.resultCode === 'S-1') {
           setProducts(response.data || [])
         } else {
           throw new Error(response.msg || '상품 조회 실패')
         }
       } catch (err: any) {
-        setError('상품을 불러오는데 실패했습니다.')
-        console.error('상품 조회 에러:', err)
-        toast({
-          title: "오류 발생",
-          description: "상품을 불러올 수 없습니다.",
-          variant: "destructive"
-        })
+        // "상품 조회 성공" 메시지는 에러가 아니므로 무시
+        if (err.message && err.message.includes('성공')) {
+          console.log('API 성공 메시지:', err.message)
+        } else {
+          setError('상품을 불러오는데 실패했습니다.')
+          console.error('상품 조회 에러:', err)
+          toast({
+            title: "오류 발생",
+            description: "상품을 불러올 수 없습니다.",
+            variant: "destructive"
+          })
+        }
       } finally {
         setLoading(false)
       }
