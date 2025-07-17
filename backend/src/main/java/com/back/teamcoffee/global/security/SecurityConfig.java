@@ -1,5 +1,6 @@
 package com.back.teamcoffee.global.security;
 
+import com.back.teamcoffee.domain.user.entity.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,11 +26,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
+
                 .authorizeHttpRequests(reg -> reg
                         .requestMatchers("/users/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/products/**").permitAll()
+                        .requestMatchers("/products/**").hasAuthority(UserRole.ADMIN.name())
                         .requestMatchers("/orders/**").permitAll()
                         .anyRequest().authenticated()
                 )

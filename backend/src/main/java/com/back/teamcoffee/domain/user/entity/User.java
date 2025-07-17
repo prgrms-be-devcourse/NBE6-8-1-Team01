@@ -28,7 +28,17 @@ public class User {
     private String email;
     private String address;
     private String password;
+    @Column(updatable = false)
     private LocalDateTime created_at;
-    private UserRole role;
 
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    private UserRole role = UserRole.USER;
+
+
+    @PrePersist
+    void prePersist() {
+        if(this.created_at == null)
+            created_at = LocalDateTime.now();
+    }
 }

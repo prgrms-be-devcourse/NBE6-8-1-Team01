@@ -2,7 +2,11 @@ package com.back.teamcoffee.domain.user.entity;
 
 public enum UserRole {
     ADMIN,
-    USER
+    USER;
+
+    public String getAuthority() {
+        return "ROLE_" + this.name();
+    }
 
 
 
