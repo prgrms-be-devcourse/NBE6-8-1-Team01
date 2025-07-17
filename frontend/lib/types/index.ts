@@ -66,13 +66,16 @@ export interface Order {
   orderDate: string
   totalAmount: number
   status: string
-  orderItems: OrderItem[]
+  deliveryAddress: string
+  createdAt: string
+  items: OrderItem[]
 }
 
 export interface OrderItem {
   orderItemId: number
   productId: number
   productName: string
+  productImage?: string
   quantity: number
   price: number
 }

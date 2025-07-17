@@ -16,4 +16,8 @@ export const orderApi = {
   // 주문 상세 조회
   getOrder: (orderId: number) => 
     apiCall<ApiResponse<Order>>(`/orders/lists/${orderId}`),
+  
+  // 내 주문 목록 조회 (현재 로그인한 사용자)
+  getMyOrders: () => 
+    apiCall<ApiResponse<Order[]>>('/orders/lists/my'),
 }
