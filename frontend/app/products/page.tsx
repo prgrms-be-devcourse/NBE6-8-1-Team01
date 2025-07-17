@@ -266,6 +266,9 @@ export default function ProductsPage() {
         // 백엔드 API 호출: GET http://localhost:8080/products
         const response = await productApi.getProducts()
         
+        // 디버깅용 로그
+        console.log('API 응답:', response)
+        
         // response 구조:
         // {
         //   resultCode: "SUCCESS",
@@ -273,8 +276,8 @@ export default function ProductsPage() {
         //   data: Product[]
         // }
         
-        if (response.resultCode === 'SUCCESS') {
-          setProducts(response.data)
+        if (response.resultCode === 'SUCCESS' || response.resultCode === 'S-1') {
+          setProducts(response.data || [])
         } else {
           throw new Error(response.msg || '상품 조회 실패')
         }
