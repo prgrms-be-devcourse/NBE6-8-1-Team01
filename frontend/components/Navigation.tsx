@@ -223,12 +223,12 @@ export function Navigation() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <motion.div whileHover={{ scale: 1.05 }}>
-                  <Button variant="ghost" className="text-white hover:bg-white/10 group">
-                    <User className="w-5 h-5 group-hover:text-mediterranean-blue transition-colors" />
-                    <span className="hidden sm:inline-block ml-2">
+                  <Button variant="ghost" className="text-gray-700 hover:bg-gray-100 group">
+                    <User className="w-5 h-5 text-gray-700 group-hover:text-mediterranean-blue transition-colors" />
+                    <span className="hidden sm:inline-block ml-2 text-gray-700 font-medium">
                       {isAuthenticated ? user?.name || '내 계정' : '계정'}
                     </span>
-                    <ChevronDown className="w-4 h-4 ml-1" />
+                    <ChevronDown className="w-4 h-4 ml-1 text-gray-700" />
                   </Button>
                 </motion.div>
               </DropdownMenuTrigger>
