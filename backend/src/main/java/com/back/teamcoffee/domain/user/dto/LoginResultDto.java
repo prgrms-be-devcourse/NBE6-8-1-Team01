@@ -9,8 +9,4 @@ public record LoginResultDto(
         return new LoginResultDto(user, token);
     }
 
-    public static LoginResultDto from(UserLoginResponseDto user, AuthTokensDto token) {
-        return new LoginResultDto(user, token);
-    }
-
 }
