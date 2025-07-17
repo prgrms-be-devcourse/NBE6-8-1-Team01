@@ -1,10 +1,10 @@
 spring:
   datasource:
-    url: jdbc:postgresql://db.ggookikrmlkkdbgqfymi.supabase.co:5432/postgres
-    username: postgres
-    password: ${DB_PASSWORD}  # 환경변수로 관리
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
-    hikari:
-      maximum-pool-size: 10
-      minimum-idle: 5
-      connection-timeout: 30000
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect

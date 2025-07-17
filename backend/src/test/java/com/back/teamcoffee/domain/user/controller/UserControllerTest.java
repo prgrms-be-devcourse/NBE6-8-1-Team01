@@ -51,6 +51,7 @@ public class UserControllerTest {
 
 
         User user = User.builder()
+                .address("테스트 주소")
                 .name(testUsername)
                 .email(testEmail)
                 .password(passwordEncoder.encode(testPassword))
@@ -66,6 +67,7 @@ public class UserControllerTest {
                 "newuser",
                 "test@email1.com",
                 "1234",
+                "testaddress",
                 UserRole.USER
         );
         mockMvc.perform(post("/users")
@@ -87,6 +89,7 @@ public class UserControllerTest {
                 "testname",
                 testEmail,
                 "1234",
+                "testaddress",
                 UserRole.USER
         );
         mockMvc.perform(post("/users")
@@ -94,7 +97,7 @@ public class UserControllerTest {
                 .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.resultCode").value("409-EMAIL-EXISTS"))
-                .andExpect(jsonPath("$.msg").value("이미 존재하는 이메일입니다."));
+                .andExpect(jsonPath("$.msg").value("이미 존재하는 이메일입니다:"+ req.email()));
 
     }
 
@@ -105,6 +108,7 @@ public class UserControllerTest {
                 "testname",
                 "test@email.com",
                 "",
+                "testaddress",
                 UserRole.USER
         );
 
@@ -119,10 +123,11 @@ public class UserControllerTest {
     @Test
     @DisplayName("회원가입 실패 - 이메일 형식 오류")
     void t4() throws Exception {
-        UserLoginRequestDto req = new UserLoginRequestDto(
+        UserRegisterRequestDto req = new UserRegisterRequestDto(
                 "testname",
                 "invalid-email",
                 "1234",
+                "testaddress",
                 UserRole.USER
         );
 
@@ -142,6 +147,7 @@ public class UserControllerTest {
                 "",
                 "test@email.com",
                 "1234",
+                "testaddress",
                 UserRole.USER
         );
         mockMvc.perform(post("/users")
@@ -159,6 +165,7 @@ public class UserControllerTest {
                 "testname",
                 "test@email.com",
                 "123",
+                "testaddress",
                 UserRole.USER
         );
         mockMvc.perform(post("/users")
@@ -176,6 +183,7 @@ public class UserControllerTest {
                 testUsername,
                 testEmail,
                 testPassword,
+
                 UserRole.USER
         );
 
@@ -203,7 +211,7 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.resultCode").value("401-INVALID-PASSWORD"))
+                .andExpect(jsonPath("$.resultCode").value("401-UNAUTHORIZED"))
                 .andExpect(jsonPath("$.msg").value("비밀번호가 일치하지 않습니다."));
 
     }
@@ -222,7 +230,7 @@ public class UserControllerTest {
                         .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.resultCode").value("404-NOT-FOUND"))
-                .andExpect(jsonPath("$.msg").value("존재하지 않는 이메일입니다."));
+                .andExpect(jsonPath("$.msg").value("사용자를 찾을 수 없습니다."));
 
     }
 
