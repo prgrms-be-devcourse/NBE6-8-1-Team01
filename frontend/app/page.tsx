@@ -88,7 +88,7 @@ export default function HomePage() {
         <VideoBackground 
           src="/videos/hero-positano.mp4"
           poster="/images/hero-poster.jpg"
-          overlayOpacity={0.6}
+          overlayOpacity={0.3}
         />
         
         {/* Animated Background Shapes - Above video */}
@@ -298,10 +298,10 @@ export default function HomePage() {
               ))}
             </div>
           ) : products.length === 0 ? (
-            <div className="text-center py-16">
-              <Coffee className="w-20 h-20 mx-auto text-mediterranean-blue/50 mb-4" />
-              <p className="text-xl text-gray-600 mb-6">아직 등록된 상품이 없습니다</p>
-              <p className="text-sm text-gray-500">곧 프리미엄 원두들을 만나보실 수 있습니다</p>
+            <div className="text-center py-16 bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl max-w-md mx-auto">
+              <Coffee className="w-24 h-24 mx-auto text-mediterranean-blue mb-6" />
+              <p className="text-2xl font-bold text-gray-800 mb-4" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>아직 등록된 상품이 없습니다</p>
+              <p className="text-lg font-medium text-gray-700" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>곧 프리미엄 원두들을 만나보실 수 있습니다</p>
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">

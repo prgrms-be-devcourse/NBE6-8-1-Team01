@@ -387,6 +387,69 @@ CREATE TABLE order_items (
 - **로컬 포트**: 8080
 - **데이터베이스**: Supabase PostgreSQL
 
----
+## 🏃‍♂️ 로컬 개발 환경 실행 방법
 
-*작성자: 백상현 (프론트엔드 책임자)*
+### 1. 백엔드 서버 실행
+```bash
+# 백엔드 디렉토리로 이동
+cd backend
+
+# Gradle 빌드 (처음 한 번만)
+./gradlew build
+
+# 서버 실행
+./gradlew bootRun
+```
+
+서버가 성공적으로 시작되면:
+- 로컬: http://localhost:8080
+- 터미널에 "Started TeamcoffeeApplication" 메시지 확인
+
+### 2. ngrok 터널 실행 (선택사항)
+```bash
+# 새 터미널 창에서
+ngrok http 8080 --auth-token YOUR_AUTH_TOKEN
+
+# 또는 설정된 도메인 사용
+ngrok http --domain=0950443fbdc5.ngrok-free.app 8080
+```
+
+### 3. 프론트엔드 개발 서버 실행
+```bash
+# 프론트엔드 디렉토리로 이동
+cd frontend
+
+# 의존성 설치 (처음 한 번만)
+npm install
+
+# 개발 서버 실행
+npm run dev
+```
+
+개발 서버 접속:
+- http://localhost:3000
+
+### 4. 테스트 계정
+- **일반 사용자**: user@email.com / password
+- **관리자**: admin@email.com / admin
+
+### 5. 환경 변수 설정
+`.env.local` 파일 생성:
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8080
+# 또는 ngrok 사용 시
+NEXT_PUBLIC_API_URL=https://0950443fbdc5.ngrok-free.app
+```
+
+### 6. 데이터베이스 초기 데이터
+```bash
+# PostgreSQL에 커피 상품 데이터 추가
+# backend/src/main/resources/coffee-products.sql 파일 실행
+```
+
+### 문제 해결
+- **CORS 에러**: 백엔드 SecurityConfig에서 허용 도메인 확인
+- **500 에러**: Supabase 연결 문자열에 `?prepareThreshold=0` 추가
+- **인증 실패**: JWT 토큰 쿠키 확인
+
+---

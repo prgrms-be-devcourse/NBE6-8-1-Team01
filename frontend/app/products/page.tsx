@@ -535,11 +535,11 @@ export default function ProductsPage() {
                   <motion.div 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="text-center py-16"
+                    className="text-center py-16 bg-white rounded-3xl shadow-xl max-w-md mx-auto"
                   >
-                    <Coffee className="w-20 h-20 mx-auto text-gray-600 mb-4" />
-                    <p className="text-xl text-muted-foreground mb-2">조건에 맞는 상품이 없습니다.</p>
-                    <p className="text-sm text-muted-foreground">다른 필터 옵션을 시도해보세요.</p>
+                    <Coffee className="w-24 h-24 mx-auto text-mediterranean-blue mb-6" />
+                    <p className="text-2xl font-bold text-gray-800 mb-3" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>조건에 맞는 상품이 없습니다.</p>
+                    <p className="text-lg font-medium text-gray-700" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>다른 필터 옵션을 시도해보세요.</p>
                   </motion.div>
                 ) : (
                   <div className={viewMode === 'grid' 
