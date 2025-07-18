@@ -67,7 +67,7 @@ export default function AdminProductsPage() {
     try {
       setIsLoading(true)
       const response = await productApi.getProducts()
-      if (response.success) {
+      if (response.resultCode === '200-OK') {
         setProducts(response.data)
       }
     } catch (error) {
@@ -105,7 +105,7 @@ export default function AdminProductsPage() {
       if (editingProduct) {
         // 수정 API 호출
         const response = await productApi.updateProduct(editingProduct.productId, productData)
-        if (response.success) {
+        if (response.resultCode === '200-OK') {
           toast({
             title: "상품 수정 완료",
             description: "상품이 성공적으로 수정되었습니다."
@@ -114,7 +114,7 @@ export default function AdminProductsPage() {
       } else {
         // 등록 API 호출
         const response = await productApi.createProduct(productData)
-        if (response.success) {
+        if (response.resultCode === '200-OK') {
           toast({
             title: "상품 등록 완료",
             description: "새 상품이 성공적으로 등록되었습니다."
@@ -142,7 +142,7 @@ export default function AdminProductsPage() {
 
     try {
       const response = await productApi.deleteProduct(productId)
-      if (response.success) {
+      if (response.resultCode === '200-DELETED') {
         toast({
           title: "상품 삭제 완료",
           description: "상품이 성공적으로 삭제되었습니다."

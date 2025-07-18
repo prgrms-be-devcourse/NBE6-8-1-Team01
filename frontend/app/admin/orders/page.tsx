@@ -110,7 +110,7 @@ export default function AdminOrdersPage() {
       // 실제로는 관리자용 전체 주문 API가 필요합니다
       // 지금은 임시로 사용자별 조회를 사용합니다
       const response = await orderApi.getOrdersByEmail('admin@email.com')
-      if (response.success) {
+      if (response.resultCode === '200-OK') {
         setAllOrders(response.data)
       }
     } catch (error) {
@@ -122,7 +122,7 @@ export default function AdminOrdersPage() {
   const fetchTodayOrders = async () => {
     try {
       const response = await orderApi.getTodayOrders()
-      if (response.success) {
+      if (response.resultCode === '200-OK') {
         setTodayOrders(response.data)
       }
     } catch (error) {
@@ -148,7 +148,7 @@ export default function AdminOrdersPage() {
       setUpdatingOrder(orderId)
       const response = await orderApi.updateOrderStatus(orderId, newStatus)
       
-      if (response.success) {
+      if (response.resultCode === '200-OK') {
         toast({
           title: "상태 변경 완료",
           description: "주문 상태가 변경되었습니다."

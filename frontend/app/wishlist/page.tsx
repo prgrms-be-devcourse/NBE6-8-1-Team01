@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Navigation } from "@/components/Navigation"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -250,7 +250,7 @@ export default function WishlistPage() {
                           
                           const response = await orderApi.createOrder(orderData)
                           
-                          if (response.success) {
+                          if (response.resultCode === '200-OK') {
                             toast({
                               title: "주문 완료",
                               description: "위시리스트 상품들의 주문이 접수되었습니다.",
