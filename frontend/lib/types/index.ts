@@ -85,10 +85,9 @@ export interface WishList {
   wishId: number
   productId: number
   productName: string
-  productImage: string
-  price: number
+  productPrice: number
+  email: string
   quantity: number
-  createdAt: string
 }
 
 export interface WishListCreate {

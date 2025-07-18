@@ -134,7 +134,7 @@ export default function WishlistPage() {
                   >
                 <div className="relative">
                   <Image
-                    src={item.productImage || "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&q=80"}
+                    src={"https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&q=80"}
                     alt={item.productName}
                     width={300}
                     height={300}
@@ -155,7 +155,7 @@ export default function WishlistPage() {
                     {item.productName}
                   </h3>
                   <p className="text-2xl font-bold text-mediterranean-blue mb-4" style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}>
-                    ₩{item.price.toLocaleString()}
+                    ₩{item.productPrice.toLocaleString()}
                   </p>
                   
                   {/* 수량 조정 */}
@@ -220,7 +220,7 @@ export default function WishlistPage() {
                     <div className="flex justify-between text-lg font-bold">
                       <span style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>총 금액</span>
                       <span className="text-mediterranean-blue" style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}>
-                        ₩{wishlist.reduce((sum, item) => sum + (item.price * item.quantity), 0).toLocaleString()}
+                        ₩{wishlist.reduce((sum, item) => sum + (item.productPrice * item.quantity), 0).toLocaleString()}
                       </span>
                     </div>
                   </div>
