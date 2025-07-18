@@ -19,9 +19,13 @@ export async function apiCall<T>(
     finalUrl: url
   })
   
+  // Basic Auth 헤더 추가
+  const basicAuth = 'Basic ' + btoa('admin@email.com:admin')
+  
   const config: RequestInit = {
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': basicAuth,
       ...options.headers,
     },
     credentials: 'include', // 쿠키 포함 (JWT)
