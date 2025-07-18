@@ -5,6 +5,7 @@ import com.back.teamcoffee.domain.wishlist.dto.WishListDto;
 import com.back.teamcoffee.domain.wishlist.dto.WishListUpdateDto;
 import com.back.teamcoffee.domain.wishlist.service.WishListService;
 import com.back.teamcoffee.global.rsdata.RsData;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class WishListController {
     @PostMapping("/{email}")
     public ResponseEntity<RsData<WishListDto>> createWishList(
             @PathVariable String email,
-            @RequestBody WishListCreateDto wishListCreateDto) {
+            @RequestBody @Valid WishListCreateDto wishListCreateDto) {
         RsData<WishListDto> wishListDto = wishListService.create(email, wishListCreateDto);
         return ResponseEntity.status(201).body(wishListDto);
     }
@@ -39,7 +40,7 @@ public class WishListController {
     public ResponseEntity<RsData<WishListDto>> updateWishListQuantity(
             @PathVariable String email,
             @PathVariable Long wishId,
-            @RequestBody WishListUpdateDto wishListUpdateDto) {
+            @RequestBody @Valid WishListUpdateDto wishListUpdateDto) {
         RsData<WishListDto> result = wishListService.updateWishListQuantity(email, wishId, wishListUpdateDto);
         return ResponseEntity.ok(result);
     }
