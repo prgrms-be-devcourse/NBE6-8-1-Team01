@@ -39,7 +39,7 @@ public class User {
     @Column(updatable = false)
     private LocalDateTime created_at;
 
-    // 🔽 연관관계 추가: OneToMany → Order.email 기준
+    // 연관관계 추가: Order.email 기준
     @OneToMany(mappedBy = "user", cascade = {PERSIST, REMOVE}, orphanRemoval = true)
     private List<Order> orders = new ArrayList<>();
 

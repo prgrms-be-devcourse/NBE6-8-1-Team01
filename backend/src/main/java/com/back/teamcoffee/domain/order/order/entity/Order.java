@@ -60,7 +60,7 @@ public class Order {
   @Column(length = 50)
   private String email;
 
-  // 🔽 연관관계 추가: ManyToOne → User.email 기준
+  // 연관관계 추가: User.email 기준
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "email", referencedColumnName = "email", insertable = false, updatable = false)
   private User user;
