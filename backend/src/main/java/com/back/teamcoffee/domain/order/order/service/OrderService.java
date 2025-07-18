@@ -3,6 +3,7 @@ package com.back.teamcoffee.domain.order.order.service;
 
 import com.back.teamcoffee.domain.order.order.dto.OrderDto;
 import com.back.teamcoffee.domain.order.order.dto.OrderProductReq;
+import com.back.teamcoffee.domain.order.order.dto.OrderStatusUpdateDto;
 import com.back.teamcoffee.domain.order.order.dto.OrderWriteReqBody;
 import com.back.teamcoffee.domain.order.order.entity.Order;
 import com.back.teamcoffee.domain.order.order.repository.OrderRepository;
@@ -133,6 +134,24 @@ public class OrderService {
     System.out.println("Order Status: " + order.getOrderStatus());
 
     order.modify(orderDto.orderStatus());
+
+    Order updatedOrder = orderRepository.save(order);
+    OrderDto updatedDto = new OrderDto(updatedOrder);
+
+    return RsData.of("200-OK", "주문 상태 변경 성공", updatedDto);
+  }
+  
+  public RsData<OrderDto> modifyOrderStatus(OrderStatusUpdateDto orderStatusUpdateDto) {
+    System.out.println("OrderStatus: " + orderStatusUpdateDto.orderStatus());
+    Optional<Order> optionalOrder = orderRepository.findById(orderStatusUpdateDto.orderId());
+    if (optionalOrder.isEmpty()) {
+      return RsData.of("404-NOT_FOUND", "주문을 찾을 수 없습니다.", null);
+    }
+
+    Order order = optionalOrder.get();
+    System.out.println("Order Status: " + order.getOrderStatus());
+
+    order.modify(orderStatusUpdateDto.orderStatus());
 
     Order updatedOrder = orderRepository.save(order);
     OrderDto updatedDto = new OrderDto(updatedOrder);
