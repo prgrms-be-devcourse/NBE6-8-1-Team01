@@ -84,20 +84,6 @@ public class WishListService {
 
 
 
-    public RsData<Void> deleteByEmailAndWishId(String email, Long wishId) {
-
-        Optional<WishList> found = wishListRepository.findByEmailAndWishId(email, wishId);
-
-        if (found.isEmpty()) {
-            return RsData.error("404-NOT_FOUND", "위시리스트가 존재하지 않습니다.");
-        }
-
-        wishListRepository.deleteByEmailAndWishId(email, wishId);
-
-        return RsData.of("200-OK", "위시리스트가 삭제되었습니다.");
-
-    }
-
 
     public RsData<WishListDto> updateWishListQuantity(String email, Long wishId, WishListUpdateDto wishListUpdateDto) {
         Optional<WishList> found = wishListRepository.findByEmailAndWishId(email, wishId);
