@@ -1,5 +1,7 @@
 package com.back.teamcoffee.domain.wishlist.controller;
 
+import com.back.teamcoffee.domain.product.entity.Product;
+import com.back.teamcoffee.domain.product.repository.ProductRepository;
 import com.back.teamcoffee.domain.user.entity.User;
 import com.back.teamcoffee.domain.user.entity.UserRole;
 import com.back.teamcoffee.domain.user.repository.UserRepository;
@@ -19,6 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,14 +48,18 @@ class WishListControllerTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ProductRepository productRepository;
+
     private User user;
+    private Product product;
 
     @BeforeEach
     void setUp() {
         wishListRepository.deleteAll();
         userRepository.deleteAll();
+        productRepository.deleteAll();
 
-        // 사용자 먼저 저장
         user = User.builder()
                 .email("test@coffee.com")
                 .password("password")
@@ -62,6 +69,9 @@ class WishListControllerTest {
                 .build();
 
         userRepository.save(user);
+
+        product = new Product("테스트상품", 5000, "테스트용 상품", 0, "img.jpg", 100, LocalDateTime.now());
+        productRepository.save(product);
     }
 
     @Test
@@ -70,13 +80,13 @@ class WishListControllerTest {
         String email = user.getEmail();
 
         WishList wishList1 = new WishList();
-        wishList1.setProductId(1L);
+        wishList1.setProductId(product.getProductId());
         wishList1.setEmail(email);
         wishList1.setQuantity(1);
         wishListRepository.save(wishList1);
 
         WishList wishList2 = new WishList();
-        wishList2.setProductId(2L);
+        wishList2.setProductId(product.getProductId());
         wishList2.setEmail(email);
         wishList2.setQuantity(2);
         wishListRepository.save(wishList2);
@@ -93,7 +103,7 @@ class WishListControllerTest {
     @DisplayName("위시리스트 추가 성공 + DB 확인")
     void 위시리스트_추가_테스트() throws Exception {
         String email = user.getEmail();
-        WishListCreateDto createDto = new WishListCreateDto(1L, 2);
+        WishListCreateDto createDto = new WishListCreateDto(product.getProductId(), 2);
 
         mockMvc.perform(post("/api/v1/wishlists/{email}", email)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -102,12 +112,12 @@ class WishListControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.resultCode").value("201-1"))
                 .andExpect(jsonPath("$.msg").value("위시리스트에 상품이 추가되었습니다."))
-                .andExpect(jsonPath("$.data.productId").value(1))
+                .andExpect(jsonPath("$.data.productId").value(product.getProductId()))
                 .andExpect(jsonPath("$.data.quantity").value(2));
 
         List<WishList> wishLists = wishListRepository.findByEmail(email);
         assertThat(wishLists).hasSize(1);
-        assertThat(wishLists.get(0).getProductId()).isEqualTo(1L);
+        assertThat(wishLists.get(0).getProductId()).isEqualTo(product.getProductId());
         assertThat(wishLists.get(0).getQuantity()).isEqualTo(2);
     }
 
@@ -116,7 +126,7 @@ class WishListControllerTest {
     void 위시리스트_삭제_테스트() throws Exception {
         String email = user.getEmail();
         WishList wishList = new WishList();
-        wishList.setProductId(1L);
+        wishList.setProductId(product.getProductId());
         wishList.setEmail(email);
         wishList.setQuantity(1);
         WishList saved = wishListRepository.save(wishList);
@@ -136,7 +146,7 @@ class WishListControllerTest {
     void 위시리스트_수량_업데이트_테스트() throws Exception {
         String email = user.getEmail();
         WishList wishList = new WishList();
-        wishList.setProductId(1L);
+        wishList.setProductId(product.getProductId());
         wishList.setEmail(email);
         wishList.setQuantity(1);
         WishList saved = wishListRepository.save(wishList);
