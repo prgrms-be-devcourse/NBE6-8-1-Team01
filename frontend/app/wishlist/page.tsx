@@ -36,7 +36,7 @@ export default function WishlistPage() {
       router.push('/login')
       toast({
         title: "로그인 필요",
-        description: "위시리스트를 보려면 로그인이 필요합니다.",
+        description: "장바구니를 보려면 로그인이 필요합니다.",
         variant: "destructive"
       })
     }
@@ -81,11 +81,11 @@ export default function WishlistPage() {
         >
           <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-mediterranean-blue to-mediterranean-terracotta">
-              나의 위시리스트
+              장바구니
             </span>
           </h1>
           <p className="text-lg text-gray-700 font-medium" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>
-            좋아하는 원두를 모아두고 한 번에 주문하세요
+            장바구니에 담은 상품을 확인하고 주문하세요
           </p>
           <div className="flex items-center justify-center gap-3 mt-4">
             <Heart className="w-6 h-6 text-mediterranean-terracotta" />
@@ -104,7 +104,7 @@ export default function WishlistPage() {
           >
             <Heart className="w-20 h-20 text-mediterranean-terracotta/30 mx-auto mb-6" />
             <p className="text-xl text-gray-700 mb-6 font-medium" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>
-              위시리스트가 비어있습니다.
+              장바구니가 비어있습니다.
             </p>
             <Link href="/products">
               <Button className="bg-mediterranean-blue hover:bg-mediterranean-blue/90 text-white rounded-full px-8 py-3 font-semibold shadow-lg hover:shadow-xl transition-all">
@@ -253,7 +253,7 @@ export default function WishlistPage() {
                           if (response.resultCode === '200-OK') {
                             toast({
                               title: "주문 완료",
-                              description: "위시리스트 상품들의 주문이 접수되었습니다.",
+                              description: "장바구니 상품들의 주문이 접수되었습니다.",
                             })
                             
                             // 위시리스트 비우기

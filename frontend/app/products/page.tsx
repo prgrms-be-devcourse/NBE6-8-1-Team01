@@ -109,14 +109,6 @@ function ProductCard({ product, index, viewMode }: { product: Product; index: nu
                 </p>
                 
                 <div className="flex gap-2">
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handleAddToWishlist}
-                    className="p-3 rounded-full bg-white border border-gray-200 hover:bg-gray-50 transition-colors shadow-md"
-                  >
-                    <Heart className="w-5 h-5 text-gray-600 hover:text-red-500 transition-colors" />
-                  </motion.button>
                   <motion.div
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
@@ -175,9 +167,9 @@ function ProductCard({ product, index, viewMode }: { product: Product; index: nu
                     whileHover={{ scale: 1.2 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={handleAddToWishlist}
-                    className="p-3 rounded-full bg-white border border-gray-200 hover:bg-gray-50 transition-colors shadow-md"
+                    className="p-3 rounded-full bg-white shadow-lg"
                   >
-                    <Heart className="w-6 h-6 text-white drop-shadow-md" />
+                    <ShoppingCart className="w-6 h-6 text-mediterranean-blue" />
                   </motion.button>
                   <motion.div
                     initial={{ scale: 0 }}

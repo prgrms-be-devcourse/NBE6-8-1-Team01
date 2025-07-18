@@ -8,12 +8,10 @@ import {
   ShoppingCart, 
   User, 
   ChevronDown, 
-  X, 
   Menu, 
   Heart,
   LogOut,
-  Package,
-  Sparkles
+  Package
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -36,10 +34,6 @@ export function Navigation() {
   const { isAuthenticated, user } = useAuth()
   const { wishlist } = useWishlist()
   
-  // TODO: CartContext 연결 필요
-  const cartItems: any[] = []
-  const cartTotal = 0
-  const cartCount = 0
 
   // Scroll effect
   useEffect(() => {
@@ -107,7 +101,7 @@ export function Navigation() {
                 <>
                   <motion.li whileHover={{ y: -2 }}>
                     <Link href="/wishlist" className="text-sm font-medium text-gray-700 hover:text-mediterranean-blue transition-colors relative group">
-                      위시리스트
+                      장바구니
                       <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-mediterranean-blue group-hover:w-full transition-all duration-300" />
                       {wishlist.length > 0 && (
                         <Badge className="absolute -top-2 -right-4 h-4 w-4 p-0 flex items-center justify-center bg-mediterranean-terracotta text-white text-[10px]">
@@ -155,71 +149,22 @@ export function Navigation() {
               </motion.div>
             )}
 
-            {/* Cart Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <motion.div whileHover={{ scale: 1.05 }}>
-                  <Button variant="ghost" className="relative text-gray-700 hover:bg-gray-100 group">
-                    <div className="relative">
-                      <ShoppingCart className="w-5 h-5 group-hover:text-mediterranean-blue transition-colors" />
-                      {cartCount > 0 && (
-                        <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center bg-mediterranean-terracotta shadow-sm">
-                          {cartCount}
-                        </Badge>
-                      )}
-                    </div>
-                    <span className="hidden sm:inline-block ml-2">장바구니</span>
-                    <ChevronDown className="w-4 h-4 ml-1" />
-                  </Button>
-                </motion.div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-96 p-6 mt-2 bg-white shadow-xl border border-gray-200" align="end">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold text-lg text-gray-800">장바구니</h3>
-                  <Sparkles className="w-4 h-4 text-mediterranean-terracotta" />
-                </div>
-                <div className="space-y-4 max-h-64 overflow-y-auto">
-                  {cartItems.length > 0 ? (
-                    cartItems.map((item) => (
-                      <motion.div 
-                        key={item.id} 
-                        className="flex items-center justify-between py-3 border-b border-gray-200"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                      >
-                        <div className="flex-1">
-                          <h4 className="text-sm font-semibold text-gray-800">{item.name}</h4>
-                          <p className="text-sm text-gray-600">₩{item.price.toLocaleString()} × {item.quantity}</p>
-                        </div>
-                        <motion.button 
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          className="text-red-400 hover:text-red-300 transition-colors"
-                        >
-                          <X className="w-4 h-4" />
-                        </motion.button>
-                      </motion.div>
-                    ))
-                  ) : (
-                    <div className="text-center py-8">
-                      <ShoppingCart className="w-12 h-12 mx-auto text-gray-600 mb-3" />
-                      <p className="text-sm text-gray-600">장바구니가 비어있습니다</p>
-                    </div>
-                  )}
-                </div>
-                <div className="mt-6 pt-4 border-t border-gray-200">
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="font-semibold text-gray-800">총 금액</span>
-                    <span className="font-bold text-xl text-mediterranean-blue">₩{cartTotal.toLocaleString()}</span>
+            {/* Cart Link */}
+            <motion.div whileHover={{ scale: 1.05 }}>
+              <Link href="/wishlist">
+                <Button variant="ghost" className="relative text-gray-700 hover:bg-gray-100 group">
+                  <div className="relative">
+                    <ShoppingCart className="w-5 h-5 group-hover:text-mediterranean-blue transition-colors" />
+                    {wishlist.length > 0 && (
+                      <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center bg-mediterranean-terracotta shadow-sm">
+                        {wishlist.length}
+                      </Badge>
+                    )}
                   </div>
-                  <Link href="/products">
-                    <Button className="w-full bg-mediterranean-blue hover:bg-mediterranean-blue/90 text-white">
-                      쇼핑 계속하기
-                    </Button>
-                  </Link>
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <span className="hidden sm:inline-block ml-2">장바구니</span>
+                </Button>
+              </Link>
+            </motion.div>
 
             {/* User Dropdown */}
             <DropdownMenu>
@@ -255,8 +200,8 @@ export function Navigation() {
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild className="hover:bg-gray-100 cursor-pointer">
                       <Link href="/wishlist" className="flex items-center">
-                        <Heart className="w-4 h-4 mr-2" />
-                        위시리스트
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        장바구니
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="bg-gray-200" />
@@ -345,7 +290,7 @@ export function Navigation() {
                         className="block text-sm font-medium text-gray-700 hover:text-mediterranean-blue transition-colors"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
-                        위시리스트 ({wishlist.length})
+                        장바구니 ({wishlist.length})
                       </Link>
                     </motion.li>
                     {user?.role === 'ADMIN' && (

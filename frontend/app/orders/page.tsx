@@ -86,7 +86,7 @@ export default function OrdersPage() {
         setIsLoading(true)
         const response = await orderApi.getMyOrders(user?.email || '')
         
-        if (response.resultCode === 'SUCCESS') {
+        if (response.resultCode === 'SUCCESS' || response.resultCode === '200-OK') {
           setOrders(response.data)
         } else {
           throw new Error(response.msg || '주문 목록 조회 실패')
@@ -124,7 +124,7 @@ export default function OrdersPage() {
         
         // 주문 목록 새로고침
         const refreshResponse = await orderApi.getMyOrders(user?.email || '')
-        if (refreshResponse.resultCode === 'SUCCESS') {
+        if (refreshResponse.resultCode === 'SUCCESS' || refreshResponse.resultCode === '200-OK') {
           setOrders(refreshResponse.data)
         }
       }

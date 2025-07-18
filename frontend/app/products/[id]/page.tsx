@@ -65,7 +65,7 @@ export default function ProductDetailPage() {
     if (!isAuthenticated) {
       toast({
         title: "로그인 필요",
-        description: "위시리스트에 추가하려면 로그인이 필요합니다.",
+        description: "장바구니에 추가하려면 로그인이 필요합니다.",
         variant: "destructive"
       })
       return
@@ -74,13 +74,13 @@ export default function ProductDetailPage() {
     try {
       await addToWishlist(product.productId, Number(quantity))
       toast({
-        title: "위시리스트에 추가됨",
-        description: `${product.productName}이(가) 위시리스트에 추가되었습니다.`,
+        title: "장바구니에 추가됨",
+        description: `${product.productName}이(가) 장바구니에 추가되었습니다.`,
       })
     } catch (error) {
       toast({
         title: "추가 실패",
-        description: "위시리스트 추가에 실패했습니다.",
+        description: "장바구니 추가에 실패했습니다.",
         variant: "destructive"
       })
     }
