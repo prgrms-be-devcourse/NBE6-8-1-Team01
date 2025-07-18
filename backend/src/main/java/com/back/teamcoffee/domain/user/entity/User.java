@@ -1,13 +1,18 @@
 package com.back.teamcoffee.domain.user.entity;
 
 
+import com.back.teamcoffee.domain.order.order.entity.Order;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -33,6 +38,10 @@ public class User {
     private String password;
     @Column(updatable = false)
     private LocalDateTime created_at;
+
+    // 연관관계 추가: Order.email 기준
+    @OneToMany(mappedBy = "user", cascade = {PERSIST, REMOVE}, orphanRemoval = true)
+    private List<Order> orders = new ArrayList<>();
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
