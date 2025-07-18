@@ -272,7 +272,7 @@ export default function HomePage() {
         <VideoBackground 
           src="/videos/coffee-beans-slow.mp4"
           poster="/images/coffee-beans-poster.jpg"
-          overlayOpacity={0.9}
+          overlayOpacity={0.85}
           className="z-0"
         />
         <div className="relative z-10 max-w-7xl mx-auto">
@@ -281,10 +281,10 @@ export default function HomePage() {
             whileInView={{ opacity: 1, y: 0 }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-mediterranean-terracotta to-mediterranean-blue">BEST SELLERS</span>
+            <h2 className="text-5xl md:text-6xl font-black mb-4 drop-shadow-2xl" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>
+              <span className="text-white">BEST SELLERS</span>
             </h2>
-            <p className="text-lg text-gray-700 font-medium" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>커피 애호가들이 선택한 최고의 원두</p>
+            <p className="text-xl text-white font-bold drop-shadow-lg" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>커피 애호가들이 선택한 최고의 원두</p>
           </motion.div>
 
           {loading ? (

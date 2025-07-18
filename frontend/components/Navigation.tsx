@@ -154,16 +154,16 @@ export function Navigation() {
             {/* Cart Link */}
             <motion.div whileHover={{ scale: 1.05 }}>
               <Link href="/wishlist">
-                <Button variant="ghost" className="relative text-gray-700 hover:bg-gray-100 group">
+                <Button variant="ghost" className={`relative ${isOnHeroSection && !isScrolled ? 'text-white hover:bg-white/20' : 'text-gray-700 hover:bg-gray-100'} group`}>
                   <div className="relative">
-                    <ShoppingCart className="w-5 h-5 group-hover:text-mediterranean-blue transition-colors" />
+                    <ShoppingCart className={`w-5 h-5 ${isOnHeroSection && !isScrolled ? 'text-white group-hover:text-white/80' : 'group-hover:text-mediterranean-blue'} transition-colors`} />
                     {wishlist.length > 0 && (
                       <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center bg-mediterranean-terracotta shadow-sm">
                         {wishlist.length}
                       </Badge>
                     )}
                   </div>
-                  <span className="hidden sm:inline-block ml-2">장바구니</span>
+                  <span className={`hidden sm:inline-block ml-2 font-bold ${isOnHeroSection && !isScrolled ? 'text-white' : 'text-gray-700'}`} style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}>장바구니</span>
                 </Button>
               </Link>
             </motion.div>
