@@ -249,7 +249,7 @@ export default function ProductDetailPage() {
                 <span>주문 후 로스팅으로 최상의 신선도</span>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Additional Info */}
