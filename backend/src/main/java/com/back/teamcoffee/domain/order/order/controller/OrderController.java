@@ -1,6 +1,7 @@
 package com.back.teamcoffee.domain.order.order.controller;
 
 import com.back.teamcoffee.domain.order.order.dto.OrderDto;
+import com.back.teamcoffee.domain.order.order.dto.OrderStatusUpdateDto;
 import com.back.teamcoffee.domain.order.order.dto.OrderWriteReqBody;
 import com.back.teamcoffee.domain.order.order.service.OrderService;
 import com.back.teamcoffee.global.rsdata.RsData;
@@ -63,8 +64,8 @@ public class OrderController {
   @PutMapping("/modify")
   @Transactional
   @Operation(summary = "주문 상태 변경")
-  public ResponseEntity<RsData<OrderDto>> modifyOrder(@RequestBody @Valid OrderDto orderDto) {
-    RsData<OrderDto> updatedOrder = orderService.modifyOrder(orderDto);
+  public ResponseEntity<RsData<OrderDto>> modifyOrder(@RequestBody @Valid OrderStatusUpdateDto orderStatusUpdateDto) {
+    RsData<OrderDto> updatedOrder = orderService.modifyOrderStatus(orderStatusUpdateDto);
     return ResponseEntity.ok(updatedOrder);
   }
 
