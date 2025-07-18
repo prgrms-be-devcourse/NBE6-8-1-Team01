@@ -4,6 +4,12 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      auto-commit: false
+      maximum-pool-size: 10   # Pool 내부 클라이언트 수 ≤ 200 여유 있게
+      minimum-idle: 2
+      idle-timeout: 60000     # 60 초 후 idle 연결 정리
+      max-lifetime: 300000    # Supavisor 세션은 5분 주기로 재활용 권장
   jpa:
     properties:
       hibernate:
