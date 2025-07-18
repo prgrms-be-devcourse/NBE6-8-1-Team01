@@ -26,6 +26,7 @@ export async function apiCall<T>(
     headers: {
       'Content-Type': 'application/json',
       'Authorization': basicAuth,
+      'ngrok-skip-browser-warning': 'true',
       ...options.headers,
     },
     credentials: 'include', // 쿠키 포함 (JWT)
