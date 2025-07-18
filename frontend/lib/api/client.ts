@@ -5,7 +5,10 @@ export async function apiCall<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`
+  // Remove trailing slash from base URL and ensure endpoint starts with /
+  const baseUrl = API_BASE_URL.replace(/\/$/, '')
+  const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`
+  const url = `${baseUrl}${path}`
   
   const config: RequestInit = {
     headers: {
