@@ -1,10 +1,13 @@
 package com.back.teamcoffee.domain.wishlist.service;
 
+import com.back.teamcoffee.domain.product.entity.Product;
+import com.back.teamcoffee.domain.product.repository.ProductRepository;
 import com.back.teamcoffee.domain.wishlist.dto.WishListCreateDto;
 import com.back.teamcoffee.domain.wishlist.dto.WishListDto;
 import com.back.teamcoffee.domain.wishlist.dto.WishListUpdateDto;
 import com.back.teamcoffee.domain.wishlist.entity.WishList;
 import com.back.teamcoffee.domain.wishlist.repository.WishListRepository;
+import com.back.teamcoffee.global.exception.DataNotFoundException;
 import com.back.teamcoffee.global.rsdata.RsData;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,10 +21,19 @@ import java.util.stream.Collectors;
 public class WishListService {
 
     private final WishListRepository wishListRepository;
+    private final ProductRepository productRepository;
 
     public RsData<WishListDto> create(String email, WishListCreateDto wishListCreateDto) {
+        Optional<Product> productOpt = productRepository.findById(wishListCreateDto.productId());
+
+        if (productOpt.isEmpty()) {
+            throw new DataNotFoundException("존재하지 않는 상품입니다.");
+        }
+
+        Product product = productOpt.get();
+
         WishList wishList = new WishList();
-        wishList.setProductId(wishListCreateDto.productId());
+        wishList.setProductId(product.getProductId());
         wishList.setEmail(email);
         wishList.setQuantity(wishListCreateDto.quantity());
 
@@ -29,13 +41,14 @@ public class WishListService {
 
         WishListDto wishListDto = new WishListDto(
                 saved.getWishId(),
-                saved.getProductId(),
-                "더미 상품 1",
-                5000,
+                product.getProductId(),
+                product.getProductName(),
+                product.getPrice(),
                 saved.getEmail(),
                 saved.getQuantity()
         );
-                return RsData.of("201-1", "위시리스트에 상품이 추가되었습니다.", wishListDto);
+
+        return RsData.of("201-1", "위시리스트에 상품이 추가되었습니다.", wishListDto);
     }
 
     public RsData<List<WishListDto>> findAllByEmail(String email) {
@@ -79,11 +92,14 @@ public class WishListService {
     }
 
     private WishListDto toDto(WishList wishList) {
+        Product product = productRepository.findById(wishList.getProductId())
+                .orElseThrow(() -> new DataNotFoundException("존재하지 않는 상품입니다."));
+
         return new WishListDto(
                 wishList.getWishId(),
-                wishList.getProductId(),
-                "더미 상품",
-                5000,
+                product.getProductId(),
+                product.getProductName(),
+                product.getPrice(),
                 wishList.getEmail(),
                 wishList.getQuantity()
         );
