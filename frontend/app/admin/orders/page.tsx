@@ -119,16 +119,19 @@ export default function AdminOrdersPage() {
     }
   }
 
-  // 오늘 주문 가져오기
-  const fetchTodayOrders = async () => {
-    try {
-      const response = await orderApi.getTodayOrders()
-      if (response.resultCode === '200-OK') {
-        setTodayOrders(response.data)
-      }
-    } catch (error) {
-      console.error('오늘 주문 조회 에러:', error)
-    }
+  // 오늘 주문 가져오기 (전체 주문에서 필터링)
+  const fetchTodayOrders = () => {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    
+    // 전체 주문에서 오늘 주문만 필터링
+    const todayOrdersFiltered = allOrders.filter(order => {
+      const orderDate = new Date(order.createdAt)
+      orderDate.setHours(0, 0, 0, 0)
+      return orderDate.getTime() === today.getTime()
+    })
+    
+    setTodayOrders(todayOrdersFiltered)
   }
 
   // 데이터 로드
@@ -136,12 +139,17 @@ export default function AdminOrdersPage() {
     const loadData = async () => {
       if (user?.role === 'ADMIN') {
         setIsLoading(true)
-        await Promise.all([fetchAllOrders(), fetchTodayOrders()])
+        await fetchAllOrders()
         setIsLoading(false)
       }
     }
     loadData()
   }, [user])
+
+  // allOrders가 변경될 때 오늘 주문 필터링
+  useEffect(() => {
+    fetchTodayOrders()
+  }, [allOrders])
 
   // 주문 상태 변경
   const handleStatusChange = async (orderId: number, newStatus: string) => {
@@ -156,7 +164,8 @@ export default function AdminOrdersPage() {
         })
         
         // 데이터 새로고침
-        await Promise.all([fetchAllOrders(), fetchTodayOrders()])
+        await fetchAllOrders()
+        // fetchTodayOrders는 allOrders useEffect에서 자동 실행됨
       }
     } catch (error) {
       toast({
