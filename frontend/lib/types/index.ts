@@ -40,9 +40,8 @@ export interface LoginRequest {
 
 export interface LoginResult {
   user: {
-    username: string
+    name: string
     email: string
-    address: string
     role: string
   }
   token: {

@@ -52,7 +52,7 @@ export default function AdminProductsPage() {
 
   // 관리자 권한 체크
   useEffect(() => {
-    if (!isAuthenticated || user?.email !== 'admin@email.com') {
+    if (!isAuthenticated || user?.role !== 'ADMIN') {
       router.push('/')
       toast({
         title: "접근 권한 없음",
@@ -82,7 +82,7 @@ export default function AdminProductsPage() {
   }
 
   useEffect(() => {
-    if (user?.email === 'admin@email.com') {
+    if (user?.role === 'ADMIN') {
       fetchProducts()
     }
   }, [user])
@@ -187,7 +187,7 @@ export default function AdminProductsPage() {
     setIsDialogOpen(true)
   }
 
-  if (!isAuthenticated || user?.email !== 'admin@email.com') {
+  if (!isAuthenticated || user?.role !== 'ADMIN') {
     return null
   }
 

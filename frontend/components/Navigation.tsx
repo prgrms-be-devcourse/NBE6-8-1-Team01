@@ -116,7 +116,7 @@ export function Navigation() {
                       )}
                     </Link>
                   </motion.li>
-                  {user?.email === 'admin@email.com' && (
+                  {user?.role === 'ADMIN' && (
                     <>
                       <motion.li whileHover={{ y: -2 }}>
                         <Link href="/admin/products" className="text-sm font-medium text-gray-700 hover:text-mediterranean-blue transition-colors relative group">
@@ -228,7 +228,7 @@ export function Navigation() {
                   <Button variant="ghost" className="text-gray-700 hover:bg-gray-100 group">
                     <User className="w-5 h-5 text-gray-700 group-hover:text-mediterranean-blue transition-colors" />
                     <span className="hidden sm:inline-block ml-2 text-gray-700 font-medium">
-                      {isAuthenticated ? user?.username || '내 계정' : '계정'}
+                      {isAuthenticated ? user?.name || '내 계정' : '계정'}
                     </span>
                     <ChevronDown className="w-4 h-4 ml-1 text-gray-700" />
                   </Button>
@@ -239,7 +239,7 @@ export function Navigation() {
                   <>
                     <div className="px-3 py-2 border-b border-gray-200">
                       <p className="text-sm font-medium text-gray-800">{user?.email}</p>
-                      <p className="text-xs text-gray-600">{user?.username}</p>
+                      <p className="text-xs text-gray-600">{user?.name}</p>
                     </div>
                     <DropdownMenuItem asChild className="hover:bg-gray-100 cursor-pointer">
                       <Link href="/account" className="flex items-center">
@@ -348,7 +348,7 @@ export function Navigation() {
                         위시리스트 ({wishlist.length})
                       </Link>
                     </motion.li>
-                    {user?.email === 'admin@email.com' && (
+                    {user?.role === 'ADMIN' && (
                       <>
                         <motion.li
                           initial={{ x: -20, opacity: 0 }}

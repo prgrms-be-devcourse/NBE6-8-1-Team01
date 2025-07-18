@@ -111,7 +111,7 @@ export default function AccountPage() {
                   <User className="w-5 h-5 text-mediterranean-terracotta" />
                   <div>
                     <p className="text-sm text-gray-600">이름</p>
-                    <p className="font-semibold">{user?.username}</p>
+                    <p className="font-semibold">{user?.name}</p>
                   </div>
                 </div>
                 

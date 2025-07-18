@@ -94,7 +94,7 @@ export default function AdminOrdersPage() {
 
   // 관리자 권한 체크
   useEffect(() => {
-    if (!isAuthenticated || user?.email !== 'admin@email.com') {
+    if (!isAuthenticated || user?.role !== 'ADMIN') {
       router.push('/')
       toast({
         title: "접근 권한 없음",
@@ -109,7 +109,7 @@ export default function AdminOrdersPage() {
     try {
       // 실제로는 관리자용 전체 주문 API가 필요합니다
       // 지금은 임시로 사용자별 조회를 사용합니다
-      const response = await orderApi.getOrdersByEmail('admin@email.com')
+      const response = await orderApi.getOrders() // TODO: 전체 주문 조회 API 필요
       if (response.resultCode === '200-OK') {
         setAllOrders(response.data)
       }
@@ -133,7 +133,7 @@ export default function AdminOrdersPage() {
   // 데이터 로드
   useEffect(() => {
     const loadData = async () => {
-      if (user?.email === 'admin@email.com') {
+      if (user?.role === 'ADMIN') {
         setIsLoading(true)
         await Promise.all([fetchAllOrders(), fetchTodayOrders()])
         setIsLoading(false)
