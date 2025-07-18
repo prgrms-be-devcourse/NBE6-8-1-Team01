@@ -30,6 +30,7 @@ import { useRouter } from "next/navigation"
 export function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [isOnHeroSection, setIsOnHeroSection] = useState(true)
   const router = useRouter()
   const { isAuthenticated, user } = useAuth()
   const { wishlist } = useWishlist()
@@ -39,6 +40,7 @@ export function Navigation() {
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20)
+      setIsOnHeroSection(window.scrollY < window.innerHeight - 100)
     }
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
@@ -56,7 +58,7 @@ export function Navigation() {
   return (
     <motion.nav 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled ? 'glass-light shadow-lg' : 'bg-transparent'
+        isScrolled ? 'glass-light shadow-lg' : 'backdrop-blur-sm bg-black/10'
       }`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
@@ -86,13 +88,13 @@ export function Navigation() {
           <div className="hidden lg:flex items-center space-x-8">
             <ul className="flex items-center gap-8">
               <motion.li whileHover={{ y: -2 }}>
-                <Link href="/" className="text-sm font-medium text-gray-700 hover:text-mediterranean-blue transition-colors relative group">
+                <Link href="/" className={`text-sm font-medium ${isOnHeroSection && !isScrolled ? 'text-white hover:text-mediterranean-sand' : 'text-gray-700 hover:text-mediterranean-blue'} transition-colors relative group`}>
                   홈
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-mediterranean-blue group-hover:w-full transition-all duration-300" />
                 </Link>
               </motion.li>
               <motion.li whileHover={{ y: -2 }}>
-                <Link href="/products" className="text-sm font-medium text-gray-700 hover:text-mediterranean-blue transition-colors relative group">
+                <Link href="/products" className={`text-sm font-medium ${isOnHeroSection && !isScrolled ? 'text-white hover:text-mediterranean-sand' : 'text-gray-700 hover:text-mediterranean-blue'} transition-colors relative group`}>
                   전체 원두
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-mediterranean-blue group-hover:w-full transition-all duration-300" />
                 </Link>

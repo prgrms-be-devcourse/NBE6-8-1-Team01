@@ -88,7 +88,7 @@ export default function HomePage() {
         <VideoBackground 
           src="/videos/hero-positano.mp4"
           poster="/images/hero-poster.jpg"
-          overlayOpacity={0.5}
+          overlayOpacity={0.3}
         />
         
         {/* Animated Background Shapes - Above video */}
@@ -104,12 +104,12 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-6xl md:text-8xl font-black mb-6" style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif', letterSpacing: '-0.03em' }}>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-mediterranean-blue via-mediterranean-terracotta to-mediterranean-blue uppercase">
+            <h1 className="text-6xl md:text-8xl font-black mb-6 drop-shadow-2xl" style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif', letterSpacing: '-0.03em' }}>
+              <span className="text-white uppercase">
                 GRIDS & CIRCLES
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-gray-700 mb-12 max-w-3xl mx-auto leading-relaxed" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>
+            <p className="text-xl md:text-2xl text-white mb-12 max-w-3xl mx-auto leading-relaxed drop-shadow-lg" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>
               지중해의 햇살을 담은 프리미엄 스페셜티 커피<br />
               포지타노의 아침을 당신의 컵에 담아드립니다
             </p>
