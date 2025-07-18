@@ -44,6 +44,20 @@ export async function apiCall<T>(
       }
       
       const errorData = await response.json().catch(() => ({}))
+      
+      // 404 에러에 대한 특별 처리
+      if (response.status === 404) {
+        if (endpoint.includes('/orders/lists')) {
+          throw new Error('주문을 찾을 수 없습니다.')
+        }
+        throw new Error('요청한 리소스를 찾을 수 없습니다.')
+      }
+      
+      // 500 에러에 대한 특별 처리
+      if (response.status >= 500) {
+        throw new Error('서버 오류가 발생했습니다.')
+      }
+      
       throw new Error(errorData.msg || `HTTP ${response.status}`)
     }
     

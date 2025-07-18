@@ -116,13 +116,20 @@ export default function OrdersPage() {
         } else {
           throw new Error(response.msg || '주문 목록 조회 실패')
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('주문 목록 조회 에러:', error)
-        toast({
-          title: "오류 발생",
-          description: "주문 목록을 불러올 수 없습니다.",
-          variant: "destructive"
-        })
+        
+        // 404 에러는 주문이 없는 것으로 처리
+        if (error.message === '주문을 찾을 수 없습니다.') {
+          setOrders([])
+          // 에러 토스트 표시하지 않음
+        } else {
+          toast({
+            title: "오류 발생",
+            description: "주문 목록을 불러올 수 없습니다.",
+            variant: "destructive"
+          })
+        }
       } finally {
         setIsLoading(false)
       }
