@@ -2,6 +2,7 @@ package com.back.teamcoffee.domain.user.entity;
 
 
 import com.back.teamcoffee.domain.order.order.entity.Order;
+import com.back.teamcoffee.domain.wishlist.entity.WishList;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -42,6 +43,10 @@ public class User {
     // 연관관계 추가: Order.email 기준
     @OneToMany(mappedBy = "user", cascade = {PERSIST, REMOVE}, orphanRemoval = true)
     private List<Order> orders = new ArrayList<>();
+
+    // 연관관계 추가: WishList.email 기준
+    @OneToMany(mappedBy = "user", cascade = {PERSIST, REMOVE}, orphanRemoval = true)
+    private List<WishList> wishLists = new ArrayList<>();
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
