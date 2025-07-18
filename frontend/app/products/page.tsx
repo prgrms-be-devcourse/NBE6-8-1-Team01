@@ -279,21 +279,26 @@ export default function ProductsPage() {
         // 배열로 직접 반환하는 경우 처리
         if (Array.isArray(response)) {
           setProducts(response)
-        } else if (response.resultCode === 'SUCCESS' || response.resultCode === 'S-1') {
+        } else if (response.resultCode === 'SUCCESS' || response.resultCode === 'S-1' || response.resultCode === '200-OK') {
           setProducts(response.data || [])
         } else {
           throw new Error(response.msg || '상품 조회 실패')
         }
       } catch (err: any) {
-        // "상품 조회 성공" 메시지는 에러가 아니므로 무시
-        if (err.message && err.message.includes('성공')) {
-          console.log('API 성공 메시지:', err.message)
+        console.error('상품 조회 에러:', err)
+        setError('상품을 불러오는데 실패했습니다.')
+        
+        // 500 에러인 경우 특별 메시지
+        if (err.message && err.message.includes('500')) {
+          toast({
+            title: "서버 오류",
+            description: "서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.",
+            variant: "destructive"
+          })
         } else {
-          setError('상품을 불러오는데 실패했습니다.')
-          console.error('상품 조회 에러:', err)
           toast({
             title: "오류 발생",
-            description: "상품을 불러올 수 없습니다.",
+            description: err.message || "상품을 불러올 수 없습니다.",
             variant: "destructive"
           })
         }
