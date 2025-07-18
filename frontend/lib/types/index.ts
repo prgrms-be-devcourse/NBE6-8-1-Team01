@@ -40,10 +40,10 @@ export interface LoginRequest {
 
 export interface LoginResult {
   user: {
-    username: string
+    name: string
     email: string
-    address: string
     role: string
+    address: string
   }
   token: {
     accessToken: string
@@ -86,10 +86,10 @@ export interface WishList {
   wishId: number
   productId: number
   productName: string
-  productImage: string
-  price: number
+  productPrice: number
+  productImage?: string
+  email: string
   quantity: number
-  createdAt: string
 }
 
 export interface WishListCreate {

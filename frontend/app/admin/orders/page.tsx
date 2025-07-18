@@ -25,7 +25,7 @@ import { useAuth } from "@/contexts/AuthContext"
 import { orderApi } from "@/lib/api/orders"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
-import { 
+import {
   Package, 
   Loader2, 
   CalendarDays, 
@@ -94,7 +94,7 @@ export default function AdminOrdersPage() {
 
   // 관리자 권한 체크
   useEffect(() => {
-    if (!isAuthenticated || user?.email !== 'admin@email.com') {
+    if (!isAuthenticated || user?.role !== 'ADMIN') {
       router.push('/')
       toast({
         title: "접근 권한 없음",
@@ -109,7 +109,8 @@ export default function AdminOrdersPage() {
     try {
       // 실제로는 관리자용 전체 주문 API가 필요합니다
       // 지금은 임시로 사용자별 조회를 사용합니다
-      const response = await orderApi.getOrdersByEmail('admin@email.com')
+      // TODO: 전체 주문 조회 API 필요, 임시로 관리자 이메일로 조회
+      const response = await orderApi.getOrdersByEmail(user?.email || '')
       if (response.resultCode === '200-OK') {
         setAllOrders(response.data)
       }
@@ -118,29 +119,44 @@ export default function AdminOrdersPage() {
     }
   }
 
-  // 오늘 주문 가져오기
-  const fetchTodayOrders = async () => {
-    try {
-      const response = await orderApi.getTodayOrders()
-      if (response.resultCode === '200-OK') {
-        setTodayOrders(response.data)
+  // 오늘 주문 가져오기 (전체 주문에서 필터링)
+  const fetchTodayOrders = () => {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    
+    // 전체 주문에서 오늘 주문만 필터링
+    const todayOrdersFiltered = allOrders.filter(order => {
+      if (!order || !order.createdAt) return false
+      try {
+        const orderDate = new Date(order.createdAt)
+        orderDate.setHours(0, 0, 0, 0)
+        return orderDate.getTime() === today.getTime()
+      } catch (e) {
+        return false
       }
-    } catch (error) {
-      console.error('오늘 주문 조회 에러:', error)
-    }
+    })
+    
+    setTodayOrders(todayOrdersFiltered)
   }
 
   // 데이터 로드
   useEffect(() => {
     const loadData = async () => {
-      if (user?.email === 'admin@email.com') {
+      if (user?.role === 'ADMIN') {
         setIsLoading(true)
-        await Promise.all([fetchAllOrders(), fetchTodayOrders()])
+        await fetchAllOrders()
         setIsLoading(false)
       }
     }
     loadData()
   }, [user])
+
+  // allOrders가 변경될 때 오늘 주문 필터링
+  useEffect(() => {
+    if (allOrders.length > 0) {
+      fetchTodayOrders()
+    }
+  }, [allOrders])
 
   // 주문 상태 변경
   const handleStatusChange = async (orderId: number, newStatus: string) => {
@@ -155,7 +171,8 @@ export default function AdminOrdersPage() {
         })
         
         // 데이터 새로고침
-        await Promise.all([fetchAllOrders(), fetchTodayOrders()])
+        await fetchAllOrders()
+        // fetchTodayOrders는 allOrders useEffect에서 자동 실행됨
       }
     } catch (error) {
       toast({
@@ -350,11 +367,11 @@ export default function AdminOrdersPage() {
                               <TableCell>
                                 <div>
                                   <p className="font-medium">
-                                    {order.items[0]?.productName || '상품 없음'}
-                                    {order.items.length > 1 && ` 외 ${order.items.length - 1}개`}
+                                    {order.items && order.items[0]?.productName || '상품 없음'}
+                                    {order.items && order.items.length > 1 && ` 외 ${order.items.length - 1}개`}
                                   </p>
                                   <p className="text-sm text-gray-500">
-                                    총 {order.items.length}개 상품
+                                    총 {order.items?.length || 0}개 상품
                                   </p>
                                 </div>
                               </TableCell>

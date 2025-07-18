@@ -9,17 +9,21 @@ import java.util.List;
 
 public record OrderItemDto(
     long orderItemId,
-    int orderCount,
-    int productPrice,
-    int totalPrice
+    long productId,
+    String productName,
+    String productImage,
+    int quantity,
+    int price
 
 ) {
   public OrderItemDto(OrderItem orderItem) {
     this(
         orderItem.getOrderItemId(),
+        orderItem.getProduct().getProductId(),
+        orderItem.getProduct().getProductName(),
+        orderItem.getProduct().getProductImage(),
         orderItem.getOrderCount(),
-        orderItem.getProductPrice(),
-        orderItem.getTotalPrice()
+        orderItem.getProductPrice()
     );
   }
 }

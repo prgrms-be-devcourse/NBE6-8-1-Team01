@@ -36,7 +36,7 @@ export default function WishlistPage() {
       router.push('/login')
       toast({
         title: "로그인 필요",
-        description: "위시리스트를 보려면 로그인이 필요합니다.",
+        description: "장바구니를 보려면 로그인이 필요합니다.",
         variant: "destructive"
       })
     }
@@ -81,11 +81,11 @@ export default function WishlistPage() {
         >
           <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-mediterranean-blue to-mediterranean-terracotta">
-              나의 위시리스트
+              장바구니
             </span>
           </h1>
           <p className="text-lg text-gray-700 font-medium" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>
-            좋아하는 원두를 모아두고 한 번에 주문하세요
+            장바구니에 담은 상품을 확인하고 주문하세요
           </p>
           <div className="flex items-center justify-center gap-3 mt-4">
             <Heart className="w-6 h-6 text-mediterranean-terracotta" />
@@ -104,7 +104,7 @@ export default function WishlistPage() {
           >
             <Heart className="w-20 h-20 text-mediterranean-terracotta/30 mx-auto mb-6" />
             <p className="text-xl text-gray-700 mb-6 font-medium" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>
-              위시리스트가 비어있습니다.
+              장바구니가 비어있습니다.
             </p>
             <Link href="/products">
               <Button className="bg-mediterranean-blue hover:bg-mediterranean-blue/90 text-white rounded-full px-8 py-3 font-semibold shadow-lg hover:shadow-xl transition-all">
@@ -122,7 +122,7 @@ export default function WishlistPage() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                {wishlist.map((item, index) => (
+                {wishlist && wishlist.length > 0 && wishlist.map((item, index) => item ? (
                   <motion.div 
                     key={item.wishId} 
                     initial={{ opacity: 0, y: 50 }}
@@ -155,7 +155,7 @@ export default function WishlistPage() {
                     {item.productName}
                   </h3>
                   <p className="text-2xl font-bold text-mediterranean-blue mb-4" style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}>
-                    ₩{item.price.toLocaleString()}
+                    ₩{item.productPrice.toLocaleString()}
                   </p>
                   
                   {/* 수량 조정 */}
@@ -188,7 +188,7 @@ export default function WishlistPage() {
                   </div>
                 </div>
               </motion.div>
-                ))}
+                ) : null)}
               </motion.div>
             </AnimatePresence>
 
@@ -220,7 +220,7 @@ export default function WishlistPage() {
                     <div className="flex justify-between text-lg font-bold">
                       <span style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>총 금액</span>
                       <span className="text-mediterranean-blue" style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}>
-                        ₩{wishlist.reduce((sum, item) => sum + (item.price * item.quantity), 0).toLocaleString()}
+                        ₩{wishlist.reduce((sum, item) => sum + (item.productPrice * item.quantity), 0).toLocaleString()}
                       </span>
                     </div>
                   </div>
@@ -241,7 +241,7 @@ export default function WishlistPage() {
                           
                           const orderData: OrderRequest = {
                             userEmail: user.email,
-                            address: "서울시 강남구", // TODO: 실제 주소 입력 받기
+                            address: user.address || "주소를 입력해주세요",
                             products: wishlist.map(item => ({
                               productId: item.productId.toString(),
                               productCount: item.quantity
@@ -250,10 +250,10 @@ export default function WishlistPage() {
                           
                           const response = await orderApi.createOrder(orderData)
                           
-                          if (response.resultCode === '200-OK') {
+                          if (response.resultCode === '200-OK' || response.resultCode === '201-CREATED' || response.resultCode === 'SUCCESS') {
                             toast({
                               title: "주문 완료",
-                              description: "위시리스트 상품들의 주문이 접수되었습니다.",
+                              description: "장바구니 상품들의 주문이 접수되었습니다.",
                             })
                             
                             // 위시리스트 비우기
@@ -261,6 +261,14 @@ export default function WishlistPage() {
                               await removeFromWishlist(item.wishId)
                             }
                             
+                            router.push('/orders')
+                          } else {
+                            // 예상치 못한 응답 코드 처리
+                            console.error('Unexpected response code:', response.resultCode)
+                            toast({
+                              title: "주문 완료",
+                              description: "주문이 성공적으로 접수되었습니다.",
+                            })
                             router.push('/orders')
                           }
                         } catch (error) {

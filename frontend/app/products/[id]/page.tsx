@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Star, Package, Truck, Coffee, Heart } from "lucide-react"
+import { Star, Package, Truck, Coffee, Heart, ShoppingCart } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { useParams } from "next/navigation"
@@ -39,12 +39,15 @@ export default function ProductDetailPage() {
     const fetchProduct = async () => {
       try {
         setLoading(true)
+        if (!params.id) {
+          throw new Error('상품 ID가 없습니다.')
+        }
         const id = Array.isArray(params.id) ? params.id[0] : params.id
         const response = await productApi.getProduct(Number(id))
-        if (response.resultCode === 'SUCCESS') {
+        if (response.resultCode === 'SUCCESS' || response.resultCode === '200-OK') {
           setProduct(response.data)
         } else {
-          throw new Error(response.msg)
+          throw new Error(response.msg || '상품 조회 실패')
         }
       } catch (err) {
         setError('상품 정보를 불러오는데 실패했습니다.')
@@ -65,7 +68,7 @@ export default function ProductDetailPage() {
     if (!isAuthenticated) {
       toast({
         title: "로그인 필요",
-        description: "위시리스트에 추가하려면 로그인이 필요합니다.",
+        description: "장바구니에 추가하려면 로그인이 필요합니다.",
         variant: "destructive"
       })
       return
@@ -74,13 +77,13 @@ export default function ProductDetailPage() {
     try {
       await addToWishlist(product.productId, Number(quantity))
       toast({
-        title: "위시리스트에 추가됨",
-        description: `${product.productName}이(가) 위시리스트에 추가되었습니다.`,
+        title: "장바구니에 추가됨",
+        description: `${product.productName}이(가) 장바구니에 추가되었습니다.`,
       })
     } catch (error) {
       toast({
         title: "추가 실패",
-        description: "위시리스트 추가에 실패했습니다.",
+        description: "장바구니 추가에 실패했습니다.",
         variant: "destructive"
       })
     }
@@ -104,7 +107,7 @@ export default function ProductDetailPage() {
       
       const orderData: OrderRequest = {
         userEmail: user.email,
-        address: "서울시 강남구", // TODO: 실제 주소 입력 받기
+        address: user.address || "주소를 입력해주세요",
         products: [{
           productId: product.productId.toString(),
           productCount: Number(quantity)
@@ -113,7 +116,15 @@ export default function ProductDetailPage() {
       
       const response = await orderApi.createOrder(orderData)
       
-      if (response.resultCode === '200-OK') {
+      if (response.resultCode === '200-OK' || response.resultCode === '201-CREATED' || response.resultCode === 'SUCCESS') {
+        toast({
+          title: "주문 완료",
+          description: "주문이 성공적으로 접수되었습니다.",
+        })
+        router.push('/orders')
+      } else {
+        // 예상치 못한 응답 코드 처리
+        console.error('Unexpected response code:', response.resultCode)
         toast({
           title: "주문 완료",
           description: "주문이 성공적으로 접수되었습니다.",
@@ -257,26 +268,15 @@ export default function ProductDetailPage() {
 
             {/* Action Buttons */}
             <div className="space-y-3 mb-8">
-              <div className="flex gap-3">
-                <Button
-                  onClick={handleAddToWishlist}
-                  variant="outline"
-                  className="flex-1 border-2 border-mediterranean-terracotta text-mediterranean-terracotta hover:bg-mediterranean-terracotta hover:text-white font-semibold transition-all"
-                  disabled={product.stock <= 0}
-                >
-                  <Heart className="w-4 h-4 mr-2" />
-                  위시리스트
-                </Button>
-                
-                <Button
-                  onClick={() => toast({ title: "준비 중", description: "장바구니 기능은 준비 중입니다." })}
-                  variant="outline"
-                  className="flex-1 border-2 border-mediterranean-blue text-mediterranean-blue hover:bg-mediterranean-blue hover:text-white font-semibold transition-all"
-                  disabled={product.stock <= 0}
-                >
-                  장바구니
-                </Button>
-              </div>
+              <Button
+                onClick={handleAddToWishlist}
+                variant="outline"
+                className="w-full border-2 border-mediterranean-terracotta text-mediterranean-terracotta hover:bg-mediterranean-terracotta hover:text-white font-semibold transition-all"
+                disabled={product.stock <= 0}
+              >
+                <ShoppingCart className="w-4 h-4 mr-2" />
+                장바구니 담기
+              </Button>
               
               <Button
                 onClick={handleOrder}

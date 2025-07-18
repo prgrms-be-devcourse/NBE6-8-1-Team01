@@ -34,7 +34,4 @@ export const orderApi = {
       method: 'DELETE'
     }),
 
-  // 오늘 주문 조회
-  getTodayOrders: () => 
-    apiCall<ApiResponse<Order[]>>('/orders/lists/today'),
 }

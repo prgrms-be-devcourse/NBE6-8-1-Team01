@@ -27,7 +27,7 @@ public class Product {
     @Column(name = "order_count")
     private int orderCount;
 
-    @Column(name = "product_image")
+    @Column(name = "product_image", columnDefinition = "TEXT")
     private String productImage;
 
     private int stock;

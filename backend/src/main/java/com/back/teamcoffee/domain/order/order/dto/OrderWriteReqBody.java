@@ -13,6 +13,6 @@ public record OrderWriteReqBody(
     @NotBlank
     @Size(min = 10, max = 100)
     String userEmail,
-    @Size(min = 10, max = 300)
+    @NotBlank
     String address
 ) {}

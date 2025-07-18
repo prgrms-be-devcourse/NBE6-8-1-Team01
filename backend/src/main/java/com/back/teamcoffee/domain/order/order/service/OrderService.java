@@ -100,10 +100,11 @@ public class OrderService {
   }
 
   public RsData<List<OrderDto>> findByEmail(String email) {
-    List<Order> orders = orderRepository.findByEmail(email);
+    List<Order> orders = orderRepository.findByEmailWithItems(email);
     System.out.println("Order : " + orders);
     if (orders.isEmpty()) {
-      throw new DataNotFoundException("주문을 찾을 수 없습니다.");
+      // 빈 리스트 반환 (에러 대신)
+      return RsData.of("200-OK", "주문 내역이 없습니다.", List.of());
     }
     List<OrderDto> dtoList = orders.stream()
         .map(OrderDto::new)
@@ -113,7 +114,7 @@ public class OrderService {
   }
 
   public RsData<OrderDto> findById(long orderId) {
-    Optional<Order> order = orderRepository.findById(orderId);
+    Optional<Order> order = orderRepository.findByIdWithItems(orderId);
     if (order.isPresent()) {
       OrderDto dto = new OrderDto(order.get());
       return RsData.of("200-OK", "주문 조회 성공", dto);
@@ -178,7 +179,7 @@ public class OrderService {
     LocalDateTime todayAt2pm = LocalDate.now(zoneKST).atTime(14, 0);
     LocalDateTime yesterdayAt2pm = todayAt2pm.minusDays(1);
 
-    List<Order> orders = orderRepository.findByCreatedAtBetween(yesterdayAt2pm, todayAt2pm);
+    List<Order> orders = orderRepository.findByCreatedAtBetweenWithItems(yesterdayAt2pm, todayAt2pm);
 
     orders.forEach(order -> {
       System.out.println("Order ID: " + order.getOrderId() + ", Created At: " + order.getCreatedAt());

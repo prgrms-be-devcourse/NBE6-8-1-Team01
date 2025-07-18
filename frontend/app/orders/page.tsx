@@ -86,18 +86,50 @@ export default function OrdersPage() {
         setIsLoading(true)
         const response = await orderApi.getMyOrders(user?.email || '')
         
-        if (response.resultCode === 'SUCCESS') {
-          setOrders(response.data)
+        console.log('주문 목록 API 응답:', response)
+        
+        if (response.resultCode === 'SUCCESS' || response.resultCode === '200-OK' || response.resultCode === 'S-1') {
+          // 주문 데이터 검증 및 기본값 설정
+          const ordersData = response.data || []
+          const validatedOrders = ordersData.map((order: any) => {
+            // 각 필드를 명시적으로 검증
+            return {
+              orderId: order.orderId || order.id || 0,
+              userEmail: order.userEmail || order.email || user?.email || '',
+              orderDate: order.orderDate || order.createdAt || new Date().toISOString(),
+              totalAmount: order.totalAmount || order.totalPrice || 0,
+              status: order.status || order.orderStatus || 'PENDING',
+              deliveryAddress: order.deliveryAddress || order.address || '주소 정보 없음',
+              createdAt: order.createdAt || order.orderDate || new Date().toISOString(),
+              items: Array.isArray(order.orderItems || order.items) ? (order.orderItems || order.items).map((item: any) => ({
+                orderItemId: item.orderItemId || item.id || 0,
+                productId: item.productId || 0,
+                productName: item.productName || item.name || '상품명 없음',
+                productImage: item.productImage || item.image || null,
+                quantity: item.quantity || item.count || 1,
+                price: item.price || item.productPrice || 0
+              })) : []
+            }
+          })
+          console.log('검증된 주문 데이터:', validatedOrders)
+          setOrders(validatedOrders)
         } else {
           throw new Error(response.msg || '주문 목록 조회 실패')
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('주문 목록 조회 에러:', error)
-        toast({
-          title: "오류 발생",
-          description: "주문 목록을 불러올 수 없습니다.",
-          variant: "destructive"
-        })
+        
+        // 404 에러는 주문이 없는 것으로 처리
+        if (error.message === '주문을 찾을 수 없습니다.') {
+          setOrders([])
+          // 에러 토스트 표시하지 않음
+        } else {
+          toast({
+            title: "오류 발생",
+            description: "주문 목록을 불러올 수 없습니다.",
+            variant: "destructive"
+          })
+        }
       } finally {
         setIsLoading(false)
       }
@@ -124,7 +156,7 @@ export default function OrdersPage() {
         
         // 주문 목록 새로고침
         const refreshResponse = await orderApi.getMyOrders(user?.email || '')
-        if (refreshResponse.resultCode === 'SUCCESS') {
+        if (refreshResponse.resultCode === 'SUCCESS' || refreshResponse.resultCode === '200-OK') {
           setOrders(refreshResponse.data)
         }
       }
@@ -198,7 +230,7 @@ export default function OrdersPage() {
           // 주문 목록
           <div className="space-y-6">
             <AnimatePresence>
-              {orders.map((order, index) => {
+              {orders && orders.length > 0 && orders.map((order, index) => {
                 const statusDisplay = getStatusDisplay(order.status)
                 const StatusIcon = statusDisplay.icon
                 const isExpanded = expandedOrder === order.orderId
@@ -229,11 +261,11 @@ export default function OrdersPage() {
                             <div className="flex items-center gap-3 mt-1">
                               <p className="text-sm text-gray-600 flex items-center gap-1">
                                 <CalendarDays className="w-4 h-4" />
-                                {new Date(order.createdAt).toLocaleDateString('ko-KR', {
+                                {order.createdAt ? new Date(order.createdAt).toLocaleDateString('ko-KR', {
                                   year: 'numeric',
                                   month: 'long',
                                   day: 'numeric'
-                                })}
+                                }) : '날짜 정보 없음'}
                               </p>
                               <Badge className={`${statusDisplay.color} text-xs px-2 py-1`}>
                                 {statusDisplay.label}
@@ -248,7 +280,7 @@ export default function OrdersPage() {
                               ₩{order.totalAmount.toLocaleString()}
                             </p>
                             <p className="text-sm text-gray-600">
-                              {order.items.length}개 상품
+                              {order.items?.length || 0}개 상품
                             </p>
                           </div>
                           <ChevronRight 
@@ -274,7 +306,7 @@ export default function OrdersPage() {
                             </h4>
                             
                             <div className="space-y-3">
-                              {order.items.map((item) => (
+                              {order.items && order.items.length > 0 ? order.items.map((item) => item ? (
                                 <div key={item.orderItemId} className="flex items-center gap-4 bg-white p-4 rounded-lg">
                                   <Image
                                     src={item.productImage || "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=100&q=80"}
@@ -295,7 +327,9 @@ export default function OrdersPage() {
                                     ₩{(item.price * item.quantity).toLocaleString()}
                                   </p>
                                 </div>
-                              ))}
+                              ) : null) : (
+                                <p className="text-sm text-gray-500 italic">주문 상품 정보를 불러오는 중입니다...</p>
+                              )}
                             </div>
                             
                             {/* 배송 정보 */}

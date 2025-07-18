@@ -19,9 +19,14 @@ export async function apiCall<T>(
     finalUrl: url
   })
   
+  // Basic Auth 헤더 추가
+  const basicAuth = 'Basic ' + btoa('admin@email.com:admin')
+  
   const config: RequestInit = {
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': basicAuth,
+      'ngrok-skip-browser-warning': 'true',
       ...options.headers,
     },
     credentials: 'include', // 쿠키 포함 (JWT)
@@ -39,11 +44,34 @@ export async function apiCall<T>(
       }
       
       const errorData = await response.json().catch(() => ({}))
+      
+      // 404 에러에 대한 특별 처리
+      if (response.status === 404) {
+        if (endpoint.includes('/orders/lists')) {
+          throw new Error('주문을 찾을 수 없습니다.')
+        }
+        throw new Error('요청한 리소스를 찾을 수 없습니다.')
+      }
+      
+      // 500 에러에 대한 특별 처리
+      if (response.status >= 500) {
+        throw new Error('서버 오류가 발생했습니다.')
+      }
+      
       throw new Error(errorData.msg || `HTTP ${response.status}`)
     }
     
     const data = await response.json()
-    console.log(`API 응답 [${endpoint}]:`, data)
+    console.log(`API 응답 [${endpoint}]:`, {
+      status: response.status,
+      data: data
+    })
+    
+    // Handle 201 Created responses as success
+    if (response.status === 201 && !data.resultCode) {
+      data.resultCode = '201-CREATED'
+    }
+    
     return data
   } catch (error) {
     console.error('API 호출 에러:', error)

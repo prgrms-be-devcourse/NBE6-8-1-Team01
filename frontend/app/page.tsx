@@ -22,8 +22,10 @@ import { productApi } from '@/lib/api/products'
 import type { Product } from '@/lib/types'
 import { useToast } from "@/hooks/use-toast"
 import { CardContainer, CardBody, CardItem } from "@/components/ui/3d-card"
+import { useAuth } from "@/contexts/AuthContext"
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { VideoBackground } from "@/components/VideoBackground"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -31,6 +33,7 @@ export default function HomePage() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const { toast } = useToast()
+  const { isAuthenticated } = useAuth()
   const featuresRef = useRef(null)
 
   // GSAP Animations
@@ -80,12 +83,19 @@ export default function HomePage() {
       <Navigation />
       
       {/* Hero Section - Mediterranean Style */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-mediterranean-sky via-background to-mediterranean-sand">
-        {/* Animated Background Shapes */}
-        <div className="absolute inset-0">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-mediterranean-blue/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-mediterranean-sand/30 rounded-full blur-3xl animate-pulse delay-1000" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-mediterranean-terracotta/10 to-mediterranean-blue/10 rounded-full blur-3xl animate-pulse delay-2000" />
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Video Background */}
+        <VideoBackground 
+          src="/videos/hero-positano.mp4"
+          poster="/images/hero-poster.jpg"
+          overlayOpacity={0.1}
+        />
+        
+        {/* Animated Background Shapes - Above video */}
+        <div className="absolute inset-0 z-[1]">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-mediterranean-blue/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-mediterranean-sand/20 rounded-full blur-3xl animate-pulse delay-1000" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-mediterranean-terracotta/5 to-mediterranean-blue/5 rounded-full blur-3xl animate-pulse delay-2000" />
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 py-20 text-center">
@@ -94,12 +104,12 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-6xl md:text-8xl font-black mb-6" style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif', letterSpacing: '-0.03em' }}>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-mediterranean-blue via-mediterranean-terracotta to-mediterranean-blue uppercase">
+            <h1 className="text-6xl md:text-8xl font-black mb-6 drop-shadow-2xl" style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif', letterSpacing: '-0.03em' }}>
+              <span className="text-white uppercase">
                 GRIDS & CIRCLES
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-gray-700 mb-12 max-w-3xl mx-auto leading-relaxed" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>
+            <p className="text-xl md:text-2xl text-white mb-12 max-w-3xl mx-auto leading-relaxed drop-shadow-lg" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>
               지중해의 햇살을 담은 프리미엄 스페셜티 커피<br />
               포지타노의 아침을 당신의 컵에 담아드립니다
             </p>
@@ -111,12 +121,22 @@ export default function HomePage() {
                   커피 둘러보기
                 </Button>
               </Link>
-              <Link href="/signup">
-                <Button size="lg" variant="outline" className="border-2 border-mediterranean-blue text-mediterranean-blue hover:bg-mediterranean-blue/10 rounded-full px-8 py-6 text-lg font-semibold">
-                  <User className="mr-2 h-5 w-5" />
-                  회원가입하기
-                </Button>
-              </Link>
+              {!isAuthenticated && (
+                <Link href="/signup">
+                  <Button size="lg" variant="outline" className="border-2 border-mediterranean-blue text-mediterranean-blue hover:bg-mediterranean-blue/10 rounded-full px-8 py-6 text-lg font-semibold">
+                    <User className="mr-2 h-5 w-5" />
+                    회원가입하기
+                  </Button>
+                </Link>
+              )}
+              {isAuthenticated && (
+                <Link href="/account">
+                  <Button size="lg" variant="outline" className="border-2 border-mediterranean-blue text-mediterranean-blue hover:bg-mediterranean-blue/10 rounded-full px-8 py-6 text-lg font-semibold">
+                    <User className="mr-2 h-5 w-5" />
+                    내 정보 보기
+                  </Button>
+                </Link>
+              )}
             </div>
           </motion.div>
 
@@ -197,8 +217,14 @@ export default function HomePage() {
           <div className="grid md:grid-cols-3 gap-8 perspective-1000">
             <div className="feature-card card-3d">
               <div className="glass-light p-8 rounded-2xl text-center hover-lift h-full shadow-lg hover:shadow-xl transition-all">
-                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-mediterranean-blue to-mediterranean-sky flex items-center justify-center shadow-lg">
-                  <Coffee className="w-10 h-10 text-white" />
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full overflow-hidden shadow-lg">
+                  <Image 
+                    src="/images/coffee-harvest.jpg" 
+                    alt="Coffee Harvest"
+                    width={80} 
+                    height={80} 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <h3 className="text-2xl font-bold mb-3 text-mediterranean-blue" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>프리미엄 원두</h3>
                 <p className="text-gray-700 text-base font-medium" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>전 세계 최고급 농장에서 직접 선별한 스페셜티 등급 원두만을 사용합니다</p>
@@ -207,8 +233,14 @@ export default function HomePage() {
             
             <div className="feature-card card-3d">
               <div className="glass-light p-8 rounded-2xl text-center hover-lift h-full shadow-lg hover:shadow-xl transition-all">
-                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-mediterranean-terracotta to-mediterranean-sand flex items-center justify-center shadow-lg">
-                  <Truck className="w-10 h-10 text-white" />
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full overflow-hidden shadow-lg">
+                  <Image 
+                    src="/images/roasting-process.jpg" 
+                    alt="Roasting Process"
+                    width={80} 
+                    height={80} 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <h3 className="text-2xl font-bold mb-3 text-mediterranean-terracotta" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>신선한 배송</h3>
                 <p className="text-gray-700 text-base font-medium" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>로스팅 후 24시간 이내 배송으로 최상의 신선도를 보장합니다</p>
@@ -217,8 +249,14 @@ export default function HomePage() {
             
             <div className="feature-card card-3d">
               <div className="glass-light p-8 rounded-2xl text-center hover-lift h-full shadow-lg hover:shadow-xl transition-all">
-                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-mediterranean-blue to-mediterranean-terracotta flex items-center justify-center shadow-lg">
-                  <Shield className="w-10 h-10 text-white" />
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full overflow-hidden shadow-lg">
+                  <Image 
+                    src="/images/italian-cafe.jpg" 
+                    alt="Italian Cafe"
+                    width={80} 
+                    height={80} 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <h3 className="text-2xl font-bold mb-3 text-mediterranean-blue" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>품질 보증</h3>
                 <p className="text-gray-700 text-base font-medium" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>Q-Grader 전문가의 엄격한 커핑을 통과한 원두만 제공합니다</p>
@@ -229,17 +267,24 @@ export default function HomePage() {
       </section>
 
       {/* Premium Products Section */}
-      <section className="py-24 px-4 bg-gradient-to-b from-mediterranean-sky/10 via-background to-mediterranean-sand/10">
-        <div className="max-w-7xl mx-auto">
+      <section className="relative py-24 px-4 overflow-hidden">
+        {/* Video Background */}
+        <VideoBackground 
+          src="/videos/coffee-beans-slow.mp4"
+          poster="/images/coffee-beans-poster.jpg"
+          overlayOpacity={0.85}
+          className="z-0"
+        />
+        <div className="relative z-10 max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-mediterranean-terracotta to-mediterranean-blue">BEST SELLERS</span>
+            <h2 className="text-5xl md:text-6xl font-black mb-4 drop-shadow-2xl" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>
+              <span className="text-white">BEST SELLERS</span>
             </h2>
-            <p className="text-lg text-gray-700 font-medium" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>커피 애호가들이 선택한 최고의 원두</p>
+            <p className="text-xl text-white font-bold drop-shadow-lg" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>커피 애호가들이 선택한 최고의 원두</p>
           </motion.div>
 
           {loading ? (
@@ -251,12 +296,6 @@ export default function HomePage() {
                   <div className="h-4 bg-gray-200 rounded w-2/3" />
                 </div>
               ))}
-            </div>
-          ) : products.length === 0 ? (
-            <div className="text-center py-16">
-              <Coffee className="w-20 h-20 mx-auto text-mediterranean-blue/50 mb-4" />
-              <p className="text-xl text-gray-600 mb-6">아직 등록된 상품이 없습니다</p>
-              <p className="text-sm text-gray-500">곧 프리미엄 원두들을 만나보실 수 있습니다</p>
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -355,11 +394,13 @@ export default function HomePage() {
                   쇼핑 시작하기
                 </Button>
               </Link>
-              <Link href="/login">
-                <Button size="lg" variant="outline" className="border-2 border-mediterranean-blue text-mediterranean-blue hover:bg-mediterranean-blue hover:text-white rounded-full px-8 py-3 font-semibold transition-all">
-                  로그인
-                </Button>
-              </Link>
+              {!isAuthenticated && (
+                <Link href="/login">
+                  <Button size="lg" variant="outline" className="border-2 border-mediterranean-blue text-mediterranean-blue hover:bg-mediterranean-blue hover:text-white rounded-full px-8 py-3 font-semibold transition-all">
+                    로그인
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         </motion.div>

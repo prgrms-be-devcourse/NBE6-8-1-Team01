@@ -31,7 +31,29 @@ public class WishListService {
         }
 
         Product product = productOpt.get();
+        
+        // 중복 체크: 이미 해당 상품이 위시리스트에 있는지 확인
+        Optional<WishList> existingWishList = wishListRepository.findByEmailAndProductId(email, product.getProductId());
+        
+        if (existingWishList.isPresent()) {
+            // 이미 존재하는 경우, 수량을 증가시킴
+            WishList wishList = existingWishList.get();
+            wishList.setQuantity(wishList.getQuantity() + wishListCreateDto.quantity());
+            WishList updated = wishListRepository.save(wishList);
+            
+            WishListDto wishListDto = new WishListDto(
+                    updated.getWishId(),
+                    product.getProductId(),
+                    product.getProductName(),
+                    product.getPrice(),
+                    updated.getEmail(),
+                    updated.getQuantity()
+            );
+            
+            return RsData.of("200-OK", "위시리스트 상품 수량이 증가되었습니다.", wishListDto);
+        }
 
+        // 새로운 위시리스트 항목 생성
         WishList wishList = new WishList();
         wishList.setProductId(product.getProductId());
         wishList.setEmail(email);
@@ -48,7 +70,7 @@ public class WishListService {
                 saved.getQuantity()
         );
 
-        return RsData.of("201-1", "위시리스트에 상품이 추가되었습니다.", wishListDto);
+        return RsData.of("201-CREATED", "위시리스트에 상품이 추가되었습니다.", wishListDto);
     }
 
     public RsData<List<WishListDto>> findAllByEmail(String email) {
@@ -57,38 +79,36 @@ public class WishListService {
                 .map(this::toDto)
                 .collect(Collectors.toList());
 
-        return RsData.of("200-1", "위시리스트 조회 성공", wishListDtos);
+        return RsData.of("200-OK", "위시리스트 조회 성공", wishListDtos);
             }
 
 
-
-    public RsData<Void> deleteByEmailAndWishId(String email, Long wishId) {
-
-        Optional<WishList> found = wishListRepository.findByEmailAndWishId(email, wishId);
-
-        if (found.isEmpty()) {
-            return RsData.error("404-1", "위시리스트가 존재하지 않습니다.");
-        }
-
-        wishListRepository.deleteByEmailAndWishId(email, wishId);
-
-        return RsData.of("200-1", "위시리스트가 삭제되었습니다.");
-
-    }
 
 
     public RsData<WishListDto> updateWishListQuantity(String email, Long wishId, WishListUpdateDto wishListUpdateDto) {
         Optional<WishList> found = wishListRepository.findByEmailAndWishId(email, wishId);
 
         if(found.isEmpty()) {
-            return  RsData.error("404-1", "위시리스트가 존재하지 않습니다.");
+            return  RsData.error("404-NOT_FOUND", "위시리스트가 존재하지 않습니다.");
         }
 
         WishList wishList = found.get();
         wishList.setQuantity(wishListUpdateDto.quantity());
         WishList updatedWishList = wishListRepository.save(wishList);
 
-        return RsData.of("200-1", "위시리스트 수량이 업데이트되었습니다.", toDto(updatedWishList));
+        return RsData.of("200-OK", "위시리스트 수량이 업데이트되었습니다.", toDto(updatedWishList));
+    }
+
+    public RsData<Void> deleteByEmailAndWishId(String email, Long wishId) {
+        WishList wishList = wishListRepository.findById(wishId)
+                .orElseThrow(() -> new DataNotFoundException("존재하지 않는 위시리스트 항목입니다."));
+        
+        if (!wishList.getEmail().equals(email)) {
+            return RsData.of("403-FORBIDDEN", "권한이 없습니다.", null);
+        }
+        
+        wishListRepository.delete(wishList);
+        return RsData.of("200-OK", "위시리스트 항목이 삭제되었습니다.", null);
     }
 
     private WishListDto toDto(WishList wishList) {

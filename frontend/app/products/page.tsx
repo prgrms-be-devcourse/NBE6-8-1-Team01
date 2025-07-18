@@ -35,6 +35,7 @@ import { useToast } from "@/hooks/use-toast"
 import { useWishlist } from "@/contexts/WishlistContext"
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { VideoBackground } from "@/components/VideoBackground"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -51,8 +52,8 @@ function ProductCard({ product, index, viewMode }: { product: Product; index: nu
     try {
       await addToWishlist(product.productId, 1)
       toast({
-        title: "위시리스트에 추가됨",
-        description: `${product.productName}이(가) 위시리스트에 추가되었습니다.`,
+        title: "장바구니에 추가됨",
+        description: `${product.productName}이(가) 장바구니에 추가되었습니다.`,
       })
     } catch (error) {
       toast({
@@ -109,19 +110,14 @@ function ProductCard({ product, index, viewMode }: { product: Product; index: nu
                 </p>
                 
                 <div className="flex gap-2">
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handleAddToWishlist}
-                    className="p-3 rounded-full bg-white border border-gray-200 hover:bg-gray-50 transition-colors shadow-md"
-                  >
-                    <Heart className="w-5 h-5 text-gray-600 hover:text-red-500 transition-colors" />
-                  </motion.button>
                   <motion.div
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <Button className="bg-mediterranean-blue hover:bg-mediterranean-blue/90 text-white rounded-full px-4 py-2 font-semibold shadow-lg hover:shadow-xl transition-all">
+                    <Button 
+                      onClick={handleAddToWishlist}
+                      className="bg-mediterranean-blue hover:bg-mediterranean-blue/90 text-white rounded-full px-4 py-2 font-semibold shadow-lg hover:shadow-xl transition-all"
+                    >
                       <ShoppingCart className="w-5 h-5" />
                       <span className="ml-2">담기</span>
                     </Button>
@@ -172,9 +168,9 @@ function ProductCard({ product, index, viewMode }: { product: Product; index: nu
                     whileHover={{ scale: 1.2 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={handleAddToWishlist}
-                    className="p-3 rounded-full bg-white border border-gray-200 hover:bg-gray-50 transition-colors shadow-md"
+                    className="p-3 rounded-full bg-white shadow-lg"
                   >
-                    <Heart className="w-6 h-6 text-white drop-shadow-md" />
+                    <ShoppingCart className="w-6 h-6 text-mediterranean-blue" />
                   </motion.button>
                   <motion.div
                     initial={{ scale: 0 }}
@@ -215,7 +211,11 @@ function ProductCard({ product, index, viewMode }: { product: Product; index: nu
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Button size="icon" className="rounded-full bg-mediterranean-blue hover:bg-mediterranean-blue/90 text-white shadow-md hover:shadow-lg transition-all">
+                <Button 
+                  size="icon" 
+                  onClick={handleAddToWishlist}
+                  className="rounded-full bg-mediterranean-blue hover:bg-mediterranean-blue/90 text-white shadow-md hover:shadow-lg transition-all"
+                >
                   <ShoppingCart className="w-4 h-4" />
                 </Button>
               </motion.div>
@@ -279,21 +279,26 @@ export default function ProductsPage() {
         // 배열로 직접 반환하는 경우 처리
         if (Array.isArray(response)) {
           setProducts(response)
-        } else if (response.resultCode === 'SUCCESS' || response.resultCode === 'S-1') {
+        } else if (response.resultCode === 'SUCCESS' || response.resultCode === 'S-1' || response.resultCode === '200-OK') {
           setProducts(response.data || [])
         } else {
           throw new Error(response.msg || '상품 조회 실패')
         }
       } catch (err: any) {
-        // "상품 조회 성공" 메시지는 에러가 아니므로 무시
-        if (err.message && err.message.includes('성공')) {
-          console.log('API 성공 메시지:', err.message)
+        console.error('상품 조회 에러:', err)
+        setError('상품을 불러오는데 실패했습니다.')
+        
+        // 500 에러인 경우 특별 메시지
+        if (err.message && err.message.includes('500')) {
+          toast({
+            title: "서버 오류",
+            description: "서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.",
+            variant: "destructive"
+          })
         } else {
-          setError('상품을 불러오는데 실패했습니다.')
-          console.error('상품 조회 에러:', err)
           toast({
             title: "오류 발생",
-            description: "상품을 불러올 수 없습니다.",
+            description: err.message || "상품을 불러올 수 없습니다.",
             variant: "destructive"
           })
         }
@@ -330,15 +335,22 @@ export default function ProductsPage() {
       <Navigation />
       
       {/* Hero Section - Mediterranean Style */}
-      <section className="relative py-20 bg-gradient-to-br from-mediterranean-sky/20 via-background to-mediterranean-sand/10">
-        <div className="max-w-screen-xl mx-auto px-4 text-center">
+      <section className="relative py-20 overflow-hidden">
+        {/* Video Background */}
+        <VideoBackground 
+          src="/videos/espresso-pour.mp4"
+          poster="/images/coffee-farm-poster.jpg"
+          overlayOpacity={0.7}
+          className="z-0"
+        />
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 text-center">
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-5xl font-bold mb-4"
             style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}
           >
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-mediterranean-blue to-mediterranean-terracotta">
+            <span className="text-white drop-shadow-2xl">
               전체 원두 컬렉션
             </span>
           </motion.h1>
@@ -346,7 +358,7 @@ export default function ProductsPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-lg text-gray-700 font-medium"
+            className="text-lg text-white font-medium drop-shadow-lg"
             style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}
           >
             지중해의 햇살을 담은 프리미엄 스페셜티 커피
@@ -523,11 +535,11 @@ export default function ProductsPage() {
                   <motion.div 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="text-center py-16"
+                    className="text-center py-16 bg-white rounded-3xl shadow-xl max-w-md mx-auto"
                   >
-                    <Coffee className="w-20 h-20 mx-auto text-gray-600 mb-4" />
-                    <p className="text-xl text-muted-foreground mb-2">조건에 맞는 상품이 없습니다.</p>
-                    <p className="text-sm text-muted-foreground">다른 필터 옵션을 시도해보세요.</p>
+                    <Coffee className="w-24 h-24 mx-auto text-mediterranean-blue mb-6" />
+                    <p className="text-2xl font-bold text-gray-800 mb-3" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>조건에 맞는 상품이 없습니다.</p>
+                    <p className="text-lg font-medium text-gray-700" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>다른 필터 옵션을 시도해보세요.</p>
                   </motion.div>
                 ) : (
                   <div className={viewMode === 'grid' 

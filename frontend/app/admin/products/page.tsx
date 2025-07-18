@@ -52,7 +52,7 @@ export default function AdminProductsPage() {
 
   // 관리자 권한 체크
   useEffect(() => {
-    if (!isAuthenticated || user?.email !== 'admin@email.com') {
+    if (!isAuthenticated || user?.role !== 'ADMIN') {
       router.push('/')
       toast({
         title: "접근 권한 없음",
@@ -82,7 +82,7 @@ export default function AdminProductsPage() {
   }
 
   useEffect(() => {
-    if (user?.email === 'admin@email.com') {
+    if (user?.role === 'ADMIN') {
       fetchProducts()
     }
   }, [user])
@@ -125,10 +125,11 @@ export default function AdminProductsPage() {
       setIsDialogOpen(false)
       resetForm()
       fetchProducts()
-    } catch (error) {
+    } catch (error: any) {
+      console.error('상품 등록/수정 오류:', error)
       toast({
         title: editingProduct ? "상품 수정 실패" : "상품 등록 실패",
-        description: "작업을 완료할 수 없습니다.",
+        description: error.message || "서버 오류가 발생했습니다. 관리자에게 문의하세요.",
         variant: "destructive"
       })
     } finally {
@@ -149,10 +150,11 @@ export default function AdminProductsPage() {
         })
         fetchProducts()
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error('상품 삭제 오류:', error)
       toast({
         title: "상품 삭제 실패",
-        description: "상품을 삭제할 수 없습니다.",
+        description: error.message || "서버 오류가 발생했습니다. 관리자에게 문의하세요.",
         variant: "destructive"
       })
     }
@@ -185,7 +187,7 @@ export default function AdminProductsPage() {
     setIsDialogOpen(true)
   }
 
-  if (!isAuthenticated || user?.email !== 'admin@email.com') {
+  if (!isAuthenticated || user?.role !== 'ADMIN') {
     return null
   }
 
