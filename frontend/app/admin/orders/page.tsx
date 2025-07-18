@@ -148,7 +148,9 @@ export default function AdminOrdersPage() {
 
   // allOrders가 변경될 때 오늘 주문 필터링
   useEffect(() => {
-    fetchTodayOrders()
+    if (allOrders.length > 0) {
+      fetchTodayOrders()
+    }
   }, [allOrders])
 
   // 주문 상태 변경

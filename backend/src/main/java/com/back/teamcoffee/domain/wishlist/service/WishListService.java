@@ -113,6 +113,18 @@ public class WishListService {
         return RsData.of("200-OK", "위시리스트 수량이 업데이트되었습니다.", toDto(updatedWishList));
     }
 
+    public RsData<Void> deleteByEmailAndWishId(String email, Long wishId) {
+        WishList wishList = wishListRepository.findById(wishId)
+                .orElseThrow(() -> new DataNotFoundException("존재하지 않는 위시리스트 항목입니다."));
+        
+        if (!wishList.getEmail().equals(email)) {
+            return RsData.of("403-FORBIDDEN", "권한이 없습니다.", null);
+        }
+        
+        wishListRepository.delete(wishList);
+        return RsData.of("200-OK", "위시리스트 항목이 삭제되었습니다.", null);
+    }
+
     private WishListDto toDto(WishList wishList) {
         Product product = productRepository.findById(wishList.getProductId())
                 .orElseThrow(() -> new DataNotFoundException("존재하지 않는 상품입니다."));
