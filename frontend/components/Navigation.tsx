@@ -79,7 +79,7 @@ export function Navigation() {
                 </div>
               </div>
               <span className="text-2xl font-black" style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif', letterSpacing: '-0.03em' }}>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-mediterranean-blue to-mediterranean-terracotta uppercase">GRIDS & CIRCLES</span>
+                <span className={`uppercase ${isOnHeroSection && !isScrolled ? 'text-white' : 'text-gray-900'} transition-colors`}>GRIDS & CIRCLES</span>
               </span>
             </Link>
           </motion.div>
@@ -88,23 +88,23 @@ export function Navigation() {
           <div className="hidden lg:flex items-center space-x-8">
             <ul className="flex items-center gap-8">
               <motion.li whileHover={{ y: -2 }}>
-                <Link href="/" className={`text-sm font-medium ${isOnHeroSection && !isScrolled ? 'text-white hover:text-mediterranean-sand' : 'text-gray-700 hover:text-mediterranean-blue'} transition-colors relative group`}>
+                <Link href="/" className={`text-sm font-bold ${isOnHeroSection && !isScrolled ? 'text-white hover:text-white/80' : 'text-gray-900 hover:text-mediterranean-blue'} transition-colors relative group`} style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}>
                   홈
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-mediterranean-blue group-hover:w-full transition-all duration-300" />
+                  <span className={`absolute bottom-0 left-0 w-0 h-0.5 ${isOnHeroSection && !isScrolled ? 'bg-white' : 'bg-mediterranean-blue'} group-hover:w-full transition-all duration-300`} />
                 </Link>
               </motion.li>
               <motion.li whileHover={{ y: -2 }}>
-                <Link href="/products" className={`text-sm font-medium ${isOnHeroSection && !isScrolled ? 'text-white hover:text-mediterranean-sand' : 'text-gray-700 hover:text-mediterranean-blue'} transition-colors relative group`}>
+                <Link href="/products" className={`text-sm font-bold ${isOnHeroSection && !isScrolled ? 'text-white hover:text-white/80' : 'text-gray-900 hover:text-mediterranean-blue'} transition-colors relative group`} style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}>
                   전체 원두
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-mediterranean-blue group-hover:w-full transition-all duration-300" />
+                  <span className={`absolute bottom-0 left-0 w-0 h-0.5 ${isOnHeroSection && !isScrolled ? 'bg-white' : 'bg-mediterranean-blue'} group-hover:w-full transition-all duration-300`} />
                 </Link>
               </motion.li>
               {isAuthenticated && (
                 <>
                   <motion.li whileHover={{ y: -2 }}>
-                    <Link href="/wishlist" className="text-sm font-medium text-gray-700 hover:text-mediterranean-blue transition-colors relative group">
+                    <Link href="/wishlist" className={`text-sm font-bold ${isOnHeroSection && !isScrolled ? 'text-white hover:text-white/80' : 'text-gray-900 hover:text-mediterranean-blue'} transition-colors relative group`} style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}>
                       장바구니
-                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-mediterranean-blue group-hover:w-full transition-all duration-300" />
+                      <span className={`absolute bottom-0 left-0 w-0 h-0.5 ${isOnHeroSection && !isScrolled ? 'bg-white' : 'bg-mediterranean-blue'} group-hover:w-full transition-all duration-300`} />
                       {wishlist.length > 0 && (
                         <Badge className="absolute -top-2 -right-4 h-4 w-4 p-0 flex items-center justify-center bg-mediterranean-terracotta text-white text-[10px]">
                           {wishlist.length}
@@ -115,15 +115,15 @@ export function Navigation() {
                   {user?.role === 'ADMIN' && (
                     <>
                       <motion.li whileHover={{ y: -2 }}>
-                        <Link href="/admin/products" className="text-sm font-medium text-gray-700 hover:text-mediterranean-blue transition-colors relative group">
+                        <Link href="/admin/products" className={`text-sm font-bold ${isOnHeroSection && !isScrolled ? 'text-white hover:text-white/80' : 'text-gray-900 hover:text-mediterranean-blue'} transition-colors relative group`} style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}>
                           상품 관리
-                          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-mediterranean-blue group-hover:w-full transition-all duration-300" />
+                          <span className={`absolute bottom-0 left-0 w-0 h-0.5 ${isOnHeroSection && !isScrolled ? 'bg-white' : 'bg-mediterranean-blue'} group-hover:w-full transition-all duration-300`} />
                         </Link>
                       </motion.li>
                       <motion.li whileHover={{ y: -2 }}>
-                        <Link href="/admin/orders" className="text-sm font-medium text-gray-700 hover:text-mediterranean-blue transition-colors relative group">
+                        <Link href="/admin/orders" className={`text-sm font-bold ${isOnHeroSection && !isScrolled ? 'text-white hover:text-white/80' : 'text-gray-900 hover:text-mediterranean-blue'} transition-colors relative group`} style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}>
                           주문 관리
-                          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-mediterranean-blue group-hover:w-full transition-all duration-300" />
+                          <span className={`absolute bottom-0 left-0 w-0 h-0.5 ${isOnHeroSection && !isScrolled ? 'bg-white' : 'bg-mediterranean-blue'} group-hover:w-full transition-all duration-300`} />
                         </Link>
                       </motion.li>
                     </>
@@ -172,12 +172,12 @@ export function Navigation() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <motion.div whileHover={{ scale: 1.05 }}>
-                  <Button variant="ghost" className="text-gray-700 hover:bg-gray-100 group">
-                    <User className="w-5 h-5 text-gray-700 group-hover:text-mediterranean-blue transition-colors" />
-                    <span className="hidden sm:inline-block ml-2 text-gray-700 font-medium">
+                  <Button variant="ghost" className={`${isOnHeroSection && !isScrolled ? 'text-white hover:bg-white/20' : 'text-gray-900 hover:bg-gray-100'} group`}>
+                    <User className={`w-5 h-5 ${isOnHeroSection && !isScrolled ? 'text-white' : 'text-gray-900'} group-hover:text-mediterranean-blue transition-colors`} />
+                    <span className={`hidden sm:inline-block ml-2 font-bold ${isOnHeroSection && !isScrolled ? 'text-white' : 'text-gray-900'}`} style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}>
                       {isAuthenticated ? user?.name || '내 계정' : '계정'}
                     </span>
-                    <ChevronDown className="w-4 h-4 ml-1 text-gray-700" />
+                    <ChevronDown className={`w-4 h-4 ml-1 ${isOnHeroSection && !isScrolled ? 'text-white' : 'text-gray-900'}`} />
                   </Button>
                 </motion.div>
               </DropdownMenuTrigger>
@@ -185,8 +185,8 @@ export function Navigation() {
                 {isAuthenticated ? (
                   <>
                     <div className="px-3 py-2 border-b border-gray-200">
-                      <p className="text-sm font-medium text-gray-800">{user?.email}</p>
-                      <p className="text-xs text-gray-600">{user?.name}</p>
+                      <p className="text-sm font-bold text-gray-900" style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}>{user?.name}</p>
+                      <p className="text-xs text-gray-600" style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}>{user?.email}</p>
                     </div>
                     <DropdownMenuItem asChild className="hover:bg-gray-100 cursor-pointer">
                       <Link href="/account" className="flex items-center">
