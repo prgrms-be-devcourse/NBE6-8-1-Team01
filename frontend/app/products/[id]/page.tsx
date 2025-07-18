@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Star, Package, Truck, Coffee, Heart } from "lucide-react"
+import { Star, Package, Truck, Coffee, Heart, ShoppingCart } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { useParams } from "next/navigation"
@@ -257,26 +257,15 @@ export default function ProductDetailPage() {
 
             {/* Action Buttons */}
             <div className="space-y-3 mb-8">
-              <div className="flex gap-3">
-                <Button
-                  onClick={handleAddToWishlist}
-                  variant="outline"
-                  className="flex-1 border-2 border-mediterranean-terracotta text-mediterranean-terracotta hover:bg-mediterranean-terracotta hover:text-white font-semibold transition-all"
-                  disabled={product.stock <= 0}
-                >
-                  <Heart className="w-4 h-4 mr-2" />
-                  위시리스트
-                </Button>
-                
-                <Button
-                  onClick={() => toast({ title: "준비 중", description: "장바구니 기능은 준비 중입니다." })}
-                  variant="outline"
-                  className="flex-1 border-2 border-mediterranean-blue text-mediterranean-blue hover:bg-mediterranean-blue hover:text-white font-semibold transition-all"
-                  disabled={product.stock <= 0}
-                >
-                  장바구니
-                </Button>
-              </div>
+              <Button
+                onClick={handleAddToWishlist}
+                variant="outline"
+                className="w-full border-2 border-mediterranean-terracotta text-mediterranean-terracotta hover:bg-mediterranean-terracotta hover:text-white font-semibold transition-all"
+                disabled={product.stock <= 0}
+              >
+                <ShoppingCart className="w-4 h-4 mr-2" />
+                장바구니 담기
+              </Button>
               
               <Button
                 onClick={handleOrder}
