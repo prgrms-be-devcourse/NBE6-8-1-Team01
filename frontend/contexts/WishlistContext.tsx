@@ -42,7 +42,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       const response = await wishlistApi.getWishlist(user.email)
       console.log('Wishlist fetch response:', response)
       
-      if (response.resultCode === 'SUCCESS' || response.resultCode === '200-OK' || response.resultCode === '201-CREATED') {
+      if (response.resultCode === 'SUCCESS' || response.resultCode === '200-OK' || response.resultCode === '201-CREATED' || response.resultCode === '200-1' || response.resultCode?.startsWith('200')) {
         setWishlist(response.data || [])
       } else {
         console.warn('Unexpected wishlist response:', response)
@@ -103,7 +103,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
         })
         console.log('Add to wishlist response:', response)
         
-        if (response.resultCode === 'SUCCESS' || response.resultCode === '201-CREATED' || response.resultCode === '200-OK') {
+        if (response.resultCode === 'SUCCESS' || response.resultCode === '201-CREATED' || response.resultCode === '200-OK' || response.resultCode === '200-1' || response.resultCode?.startsWith('200') || response.resultCode?.startsWith('201')) {
           await fetchWishlist()  // 목록 새로고침
           toast({
             title: "추가 완료",
@@ -138,7 +138,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     try {
       const response = await wishlistApi.removeFromWishlist(user.email, wishId)
       
-      if (response.resultCode === 'SUCCESS' || response.resultCode === '200-OK' || response.resultCode === '204-NO-CONTENT') {
+      if (response.resultCode === 'SUCCESS' || response.resultCode === '200-OK' || response.resultCode === '204-NO-CONTENT' || response.resultCode?.startsWith('200') || response.resultCode?.startsWith('204')) {
         // 로컬 상태에서 바로 제거 (빠른 UI 업데이트)
         setWishlist(prev => prev.filter(item => item.wishId !== wishId))
         
@@ -166,7 +166,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
         quantity
       })
       
-      if (response.resultCode === 'SUCCESS' || response.resultCode === '200-OK') {
+      if (response.resultCode === 'SUCCESS' || response.resultCode === '200-OK' || response.resultCode?.startsWith('200')) {
         // 로컬 상태 업데이트
         setWishlist(prev => 
           prev.map(item => 
