@@ -9,6 +9,8 @@ import java.util.List;
 
 public record OrderItemDto(
     long orderItemId,
+    long productId,
+    String productName,
     int orderCount,
     int productPrice,
     int totalPrice
@@ -17,6 +19,8 @@ public record OrderItemDto(
   public OrderItemDto(OrderItem orderItem) {
     this(
         orderItem.getOrderItemId(),
+        orderItem.getProduct().getProductId(),
+        orderItem.getProduct().getProductName(),
         orderItem.getOrderCount(),
         orderItem.getProductPrice(),
         orderItem.getTotalPrice()
