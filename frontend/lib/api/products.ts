@@ -1,52 +1,36 @@
-import apiClient from './client';
+import { apiCall } from './client'
+import type { ApiResponse, Product, ProductMenu } from '../types'
 
-export interface Product {
-  id: number;
-  name: string;
-  price: number;
-  description: string;
-  origin: string;
-  roastLevel: string;
-  flavorNotes: string[];
-  imageUrl: string;
-  stock: number;
-}
-
-export interface ProductListResponse {
-  data: Product[];
-  message: string;
-  resultCode: string;
-}
-
-// 상품 API
 export const productApi = {
   // 전체 상품 조회
-  getAll: async () => {
-    const response = await apiClient.get<ProductListResponse>('/products');
-    return response.data;
-  },
-
+  getProducts: () => 
+    apiCall<ApiResponse<Product[]>>('/products'),
+  
   // 상품 상세 조회
-  getById: async (id: number) => {
-    const response = await apiClient.get<{ data: Product }>(`/products/${id}`);
-    return response.data;
-  },
-
-  // 상품 생성 (관리자용)
-  create: async (product: Omit<Product, 'id'>) => {
-    const response = await apiClient.post<{ data: Product }>('/products', product);
-    return response.data;
-  },
-
-  // 상품 수정 (관리자용)
-  update: async (id: number, product: Partial<Product>) => {
-    const response = await apiClient.put<{ data: Product }>(`/products/${id}`, product);
-    return response.data;
-  },
-
-  // 상품 삭제 (관리자용)
-  delete: async (id: number) => {
-    const response = await apiClient.delete(`/products/${id}`);
-    return response.data;
-  }
-};
+  getProduct: (id: number) => 
+    apiCall<ApiResponse<Product>>(`/products/${id}`),
+  
+  // 상품 메뉴 조회
+  getMenu: () => 
+    apiCall<ApiResponse<ProductMenu[]>>('/products/menu'),
+  
+  // 상품 생성 (관리자)
+  createProduct: (product: Omit<Product, 'productId' | 'createdAt'>) => 
+    apiCall<ApiResponse<Product>>('/products', {
+      method: 'POST',
+      body: JSON.stringify(product),
+    }),
+  
+  // 상품 수정 (관리자)
+  updateProduct: (id: number, product: Partial<Product>) => 
+    apiCall<ApiResponse<Product>>(`/products/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(product),
+    }),
+  
+  // 상품 삭제 (관리자)
+  deleteProduct: (id: number) => 
+    apiCall<ApiResponse<void>>(`/products/${id}`, {
+      method: 'DELETE',
+    }),
+}

@@ -48,7 +48,11 @@ module.exports = {
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'
-  			}
+  			},
+  			'mediterranean-blue': 'hsl(var(--mediterranean-blue))',
+  			'mediterranean-sky': 'hsl(var(--mediterranean-sky))',
+  			'mediterranean-sand': 'hsl(var(--mediterranean-sand))',
+  			'mediterranean-terracotta': 'hsl(var(--mediterranean-terracotta))'
   		},
   		borderRadius: {
   			lg: 'var(--radius)',

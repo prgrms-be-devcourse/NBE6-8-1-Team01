@@ -21,7 +21,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest req,
                                     HttpServletResponse res,
                                     FilterChain chain) throws ServletException, IOException {
-        String token = CookieUtil.resolveToken(req, "accessToken");
+        String token = CookieUtil.resolveToken(req, "AccessToken");
 
         if(token != null && jwt.validateToken(token)) {
             Authentication auth = jwt.getAuthentication(token);

@@ -6,26 +6,28 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Coffee, Mail, Lock, User, MapPin, Phone } from "lucide-react"
+import { Coffee, Mail, Lock, User, MapPin } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { authApi } from "@/lib/api/auth"
+import { useToast } from "@/hooks/use-toast"
+import { motion } from "framer-motion"
 
 export default function SignupPage() {
   const router = useRouter()
+  const { toast } = useToast()
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     confirmPassword: "",
-    name: "",
-    phone: "",
+    username: "",
     address: "",
-    detailAddress: "",
   })
   const [agreements, setAgreements] = useState({
     terms: false,
     privacy: false,
-    marketing: false,
   })
+  const [loading, setLoading] = useState(false)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -34,267 +36,304 @@ export default function SignupPage() {
     })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     if (formData.password !== formData.confirmPassword) {
-      alert("비밀번호가 일치하지 않습니다.")
+      toast({
+        title: "입력 오류",
+        description: "비밀번호가 일치하지 않습니다.",
+        variant: "destructive"
+      })
       return
     }
 
     if (!agreements.terms || !agreements.privacy) {
-      alert("필수 약관에 동의해주세요.")
+      toast({
+        title: "입력 오류",
+        description: "필수 약관에 동의해주세요.",
+        variant: "destructive"
+      })
       return
     }
 
-    // TODO: 백엔드 연동 시 실제 회원가입 로직 구현
-    console.log("회원가입 시도:", { ...formData, ...agreements })
-    
-    // 임시로 로그인 페이지로 이동
-    router.push("/login")
+    if (formData.password.length < 4) {
+      toast({
+        title: "입력 오류",
+        description: "비밀번호는 4자 이상이어야 합니다.",
+        variant: "destructive"
+      })
+      return
+    }
+
+    try {
+      setLoading(true)
+      
+      const response = await authApi.register({
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        address: formData.address,
+        role: 'USER'
+      })
+      
+      if (response.resultCode === 'SUCCESS') {
+        toast({
+          title: "회원가입 성공",
+          description: "환영합니다! 회원가입이 완료되었습니다.",
+        })
+        // 회원가입 성공 후 로그인 페이지로
+        router.push("/login")
+      } else {
+        throw new Error(response.msg || "회원가입 실패")
+      }
+    } catch (err: any) {
+      toast({
+        title: "회원가입 실패",
+        description: err.message || "회원가입에 실패했습니다.",
+        variant: "destructive"
+      })
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleAllAgree = () => {
-    const newValue = !agreements.terms || !agreements.privacy || !agreements.marketing
+    const newValue = !agreements.terms || !agreements.privacy
     setAgreements({
       terms: newValue,
       privacy: newValue,
-      marketing: newValue,
     })
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-mediterranean-sky/20 via-background to-mediterranean-sand/10">
       <Navigation />
       
-      <div className="flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md">
-          {/* Logo */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-600 rounded-full mb-4">
-              <Coffee className="w-10 h-10 text-white" />
+      <div className="flex min-h-[calc(100vh-80px)] items-center justify-center px-4 py-12">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-lg"
+        >
+          <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10 border border-mediterranean-blue/10">
+            {/* Logo */}
+            <motion.div 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", duration: 0.5 }}
+              className="flex justify-center mb-8"
+            >
+              <div className="w-20 h-20 bg-gradient-to-br from-mediterranean-blue to-mediterranean-terracotta rounded-full flex items-center justify-center shadow-lg">
+                <Coffee className="w-10 h-10 text-white" />
+              </div>
+            </motion.div>
+            
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-900 mb-3" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>
+                회원가입
+              </h1>
+              <p className="text-gray-600" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>
+                프리미엄 커피의 세계로 초대합니다
+              </p>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">회원가입</h1>
-            <p className="text-gray-600 mt-2">그리드앤써클스의 회원이 되어주세요</p>
-          </div>
 
-          {/* Signup Form */}
-          <div className="bg-white rounded-xl shadow-lg p-8">
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-5">
+
               {/* Email */}
-              <div>
-                <Label htmlFor="email" className="text-gray-700">
-                  이메일 <span className="text-red-500">*</span>
-                </Label>
-                <div className="relative mt-1">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-sm font-semibold text-gray-800" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>
+                  이메일
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <Input
                     id="email"
                     name="email"
                     type="email"
-                    placeholder="your@email.com"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="pl-10 bg-gray-50 border-gray-200 focus:border-amber-500 focus:ring-amber-500"
+                    className="w-full h-12 pl-12 pr-4 bg-gray-50 border border-gray-300 rounded-xl focus:border-mediterranean-blue focus:ring-2 focus:ring-mediterranean-blue/20 transition-all"
+                    placeholder="example@email.com"
                     required
+                    disabled={loading}
+                  />
+                </div>
+              </div>
+
+              {/* Username */}
+              <div className="space-y-2">
+                <label htmlFor="username" className="text-sm font-semibold text-gray-800" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>
+                  이름
+                </label>
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Input
+                    id="username"
+                    name="username"
+                    type="text"
+                    value={formData.username}
+                    onChange={handleInputChange}
+                    className="w-full h-12 pl-12 pr-4 bg-gray-50 border border-gray-300 rounded-xl focus:border-mediterranean-blue focus:ring-2 focus:ring-mediterranean-blue/20 transition-all"
+                    placeholder="이름을 입력해주세요"
+                    required
+                    disabled={loading}
                   />
                 </div>
               </div>
 
               {/* Password */}
-              <div>
-                <Label htmlFor="password" className="text-gray-700">
-                  비밀번호 <span className="text-red-500">*</span>
-                </Label>
-                <div className="relative mt-1">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <div className="space-y-2">
+                <label htmlFor="password" className="text-sm font-semibold text-gray-800" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>
+                  비밀번호
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <Input
                     id="password"
                     name="password"
                     type="password"
-                    placeholder="8자 이상 입력해주세요"
                     value={formData.password}
                     onChange={handleInputChange}
-                    className="pl-10 bg-gray-50 border-gray-200 focus:border-amber-500 focus:ring-amber-500"
+                    className="w-full h-12 pl-12 pr-4 bg-gray-50 border border-gray-300 rounded-xl focus:border-mediterranean-blue focus:ring-2 focus:ring-mediterranean-blue/20 transition-all"
+                    placeholder="4자 이상 입력해주세요"
                     required
+                    disabled={loading}
                   />
                 </div>
               </div>
 
               {/* Confirm Password */}
-              <div>
-                <Label htmlFor="confirmPassword" className="text-gray-700">
-                  비밀번호 확인 <span className="text-red-500">*</span>
-                </Label>
-                <div className="relative mt-1">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <div className="space-y-2">
+                <label htmlFor="confirmPassword" className="text-sm font-semibold text-gray-800" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>
+                  비밀번호 확인
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <Input
                     id="confirmPassword"
                     name="confirmPassword"
                     type="password"
-                    placeholder="비밀번호를 다시 입력해주세요"
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
-                    className="pl-10 bg-gray-50 border-gray-200 focus:border-amber-500 focus:ring-amber-500"
+                    className="w-full h-12 pl-12 pr-4 bg-gray-50 border border-gray-300 rounded-xl focus:border-mediterranean-blue focus:ring-2 focus:ring-mediterranean-blue/20 transition-all"
+                    placeholder="비밀번호를 다시 입력해주세요"
                     required
-                  />
-                </div>
-              </div>
-
-              {/* Name */}
-              <div>
-                <Label htmlFor="name" className="text-gray-700">
-                  이름 <span className="text-red-500">*</span>
-                </Label>
-                <div className="relative mt-1">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <Input
-                    id="name"
-                    name="name"
-                    type="text"
-                    placeholder="이름을 입력해주세요"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className="pl-10 bg-gray-50 border-gray-200 focus:border-amber-500 focus:ring-amber-500"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Phone */}
-              <div>
-                <Label htmlFor="phone" className="text-gray-700">
-                  전화번호 <span className="text-red-500">*</span>
-                </Label>
-                <div className="relative mt-1">
-                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    placeholder="010-0000-0000"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    className="pl-10 bg-gray-50 border-gray-200 focus:border-amber-500 focus:ring-amber-500"
-                    required
+                    disabled={loading}
                   />
                 </div>
               </div>
 
               {/* Address */}
-              <div>
-                <Label htmlFor="address" className="text-gray-700">
-                  주소 <span className="text-red-500">*</span>
-                </Label>
-                <div className="space-y-2 mt-1">
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <Input
-                      id="address"
-                      name="address"
-                      type="text"
-                      placeholder="기본 주소"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      className="pl-10 bg-gray-50 border-gray-200 focus:border-amber-500 focus:ring-amber-500"
-                      required
-                    />
-                  </div>
+              <div className="space-y-2">
+                <label htmlFor="address" className="text-sm font-semibold text-gray-800" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>
+                  주소
+                </label>
+                <div className="relative">
+                  <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <Input
-                    name="detailAddress"
+                    id="address"
+                    name="address"
                     type="text"
-                    placeholder="상세 주소 (동, 호수 등)"
-                    value={formData.detailAddress}
+                    value={formData.address}
                     onChange={handleInputChange}
-                    className="bg-gray-50 border-gray-200 focus:border-amber-500 focus:ring-amber-500"
+                    className="w-full h-12 pl-12 pr-4 bg-gray-50 border border-gray-300 rounded-xl focus:border-mediterranean-blue focus:ring-2 focus:ring-mediterranean-blue/20 transition-all"
+                    placeholder="배송 받으실 주소를 입력해주세요"
+                    required
+                    disabled={loading}
                   />
                 </div>
               </div>
 
               {/* Agreements */}
-              <div className="space-y-3 pt-4 border-t">
-                <div className="flex items-center">
+              <div className="space-y-3 pt-5 mt-5 border-t border-gray-200">
+                <div className="flex items-center p-3 bg-mediterranean-sky/10 rounded-lg hover:bg-mediterranean-sky/20 transition-colors">
                   <Checkbox
                     id="all-agree"
-                    checked={agreements.terms && agreements.privacy && agreements.marketing}
+                    checked={agreements.terms && agreements.privacy}
                     onCheckedChange={handleAllAgree}
+                    disabled={loading}
+                    className="data-[state=checked]:bg-mediterranean-blue data-[state=checked]:border-mediterranean-blue"
                   />
                   <label
                     htmlFor="all-agree"
-                    className="ml-2 text-sm font-medium text-gray-900 cursor-pointer"
+                    className="ml-3 text-sm font-bold text-gray-900 cursor-pointer flex-1"
+                    style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}
                   >
-                    전체 동의
+                    전체 약관 동의
                   </label>
                 </div>
                 
-                <div className="flex items-center ml-6">
-                  <Checkbox
-                    id="terms"
-                    checked={agreements.terms}
-                    onCheckedChange={(checked) =>
-                      setAgreements({ ...agreements, terms: checked as boolean })
-                    }
-                  />
-                  <label
-                    htmlFor="terms"
-                    className="ml-2 text-sm text-gray-600 cursor-pointer"
-                  >
-                    [필수] 이용약관 동의
-                  </label>
-                </div>
+                <div className="space-y-2 ml-2">
+                  <div className="flex items-center p-2">
+                    <Checkbox
+                      id="terms"
+                      checked={agreements.terms}
+                      onCheckedChange={(checked) =>
+                        setAgreements({ ...agreements, terms: checked as boolean })
+                      }
+                      disabled={loading}
+                      className="data-[state=checked]:bg-mediterranean-blue data-[state=checked]:border-mediterranean-blue"
+                    />
+                    <label
+                      htmlFor="terms"
+                      className="ml-3 text-sm text-gray-700 cursor-pointer"
+                      style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}
+                    >
+                      <span className="text-mediterranean-terracotta font-medium">[필수]</span> 이용약관 동의
+                    </label>
+                  </div>
 
-                <div className="flex items-center ml-6">
-                  <Checkbox
-                    id="privacy"
-                    checked={agreements.privacy}
-                    onCheckedChange={(checked) =>
-                      setAgreements({ ...agreements, privacy: checked as boolean })
-                    }
-                  />
-                  <label
-                    htmlFor="privacy"
-                    className="ml-2 text-sm text-gray-600 cursor-pointer"
-                  >
-                    [필수] 개인정보 처리방침 동의
-                  </label>
-                </div>
-
-                <div className="flex items-center ml-6">
-                  <Checkbox
-                    id="marketing"
-                    checked={agreements.marketing}
-                    onCheckedChange={(checked) =>
-                      setAgreements({ ...agreements, marketing: checked as boolean })
-                    }
-                  />
-                  <label
-                    htmlFor="marketing"
-                    className="ml-2 text-sm text-gray-600 cursor-pointer"
-                  >
-                    [선택] 마케팅 정보 수신 동의
-                  </label>
+                  <div className="flex items-center p-2">
+                    <Checkbox
+                      id="privacy"
+                      checked={agreements.privacy}
+                      onCheckedChange={(checked) =>
+                        setAgreements({ ...agreements, privacy: checked as boolean })
+                      }
+                      disabled={loading}
+                      className="data-[state=checked]:bg-mediterranean-blue data-[state=checked]:border-mediterranean-blue"
+                    />
+                    <label
+                      htmlFor="privacy"
+                      className="ml-3 text-sm text-gray-700 cursor-pointer"
+                      style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}
+                    >
+                      <span className="text-mediterranean-terracotta font-medium">[필수]</span> 개인정보 처리방침 동의
+                    </label>
+                  </div>
                 </div>
               </div>
 
               <Button
                 type="submit"
-                className="w-full bg-amber-600 hover:bg-amber-700 text-white py-3"
+                className="w-full h-12 bg-mediterranean-blue hover:bg-mediterranean-blue/90 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+                disabled={loading}
               >
-                가입하기
+                {loading ? "가입 중..." : "가입하기"}
               </Button>
-            </form>
 
-            {/* Login link */}
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600">
-                이미 회원이신가요?{" "}
-                <Link href="/login" className="text-amber-600 hover:text-amber-700 font-medium">
-                  로그인
-                </Link>
-              </p>
-            </div>
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-4 bg-white text-gray-500">또는</span>
+                </div>
+              </div>
+              
+              <div className="text-center">
+                <p className="text-gray-600 text-sm" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>
+                  이미 회원이신가요?{" "}
+                  <Link href="/login" className="text-mediterranean-blue hover:text-mediterranean-blue/80 font-semibold">
+                    로그인
+                  </Link>
+                </p>
+              </div>
+            </form>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   )
