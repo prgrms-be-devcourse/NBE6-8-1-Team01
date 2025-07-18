@@ -58,7 +58,7 @@ export function Navigation() {
   return (
     <motion.nav 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled ? 'glass-light shadow-lg' : 'backdrop-blur-sm bg-black/10'
+        isScrolled ? 'glass-light shadow-lg' : 'backdrop-blur-md bg-black/30'
       }`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}

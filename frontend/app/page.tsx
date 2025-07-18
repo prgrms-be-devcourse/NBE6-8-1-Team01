@@ -88,7 +88,7 @@ export default function HomePage() {
         <VideoBackground 
           src="/videos/hero-positano.mp4"
           poster="/images/hero-poster.jpg"
-          overlayOpacity={0.3}
+          overlayOpacity={0.6}
         />
         
         {/* Animated Background Shapes - Above video */}
@@ -272,7 +272,7 @@ export default function HomePage() {
         <VideoBackground 
           src="/videos/coffee-beans-slow.mp4"
           poster="/images/coffee-beans-poster.jpg"
-          overlayOpacity={0.85}
+          overlayOpacity={0.9}
           className="z-0"
         />
         <div className="relative z-10 max-w-7xl mx-auto">
