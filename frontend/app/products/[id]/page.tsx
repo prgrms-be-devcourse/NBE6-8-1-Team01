@@ -39,6 +39,9 @@ export default function ProductDetailPage() {
     const fetchProduct = async () => {
       try {
         setLoading(true)
+        if (!params.id) {
+          throw new Error('상품 ID가 없습니다.')
+        }
         const id = Array.isArray(params.id) ? params.id[0] : params.id
         const response = await productApi.getProduct(Number(id))
         if (response.resultCode === 'SUCCESS' || response.resultCode === '200-OK') {

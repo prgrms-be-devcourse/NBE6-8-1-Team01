@@ -122,7 +122,7 @@ export default function WishlistPage() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                {wishlist.map((item, index) => (
+                {wishlist && wishlist.length > 0 && wishlist.map((item, index) => item ? (
                   <motion.div 
                     key={item.wishId} 
                     initial={{ opacity: 0, y: 50 }}
@@ -188,7 +188,7 @@ export default function WishlistPage() {
                   </div>
                 </div>
               </motion.div>
-                ))}
+                ) : null)}
               </motion.div>
             </AnimatePresence>
 
