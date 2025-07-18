@@ -25,6 +25,7 @@ import { CardContainer, CardBody, CardItem } from "@/components/ui/3d-card"
 import { useAuth } from "@/contexts/AuthContext"
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { VideoBackground } from "@/components/VideoBackground"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -82,12 +83,19 @@ export default function HomePage() {
       <Navigation />
       
       {/* Hero Section - Mediterranean Style */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-mediterranean-sky via-background to-mediterranean-sand">
-        {/* Animated Background Shapes */}
-        <div className="absolute inset-0">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-mediterranean-blue/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-mediterranean-sand/30 rounded-full blur-3xl animate-pulse delay-1000" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-mediterranean-terracotta/10 to-mediterranean-blue/10 rounded-full blur-3xl animate-pulse delay-2000" />
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Video Background */}
+        <VideoBackground 
+          src="/videos/hero-positano.mp4"
+          poster="/images/hero-poster.jpg"
+          overlayOpacity={0.5}
+        />
+        
+        {/* Animated Background Shapes - Above video */}
+        <div className="absolute inset-0 z-[1]">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-mediterranean-blue/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-mediterranean-sand/20 rounded-full blur-3xl animate-pulse delay-1000" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-mediterranean-terracotta/5 to-mediterranean-blue/5 rounded-full blur-3xl animate-pulse delay-2000" />
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 py-20 text-center">
@@ -209,8 +217,14 @@ export default function HomePage() {
           <div className="grid md:grid-cols-3 gap-8 perspective-1000">
             <div className="feature-card card-3d">
               <div className="glass-light p-8 rounded-2xl text-center hover-lift h-full shadow-lg hover:shadow-xl transition-all">
-                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-mediterranean-blue to-mediterranean-sky flex items-center justify-center shadow-lg">
-                  <Coffee className="w-10 h-10 text-white" />
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full overflow-hidden shadow-lg">
+                  <Image 
+                    src="/images/coffee-harvest.jpg" 
+                    alt="Coffee Harvest"
+                    width={80} 
+                    height={80} 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <h3 className="text-2xl font-bold mb-3 text-mediterranean-blue" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>프리미엄 원두</h3>
                 <p className="text-gray-700 text-base font-medium" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>전 세계 최고급 농장에서 직접 선별한 스페셜티 등급 원두만을 사용합니다</p>
@@ -219,8 +233,14 @@ export default function HomePage() {
             
             <div className="feature-card card-3d">
               <div className="glass-light p-8 rounded-2xl text-center hover-lift h-full shadow-lg hover:shadow-xl transition-all">
-                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-mediterranean-terracotta to-mediterranean-sand flex items-center justify-center shadow-lg">
-                  <Truck className="w-10 h-10 text-white" />
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full overflow-hidden shadow-lg">
+                  <Image 
+                    src="/images/roasting-process.jpg" 
+                    alt="Roasting Process"
+                    width={80} 
+                    height={80} 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <h3 className="text-2xl font-bold mb-3 text-mediterranean-terracotta" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>신선한 배송</h3>
                 <p className="text-gray-700 text-base font-medium" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>로스팅 후 24시간 이내 배송으로 최상의 신선도를 보장합니다</p>
@@ -229,8 +249,14 @@ export default function HomePage() {
             
             <div className="feature-card card-3d">
               <div className="glass-light p-8 rounded-2xl text-center hover-lift h-full shadow-lg hover:shadow-xl transition-all">
-                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-mediterranean-blue to-mediterranean-terracotta flex items-center justify-center shadow-lg">
-                  <Shield className="w-10 h-10 text-white" />
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full overflow-hidden shadow-lg">
+                  <Image 
+                    src="/images/italian-cafe.jpg" 
+                    alt="Italian Cafe"
+                    width={80} 
+                    height={80} 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <h3 className="text-2xl font-bold mb-3 text-mediterranean-blue" style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}>품질 보증</h3>
                 <p className="text-gray-700 text-base font-medium" style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}>Q-Grader 전문가의 엄격한 커핑을 통과한 원두만 제공합니다</p>

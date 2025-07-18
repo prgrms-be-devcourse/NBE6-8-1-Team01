@@ -11,9 +11,9 @@ public record OrderItemDto(
     long orderItemId,
     long productId,
     String productName,
-    int orderCount,
-    int productPrice,
-    int totalPrice
+    String productImage,
+    int quantity,
+    int price
 
 ) {
   public OrderItemDto(OrderItem orderItem) {
@@ -21,9 +21,9 @@ public record OrderItemDto(
         orderItem.getOrderItemId(),
         orderItem.getProduct().getProductId(),
         orderItem.getProduct().getProductName(),
+        orderItem.getProduct().getProductImage(),
         orderItem.getOrderCount(),
-        orderItem.getProductPrice(),
-        orderItem.getTotalPrice()
+        orderItem.getProductPrice()
     );
   }
 }
