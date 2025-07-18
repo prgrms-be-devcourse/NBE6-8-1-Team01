@@ -22,6 +22,7 @@ import { productApi } from '@/lib/api/products'
 import type { Product } from '@/lib/types'
 import { useToast } from "@/hooks/use-toast"
 import { CardContainer, CardBody, CardItem } from "@/components/ui/3d-card"
+import { useAuth } from "@/contexts/AuthContext"
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
@@ -31,6 +32,7 @@ export default function HomePage() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const { toast } = useToast()
+  const { isAuthenticated } = useAuth()
   const featuresRef = useRef(null)
 
   // GSAP Animations
@@ -111,12 +113,22 @@ export default function HomePage() {
                   커피 둘러보기
                 </Button>
               </Link>
-              <Link href="/signup">
-                <Button size="lg" variant="outline" className="border-2 border-mediterranean-blue text-mediterranean-blue hover:bg-mediterranean-blue/10 rounded-full px-8 py-6 text-lg font-semibold">
-                  <User className="mr-2 h-5 w-5" />
-                  회원가입하기
-                </Button>
-              </Link>
+              {!isAuthenticated && (
+                <Link href="/signup">
+                  <Button size="lg" variant="outline" className="border-2 border-mediterranean-blue text-mediterranean-blue hover:bg-mediterranean-blue/10 rounded-full px-8 py-6 text-lg font-semibold">
+                    <User className="mr-2 h-5 w-5" />
+                    회원가입하기
+                  </Button>
+                </Link>
+              )}
+              {isAuthenticated && (
+                <Link href="/account">
+                  <Button size="lg" variant="outline" className="border-2 border-mediterranean-blue text-mediterranean-blue hover:bg-mediterranean-blue/10 rounded-full px-8 py-6 text-lg font-semibold">
+                    <User className="mr-2 h-5 w-5" />
+                    내 정보 보기
+                  </Button>
+                </Link>
+              )}
             </div>
           </motion.div>
 
