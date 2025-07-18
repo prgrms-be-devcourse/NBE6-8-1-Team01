@@ -8,7 +8,7 @@ import { useAuth } from "@/contexts/AuthContext"
 import { authApi } from "@/lib/api"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
-import { User, Mail, Calendar, Shield, AlertTriangle, Loader2 } from "lucide-react"
+import { User, Mail, Calendar, Shield, AlertTriangle, Loader2, Package, Heart } from "lucide-react"
 import { motion } from "framer-motion"
 import {
   AlertDialog,
