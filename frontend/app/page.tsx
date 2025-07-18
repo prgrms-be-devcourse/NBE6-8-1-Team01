@@ -367,11 +367,13 @@ export default function HomePage() {
                   쇼핑 시작하기
                 </Button>
               </Link>
-              <Link href="/login">
-                <Button size="lg" variant="outline" className="border-2 border-mediterranean-blue text-mediterranean-blue hover:bg-mediterranean-blue hover:text-white rounded-full px-8 py-3 font-semibold transition-all">
-                  로그인
-                </Button>
-              </Link>
+              {!isAuthenticated && (
+                <Link href="/login">
+                  <Button size="lg" variant="outline" className="border-2 border-mediterranean-blue text-mediterranean-blue hover:bg-mediterranean-blue hover:text-white rounded-full px-8 py-3 font-semibold transition-all">
+                    로그인
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         </motion.div>

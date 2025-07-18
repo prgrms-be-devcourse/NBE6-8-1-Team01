@@ -109,7 +109,8 @@ export default function AdminOrdersPage() {
     try {
       // 실제로는 관리자용 전체 주문 API가 필요합니다
       // 지금은 임시로 사용자별 조회를 사용합니다
-      const response = await orderApi.getOrders() // TODO: 전체 주문 조회 API 필요
+      // TODO: 전체 주문 조회 API 필요, 임시로 관리자 이메일로 조회
+      const response = await orderApi.getOrdersByEmail(user?.email || '')
       if (response.resultCode === '200-OK') {
         setAllOrders(response.data)
       }
