@@ -1,6 +1,7 @@
 package com.back.teamcoffee.domain.order.order.entity;
 
 import com.back.teamcoffee.domain.order.orderItem.entity.OrderItem;
+import com.back.teamcoffee.domain.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -58,6 +59,11 @@ public class Order {
 
   @Column(length = 50)
   private String email;
+
+  // 🔽 연관관계 추가: ManyToOne → User.email 기준
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "email", referencedColumnName = "email", insertable = false, updatable = false)
+  private User user;
 
   @OneToMany(mappedBy = "order", fetch = LAZY, cascade = {PERSIST, REMOVE}, orphanRemoval = true)
   @JsonManagedReference
