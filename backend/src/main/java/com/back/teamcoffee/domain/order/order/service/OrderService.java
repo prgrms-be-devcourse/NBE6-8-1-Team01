@@ -52,7 +52,7 @@ public class OrderService {
     Order orderBuilder = Order.builder()
         .user("")
         .orderCount(totalCount.get())
-        .productName("firstProductName + \" 외 \" + productsSize + \"개\"")
+        .productName(firstProductName + " 외 " + productsSize + "개")
         .totalPrice(totalPrice.get())
         .address(orderWriteReqBody.address())
         .email(orderWriteReqBody.userEmail())
