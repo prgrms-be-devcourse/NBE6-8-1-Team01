@@ -346,12 +346,15 @@ export default function AdminOrdersPage() {
                           return (
                             <TableRow key={order.orderId}>
                               <TableCell className="font-medium">#{order.orderId}</TableCell>
-                              <TableCell>{order.customerEmail}</TableCell>
+                              <TableCell>{order.userEmail}</TableCell>
                               <TableCell>
                                 <div>
-                                  <p className="font-medium">{order.orderName}</p>
+                                  <p className="font-medium">
+                                    {order.items[0]?.productName || '상품 없음'}
+                                    {order.items.length > 1 && ` 외 ${order.items.length - 1}개`}
+                                  </p>
                                   <p className="text-sm text-gray-500">
-                                    {order.items.length}개 상품
+                                    총 {order.items.length}개 상품
                                   </p>
                                 </div>
                               </TableCell>
