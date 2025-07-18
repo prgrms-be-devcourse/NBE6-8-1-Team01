@@ -346,7 +346,7 @@ export default function AdminOrdersPage() {
                           return (
                             <TableRow key={order.orderId}>
                               <TableCell className="font-medium">#{order.orderId}</TableCell>
-                              <TableCell>{order.customerEmail}</TableCell>
+                              <TableCell>{order.userEmail}</TableCell>
                               <TableCell>
                                 <div>
                                   <p className="font-medium">{order.orderName}</p>
