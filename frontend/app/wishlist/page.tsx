@@ -241,7 +241,7 @@ export default function WishlistPage() {
                           
                           const orderData: OrderRequest = {
                             userEmail: user.email,
-                            address: "서울시 강남구", // TODO: 실제 주소 입력 받기
+                            address: "서울특별시 강남구 테헤란로 123", // TODO: 실제 주소 입력 받기
                             products: wishlist.map(item => ({
                               productId: item.productId.toString(),
                               productCount: item.quantity
