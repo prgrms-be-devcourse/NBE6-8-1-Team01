@@ -12,19 +12,23 @@ import { useWishlist } from "@/contexts/WishlistContext"
 import { useAuth } from "@/contexts/AuthContext"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
+import { orderApi } from "@/lib/api/orders"
+import type { OrderRequest } from "@/lib/types"
 
 export default function WishlistPage() {
   const router = useRouter()
   const { toast } = useToast()
   
   // Context에서 필요한 것들 가져오기
-  const { isAuthenticated, isLoading: authLoading } = useAuth()
+  const { isAuthenticated, isLoading: authLoading, user } = useAuth()
   const { 
     wishlist, 
     isLoading, 
     removeFromWishlist,
     updateQuantity 
   } = useWishlist()
+  
+  const [isOrdering, setIsOrdering] = useState(false)
 
   // 로그인 안했으면 로그인 페이지로
   useEffect(() => {
@@ -229,14 +233,49 @@ export default function WishlistPage() {
                     
                     <Button 
                       className="w-full bg-mediterranean-blue hover:bg-mediterranean-blue/90 text-white font-semibold py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all"
-                      onClick={() => {
-                        toast({
-                          title: "주문 기능 준비 중",
-                          description: "주문 기능은 곳 추가될 예정입니다.",
-                        })
+                      onClick={async () => {
+                        if (!user) return
+                        
+                        try {
+                          setIsOrdering(true)
+                          
+                          const orderData: OrderRequest = {
+                            userEmail: user.email,
+                            address: "서울시 강남구", // TODO: 실제 주소 입력 받기
+                            products: wishlist.map(item => ({
+                              productId: item.productId.toString(),
+                              productCount: item.quantity
+                            }))
+                          }
+                          
+                          const response = await orderApi.createOrder(orderData)
+                          
+                          if (response.success) {
+                            toast({
+                              title: "주문 완료",
+                              description: "위시리스트 상품들의 주문이 접수되었습니다.",
+                            })
+                            
+                            // 위시리스트 비우기
+                            for (const item of wishlist) {
+                              await removeFromWishlist(item.wishId)
+                            }
+                            
+                            router.push('/orders')
+                          }
+                        } catch (error) {
+                          toast({
+                            title: "주문 실패",
+                            description: "주문 처리 중 오류가 발생했습니다.",
+                            variant: "destructive"
+                          })
+                        } finally {
+                          setIsOrdering(false)
+                        }
                       }}
+                      disabled={isOrdering}
                     >
-                      전체 주문하기
+                      {isOrdering ? "주문 처리 중..." : "전체 주문하기"}
                     </Button>
                   </div>
                 </div>

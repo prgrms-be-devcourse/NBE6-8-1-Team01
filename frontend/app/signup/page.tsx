@@ -77,7 +77,7 @@ export default function SignupPage() {
         role: 'USER'
       })
       
-      if (response.resultCode === 'SUCCESS') {
+      if (response.resultCode === '201-CREATED') {
         toast({
           title: "회원가입 성공",
           description: "환영합니다! 회원가입이 완료되었습니다.",

@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await authApi.login({ email, password })
       
-      if (response.resultCode === 'SUCCESS') {
+      if (response.resultCode === '200-OK') {
         const { user, token } = response.data
         
         // 상태 업데이트
@@ -81,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await authApi.register(userData)
       
-      if (response.resultCode === 'SUCCESS') {
+      if (response.resultCode === '200-OK') {
         // 회원가입 성공 후 자동 로그인
         await login(userData.email, userData.password)
       }
