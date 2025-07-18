@@ -10,6 +10,15 @@ export async function apiCall<T>(
   const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`
   const url = `${baseUrl}${path}`
   
+  // Debug log
+  console.log('API URL Debug:', {
+    API_BASE_URL,
+    baseUrl,
+    endpoint,
+    path,
+    finalUrl: url
+  })
+  
   const config: RequestInit = {
     headers: {
       'Content-Type': 'application/json',
