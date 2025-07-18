@@ -12,7 +12,9 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(
                         "http://localhost:3000",
-                        "https://nbe-6-8-1-team01.vercel.app"
+                        "https://nbe-6-8-1-team01.vercel.app",
+                        "https://*.ngrok-free.app",
+                        "https://*.ngrok.io"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
