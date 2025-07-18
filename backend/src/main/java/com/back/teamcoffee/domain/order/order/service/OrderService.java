@@ -103,7 +103,8 @@ public class OrderService {
     List<Order> orders = orderRepository.findByEmailWithItems(email);
     System.out.println("Order : " + orders);
     if (orders.isEmpty()) {
-      throw new DataNotFoundException("주문을 찾을 수 없습니다.");
+      // 빈 리스트 반환 (에러 대신)
+      return RsData.of("200-OK", "주문 내역이 없습니다.", List.of());
     }
     List<OrderDto> dtoList = orders.stream()
         .map(OrderDto::new)

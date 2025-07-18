@@ -101,7 +101,7 @@ export default function OrdersPage() {
               status: order.status || order.orderStatus || 'PENDING',
               deliveryAddress: order.deliveryAddress || order.address || '주소 정보 없음',
               createdAt: order.createdAt || order.orderDate || new Date().toISOString(),
-              items: Array.isArray(order.items) ? order.items.map((item: any) => ({
+              items: Array.isArray(order.orderItems || order.items) ? (order.orderItems || order.items).map((item: any) => ({
                 orderItemId: item.orderItemId || item.id || 0,
                 productId: item.productId || 0,
                 productName: item.productName || item.name || '상품명 없음',
