@@ -1,5 +1,7 @@
 package com.back.teamcoffee.domain.wishlist.entity;
 
+import com.back.teamcoffee.domain.user.entity.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,4 +28,10 @@ public class WishList {
     
     @Column(name = "quantity", nullable = false)
     private int quantity;
+
+    // 연관관계 추가: User.email 기준
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "email", referencedColumnName = "email", insertable = false, updatable = false)
+    @JsonBackReference
+    private User user;
 }
