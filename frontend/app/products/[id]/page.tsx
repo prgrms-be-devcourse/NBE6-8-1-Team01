@@ -285,7 +285,7 @@ export default function ProductDetailPage() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   )
