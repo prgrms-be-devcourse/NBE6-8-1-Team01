@@ -29,5 +29,9 @@ logging:
     org.hibernate.orm.jdbc.bind: TRACE
     org.hibernate.orm.jdbc.extract: TRACE
     org.springframework.transaction.interceptor: TRACE
-
+app:
+  admin:
+    email: ${APP_EMAIL}
+    name: ${APP_NAME}
+    password: ${APP_PASSWORD}
 
