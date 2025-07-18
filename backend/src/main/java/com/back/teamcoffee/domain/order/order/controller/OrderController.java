@@ -7,7 +7,6 @@ import com.back.teamcoffee.global.rsdata.RsData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,7 +63,7 @@ public class OrderController {
   @PutMapping("/modify")
   @Transactional
   @Operation(summary = "주문 상태 변경")
-  public ResponseEntity<RsData<OrderDto>> modifyOrder(@RequestBody OrderDto orderDto) {
+  public ResponseEntity<RsData<OrderDto>> modifyOrder(@RequestBody @Valid OrderDto orderDto) {
     RsData<OrderDto> updatedOrder = orderService.modifyOrder(orderDto);
     return ResponseEntity.ok(updatedOrder);
   }
