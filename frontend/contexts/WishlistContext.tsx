@@ -40,9 +40,16 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     setIsLoading(true)
     try {
       const response = await wishlistApi.getWishlist(user.email)
+      console.log('Wishlist fetch response:', response)
       
-      if (response.resultCode === 'SUCCESS') {
-        setWishlist(response.data)
+      if (response.resultCode === 'SUCCESS' || response.resultCode === '200-OK' || response.resultCode === '201-CREATED') {
+        setWishlist(response.data || [])
+      } else {
+        console.warn('Unexpected wishlist response:', response)
+        // 데이터가 있으면 사용
+        if (response.data) {
+          setWishlist(response.data)
+        }
       }
     } catch (error) {
       console.error('위시리스트 조회 실패:', error)
@@ -81,13 +88,24 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
         productId,
         quantity
       })
+      console.log('Add to wishlist response:', response)
       
-      if (response.resultCode === 'SUCCESS') {
+      if (response.resultCode === 'SUCCESS' || response.resultCode === '201-CREATED' || response.resultCode === '200-OK') {
         await fetchWishlist()  // 목록 새로고침
         toast({
           title: "추가 완료",
-          description: "위시리스트에 추가되었습니다.",
+          description: "장바구니에 추가되었습니다.",
         })
+      } else {
+        console.warn('Unexpected add to wishlist response:', response)
+        // 데이터가 있으면 성공으로 처리
+        if (response.data) {
+          await fetchWishlist()
+          toast({
+            title: "추가 완료",
+            description: "장바구니에 추가되었습니다.",
+          })
+        }
       }
     } catch (error) {
       console.error('위시리스트 추가 실패:', error)
@@ -106,13 +124,13 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     try {
       const response = await wishlistApi.removeFromWishlist(user.email, wishId)
       
-      if (response.resultCode === 'SUCCESS') {
+      if (response.resultCode === 'SUCCESS' || response.resultCode === '200-OK' || response.resultCode === '204-NO-CONTENT') {
         // 로컬 상태에서 바로 제거 (빠른 UI 업데이트)
         setWishlist(prev => prev.filter(item => item.wishId !== wishId))
         
         toast({
           title: "삭제 완료",
-          description: "위시리스트에서 삭제되었습니다.",
+          description: "장바구니에서 삭제되었습니다.",
         })
       }
     } catch (error) {
@@ -134,7 +152,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
         quantity
       })
       
-      if (response.resultCode === 'SUCCESS') {
+      if (response.resultCode === 'SUCCESS' || response.resultCode === '200-OK') {
         // 로컬 상태 업데이트
         setWishlist(prev => 
           prev.map(item => 

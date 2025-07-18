@@ -48,7 +48,16 @@ export async function apiCall<T>(
     }
     
     const data = await response.json()
-    console.log(`API 응답 [${endpoint}]:`, data)
+    console.log(`API 응답 [${endpoint}]:`, {
+      status: response.status,
+      data: data
+    })
+    
+    // Handle 201 Created responses as success
+    if (response.status === 201 && !data.resultCode) {
+      data.resultCode = '201-CREATED'
+    }
+    
     return data
   } catch (error) {
     console.error('API 호출 에러:', error)

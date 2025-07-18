@@ -87,7 +87,15 @@ export default function OrdersPage() {
         const response = await orderApi.getMyOrders(user?.email || '')
         
         if (response.resultCode === 'SUCCESS' || response.resultCode === '200-OK') {
-          setOrders(response.data)
+          // 주문 데이터 검증 및 기본값 설정
+          const ordersData = response.data || []
+          const validatedOrders = ordersData.map((order: Order) => ({
+            ...order,
+            items: order.items || [],
+            totalAmount: order.totalAmount || 0,
+            deliveryAddress: order.deliveryAddress || '주소 정보 없음'
+          }))
+          setOrders(validatedOrders)
         } else {
           throw new Error(response.msg || '주문 목록 조회 실패')
         }
@@ -248,7 +256,7 @@ export default function OrdersPage() {
                               ₩{order.totalAmount.toLocaleString()}
                             </p>
                             <p className="text-sm text-gray-600">
-                              {order.items.length}개 상품
+                              {order.items?.length || 0}개 상품
                             </p>
                           </div>
                           <ChevronRight 
@@ -274,7 +282,7 @@ export default function OrdersPage() {
                             </h4>
                             
                             <div className="space-y-3">
-                              {order.items.map((item) => (
+                              {order.items && order.items.length > 0 ? order.items.map((item) => (
                                 <div key={item.orderItemId} className="flex items-center gap-4 bg-white p-4 rounded-lg">
                                   <Image
                                     src={item.productImage || "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=100&q=80"}
@@ -295,7 +303,9 @@ export default function OrdersPage() {
                                     ₩{(item.price * item.quantity).toLocaleString()}
                                   </p>
                                 </div>
-                              ))}
+                              )) : (
+                                <p className="text-sm text-gray-500 italic">주문 상품 정보를 불러오는 중입니다...</p>
+                              )}
                             </div>
                             
                             {/* 배송 정보 */}

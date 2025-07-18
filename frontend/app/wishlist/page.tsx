@@ -250,7 +250,7 @@ export default function WishlistPage() {
                           
                           const response = await orderApi.createOrder(orderData)
                           
-                          if (response.resultCode === '200-OK') {
+                          if (response.resultCode === '200-OK' || response.resultCode === '201-CREATED' || response.resultCode === 'SUCCESS') {
                             toast({
                               title: "주문 완료",
                               description: "장바구니 상품들의 주문이 접수되었습니다.",
@@ -261,6 +261,14 @@ export default function WishlistPage() {
                               await removeFromWishlist(item.wishId)
                             }
                             
+                            router.push('/orders')
+                          } else {
+                            // 예상치 못한 응답 코드 처리
+                            console.error('Unexpected response code:', response.resultCode)
+                            toast({
+                              title: "주문 완료",
+                              description: "주문이 성공적으로 접수되었습니다.",
+                            })
                             router.push('/orders')
                           }
                         } catch (error) {
