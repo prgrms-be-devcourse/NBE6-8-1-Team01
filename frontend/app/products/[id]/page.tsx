@@ -15,21 +15,25 @@ import Link from "next/link"
 import Image from "next/image"
 import { useParams } from "next/navigation"
 import { productApi } from "@/lib/api/products"
-import type { Product } from "@/lib/types"
+import { orderApi } from "@/lib/api/orders"
+import type { Product, OrderRequest } from "@/lib/types"
 import { useToast } from "@/hooks/use-toast"
 import { useWishlist } from "@/contexts/WishlistContext"
 import { useAuth } from "@/contexts/AuthContext"
 import { motion } from "framer-motion"
+import { useRouter } from "next/navigation"
 
 export default function ProductDetailPage() {
   const params = useParams()
+  const router = useRouter()
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [quantity, setQuantity] = useState("1")
+  const [isOrdering, setIsOrdering] = useState(false)
   const { toast } = useToast()
   const { addToWishlist } = useWishlist()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -79,6 +83,51 @@ export default function ProductDetailPage() {
         description: "위시리스트 추가에 실패했습니다.",
         variant: "destructive"
       })
+    }
+  }
+
+  const handleOrder = async () => {
+    if (!product || !user) return
+    
+    if (!isAuthenticated) {
+      toast({
+        title: "로그인 필요",
+        description: "주문하려면 로그인이 필요합니다.",
+        variant: "destructive"
+      })
+      router.push('/login')
+      return
+    }
+
+    try {
+      setIsOrdering(true)
+      
+      const orderData: OrderRequest = {
+        userEmail: user.email,
+        address: "서울시 강남구", // TODO: 실제 주소 입력 받기
+        products: [{
+          productId: product.productId.toString(),
+          productCount: Number(quantity)
+        }]
+      }
+      
+      const response = await orderApi.createOrder(orderData)
+      
+      if (response.success) {
+        toast({
+          title: "주문 완료",
+          description: "주문이 성공적으로 접수되었습니다.",
+        })
+        router.push('/orders')
+      }
+    } catch (error) {
+      toast({
+        title: "주문 실패",
+        description: "주문 처리 중 오류가 발생했습니다.",
+        variant: "destructive"
+      })
+    } finally {
+      setIsOrdering(false)
     }
   }
 
@@ -207,23 +256,34 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-3 mb-8">
-              <Button
-                onClick={handleAddToWishlist}
-                variant="outline"
-                className="flex-1 border-2 border-mediterranean-terracotta text-mediterranean-terracotta hover:bg-mediterranean-terracotta hover:text-white font-semibold transition-all"
-                disabled={product.stock <= 0}
-              >
-                <Heart className="w-4 h-4 mr-2" />
-                위시리스트
-              </Button>
+            <div className="space-y-3 mb-8">
+              <div className="flex gap-3">
+                <Button
+                  onClick={handleAddToWishlist}
+                  variant="outline"
+                  className="flex-1 border-2 border-mediterranean-terracotta text-mediterranean-terracotta hover:bg-mediterranean-terracotta hover:text-white font-semibold transition-all"
+                  disabled={product.stock <= 0}
+                >
+                  <Heart className="w-4 h-4 mr-2" />
+                  위시리스트
+                </Button>
+                
+                <Button
+                  onClick={() => toast({ title: "준비 중", description: "장바구니 기능은 준비 중입니다." })}
+                  variant="outline"
+                  className="flex-1 border-2 border-mediterranean-blue text-mediterranean-blue hover:bg-mediterranean-blue hover:text-white font-semibold transition-all"
+                  disabled={product.stock <= 0}
+                >
+                  장바구니
+                </Button>
+              </div>
               
               <Button
-                onClick={handleAddToWishlist}
-                className="flex-[2] bg-mediterranean-blue hover:bg-mediterranean-blue/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all"
-                disabled={product.stock <= 0}
+                onClick={handleOrder}
+                className="w-full bg-mediterranean-blue hover:bg-mediterranean-blue/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all py-3 text-lg"
+                disabled={product.stock <= 0 || isOrdering}
               >
-                {product.stock <= 0 ? "품절" : "장바구니 담기"}
+                {isOrdering ? "주문 처리 중..." : (product.stock <= 0 ? "품절" : `바로 구매 (₩${(product.price * Number(quantity)).toLocaleString()})`)}
               </Button>
             </div>
 

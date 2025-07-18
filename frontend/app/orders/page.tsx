@@ -58,11 +58,12 @@ const getStatusDisplay = (status: string) => {
 export default function OrdersPage() {
   const router = useRouter()
   const { toast } = useToast()
-  const { isAuthenticated, isLoading: authLoading } = useAuth()
+  const { isAuthenticated, isLoading: authLoading, user } = useAuth()
   
   const [orders, setOrders] = useState<Order[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [expandedOrder, setExpandedOrder] = useState<number | null>(null)
+  const [cancellingOrder, setCancellingOrder] = useState<number | null>(null)
 
   // 로그인 체크
   useEffect(() => {
@@ -83,7 +84,7 @@ export default function OrdersPage() {
       
       try {
         setIsLoading(true)
-        const response = await orderApi.getMyOrders()
+        const response = await orderApi.getMyOrders(user?.email || '')
         
         if (response.resultCode === 'SUCCESS') {
           setOrders(response.data)
@@ -105,7 +106,38 @@ export default function OrdersPage() {
     if (isAuthenticated && !authLoading) {
       fetchOrders()
     }
-  }, [isAuthenticated, authLoading, toast])
+  }, [isAuthenticated, authLoading, toast, user])
+
+  // 주문 취소 함수
+  const handleCancelOrder = async (orderId: number) => {
+    if (!confirm('정말로 이 주문을 취소하시겠습니까?')) return
+
+    try {
+      setCancellingOrder(orderId)
+      const response = await orderApi.cancelOrder(orderId)
+      
+      if (response.success) {
+        toast({
+          title: "주문 취소 완료",
+          description: "주문이 성공적으로 취소되었습니다.",
+        })
+        
+        // 주문 목록 새로고침
+        const refreshResponse = await orderApi.getMyOrders(user?.email || '')
+        if (refreshResponse.success) {
+          setOrders(refreshResponse.data)
+        }
+      }
+    } catch (error) {
+      toast({
+        title: "주문 취소 실패",
+        description: "주문을 취소할 수 없습니다.",
+        variant: "destructive"
+      })
+    } finally {
+      setCancellingOrder(null)
+    }
+  }
 
   // 로딩 중
   if (authLoading || isLoading) {
@@ -277,6 +309,33 @@ export default function OrdersPage() {
                                 <p className="text-sm text-mediterranean-blue mt-2">예상 도착일: 주문일로부터 2-3일</p>
                               )}
                             </div>
+                            
+                            {/* 주문 취소 버튼 */}
+                            {order.status === 'PENDING' && (
+                              <div className="mt-4 flex justify-end">
+                                <Button
+                                  variant="destructive"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleCancelOrder(order.orderId)
+                                  }}
+                                  disabled={cancellingOrder === order.orderId}
+                                  className="flex items-center gap-2"
+                                >
+                                  {cancellingOrder === order.orderId ? (
+                                    <>
+                                      <Loader2 className="w-4 h-4 animate-spin" />
+                                      취소 중...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <X className="w-4 h-4" />
+                                      주문 취소
+                                    </>
+                                  )}
+                                </Button>
+                              </div>
+                            )}
                           </div>
                         </motion.div>
                       )}

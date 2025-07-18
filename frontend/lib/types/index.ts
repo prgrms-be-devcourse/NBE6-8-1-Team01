@@ -58,6 +58,7 @@ export interface OrderRequest {
     productCount: number
   }[]
   userEmail: string
+  address?: string
 }
 
 export interface Order {

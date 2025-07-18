@@ -104,17 +104,35 @@ export function Navigation() {
                 </Link>
               </motion.li>
               {isAuthenticated && (
-                <motion.li whileHover={{ y: -2 }}>
-                  <Link href="/wishlist" className="text-sm font-medium text-gray-700 hover:text-mediterranean-blue transition-colors relative group">
-                    위시리스트
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-mediterranean-blue group-hover:w-full transition-all duration-300" />
-                    {wishlist.length > 0 && (
-                      <Badge className="absolute -top-2 -right-4 h-4 w-4 p-0 flex items-center justify-center bg-mediterranean-terracotta text-white text-[10px]">
-                        {wishlist.length}
-                      </Badge>
-                    )}
-                  </Link>
-                </motion.li>
+                <>
+                  <motion.li whileHover={{ y: -2 }}>
+                    <Link href="/wishlist" className="text-sm font-medium text-gray-700 hover:text-mediterranean-blue transition-colors relative group">
+                      위시리스트
+                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-mediterranean-blue group-hover:w-full transition-all duration-300" />
+                      {wishlist.length > 0 && (
+                        <Badge className="absolute -top-2 -right-4 h-4 w-4 p-0 flex items-center justify-center bg-mediterranean-terracotta text-white text-[10px]">
+                          {wishlist.length}
+                        </Badge>
+                      )}
+                    </Link>
+                  </motion.li>
+                  {user?.email === 'admin@email.com' && (
+                    <>
+                      <motion.li whileHover={{ y: -2 }}>
+                        <Link href="/admin/products" className="text-sm font-medium text-gray-700 hover:text-mediterranean-blue transition-colors relative group">
+                          상품 관리
+                          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-mediterranean-blue group-hover:w-full transition-all duration-300" />
+                        </Link>
+                      </motion.li>
+                      <motion.li whileHover={{ y: -2 }}>
+                        <Link href="/admin/orders" className="text-sm font-medium text-gray-700 hover:text-mediterranean-blue transition-colors relative group">
+                          주문 관리
+                          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-mediterranean-blue group-hover:w-full transition-all duration-300" />
+                        </Link>
+                      </motion.li>
+                    </>
+                  )}
+                </>
               )}
             </ul>
           </div>
@@ -210,7 +228,7 @@ export function Navigation() {
                   <Button variant="ghost" className="text-gray-700 hover:bg-gray-100 group">
                     <User className="w-5 h-5 text-gray-700 group-hover:text-mediterranean-blue transition-colors" />
                     <span className="hidden sm:inline-block ml-2 text-gray-700 font-medium">
-                      {isAuthenticated ? user?.username || '내 계정' : '계정'}
+                      {isAuthenticated ? user?.name || '내 계정' : '계정'}
                     </span>
                     <ChevronDown className="w-4 h-4 ml-1 text-gray-700" />
                   </Button>
@@ -221,8 +239,14 @@ export function Navigation() {
                   <>
                     <div className="px-3 py-2 border-b border-gray-200">
                       <p className="text-sm font-medium text-gray-800">{user?.email}</p>
-                      <p className="text-xs text-gray-600">{user?.username}</p>
+                      <p className="text-xs text-gray-600">{user?.name}</p>
                     </div>
+                    <DropdownMenuItem asChild className="hover:bg-gray-100 cursor-pointer">
+                      <Link href="/account" className="flex items-center">
+                        <User className="w-4 h-4 mr-2" />
+                        내 정보
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuItem asChild className="hover:bg-gray-100 cursor-pointer">
                       <Link href="/orders" className="flex items-center">
                         <Package className="w-4 h-4 mr-2" />
@@ -310,19 +334,51 @@ export function Navigation() {
                   </Link>
                 </motion.li>
                 {isAuthenticated && (
-                  <motion.li
-                    initial={{ x: -20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                  >
-                    <Link 
-                      href="/wishlist" 
-                      className="block text-sm font-medium text-gray-700 hover:text-mediterranean-blue transition-colors"
-                      onClick={() => setIsMobileMenuOpen(false)}
+                  <>
+                    <motion.li
+                      initial={{ x: -20, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.3 }}
                     >
-                      위시리스트 ({wishlist.length})
-                    </Link>
-                  </motion.li>
+                      <Link 
+                        href="/wishlist" 
+                        className="block text-sm font-medium text-gray-700 hover:text-mediterranean-blue transition-colors"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        위시리스트 ({wishlist.length})
+                      </Link>
+                    </motion.li>
+                    {user?.email === 'admin@email.com' && (
+                      <>
+                        <motion.li
+                          initial={{ x: -20, opacity: 0 }}
+                          animate={{ x: 0, opacity: 1 }}
+                          transition={{ delay: 0.4 }}
+                        >
+                          <Link 
+                            href="/admin/products" 
+                            className="block text-sm font-medium text-gray-700 hover:text-mediterranean-blue transition-colors"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                          >
+                            상품 관리
+                          </Link>
+                        </motion.li>
+                        <motion.li
+                          initial={{ x: -20, opacity: 0 }}
+                          animate={{ x: 0, opacity: 1 }}
+                          transition={{ delay: 0.5 }}
+                        >
+                          <Link 
+                            href="/admin/orders" 
+                            className="block text-sm font-medium text-gray-700 hover:text-mediterranean-blue transition-colors"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                          >
+                            주문 관리
+                          </Link>
+                        </motion.li>
+                      </>
+                    )}
+                  </>
                 )}
               </ul>
             </motion.div>

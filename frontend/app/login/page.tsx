@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { authApi } from "@/lib/api/auth"
+import { useAuth } from "@/contexts/AuthContext"
 import { useToast } from "@/hooks/use-toast"
 import { Coffee, Mail, Lock } from "lucide-react"
 import { motion } from "framer-motion"
@@ -14,6 +14,7 @@ import { motion } from "framer-motion"
 export default function LoginPage() {
   const router = useRouter()
   const { toast } = useToast()
+  const { login } = useAuth()
   const [formData, setFormData] = useState({
     email: "",
     password: ""
@@ -35,19 +36,15 @@ export default function LoginPage() {
     try {
       setLoading(true)
       
-      const response = await authApi.login(formData)
+      await login(formData.email, formData.password)
       
-      if (response.resultCode === 'SUCCESS') {
-        toast({
-          title: "로그인 성공",
-          description: "환영합니다!",
-        })
-        // 로그인 성공 - 쿠키는 서버에서 자동 설정됨
-        router.push("/")
-        router.refresh()
-      } else {
-        throw new Error(response.msg || "로그인 실패")
-      }
+      toast({
+        title: "로그인 성공",
+        description: "환영합니다!",
+      })
+      
+      router.push("/")
+      router.refresh()
     } catch (err: any) {
       toast({
         title: "로그인 실패",
