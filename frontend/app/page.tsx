@@ -162,14 +162,14 @@ export default function HomePage() {
                         >
                           ₩{product.price.toLocaleString()}
                         </CardItem>
-                        <CardItem
-                          translateZ={20}
-                          as={Link}
-                          href={`/products/${product.productId}`}
-                          className="px-4 py-2 rounded-xl bg-mediterranean-blue text-white text-sm font-bold hover:bg-mediterranean-blue/90 transition-colors"
-                        >
-                          상세보기 →
-                        </CardItem>
+                        <Link href={`/products/${product.productId}`}>
+                          <CardItem
+                            translateZ={20}
+                            className="px-4 py-2 rounded-xl bg-mediterranean-blue text-white text-sm font-bold hover:bg-mediterranean-blue/90 transition-colors"
+                          >
+                            상세보기 →
+                          </CardItem>
+                        </Link>
                       </div>
                     </CardBody>
                   </CardContainer>
