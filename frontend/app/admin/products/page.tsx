@@ -94,12 +94,14 @@ export default function AdminProductsPage() {
 
     try {
       const productData = {
+        productId: null,
         productName: formData.productName,
         price: parseInt(formData.price),
-        description: formData.description,
+        description: formData.description || null,
         productImage: formData.productImage || "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&q=80",
         stock: parseInt(formData.stock),
-        orderCount: parseInt(formData.orderCount)
+        orderCount: parseInt(formData.orderCount),
+        createdAt: null
       }
 
       if (editingProduct) {
