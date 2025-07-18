@@ -107,7 +107,7 @@ export default function ProductDetailPage() {
       
       const orderData: OrderRequest = {
         userEmail: user.email,
-        address: "서울특별시 강남구 테헤란로 123", // TODO: 주소 입력 받기
+        address: user.address || "주소를 입력해주세요",
         products: [{
           productId: product.productId.toString(),
           productCount: Number(quantity)

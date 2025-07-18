@@ -18,7 +18,7 @@ public record OrderDto(
     @NotBlank
     String productName,
     int totalPrice,
-    @Size(min = 10, max = 300)
+    @NotBlank
     String address,
     LocalDateTime createDate,
     LocalDateTime modifiedDate,

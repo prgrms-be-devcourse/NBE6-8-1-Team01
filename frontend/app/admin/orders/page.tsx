@@ -126,9 +126,14 @@ export default function AdminOrdersPage() {
     
     // 전체 주문에서 오늘 주문만 필터링
     const todayOrdersFiltered = allOrders.filter(order => {
-      const orderDate = new Date(order.createdAt)
-      orderDate.setHours(0, 0, 0, 0)
-      return orderDate.getTime() === today.getTime()
+      if (!order || !order.createdAt) return false
+      try {
+        const orderDate = new Date(order.createdAt)
+        orderDate.setHours(0, 0, 0, 0)
+        return orderDate.getTime() === today.getTime()
+      } catch (e) {
+        return false
+      }
     })
     
     setTodayOrders(todayOrdersFiltered)

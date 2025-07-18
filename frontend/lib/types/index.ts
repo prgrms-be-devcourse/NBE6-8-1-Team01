@@ -43,6 +43,7 @@ export interface LoginResult {
     name: string
     email: string
     role: string
+    address: string
   }
   token: {
     accessToken: string
