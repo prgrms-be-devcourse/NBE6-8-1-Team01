@@ -94,14 +94,12 @@ export default function AdminProductsPage() {
 
     try {
       const productData = {
-        productId: null,
         productName: formData.productName,
         price: parseInt(formData.price),
-        description: formData.description || null,
+        description: formData.description,
         productImage: formData.productImage || "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&q=80",
         stock: parseInt(formData.stock),
-        orderCount: parseInt(formData.orderCount),
-        createdAt: null
+        orderCount: parseInt(formData.orderCount)
       }
 
       if (editingProduct) {
@@ -127,10 +125,11 @@ export default function AdminProductsPage() {
       setIsDialogOpen(false)
       resetForm()
       fetchProducts()
-    } catch (error) {
+    } catch (error: any) {
+      console.error('상품 등록/수정 오류:', error)
       toast({
         title: editingProduct ? "상품 수정 실패" : "상품 등록 실패",
-        description: "작업을 완료할 수 없습니다.",
+        description: error.message || "서버 오류가 발생했습니다. 관리자에게 문의하세요.",
         variant: "destructive"
       })
     } finally {
@@ -151,10 +150,11 @@ export default function AdminProductsPage() {
         })
         fetchProducts()
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error('상품 삭제 오류:', error)
       toast({
         title: "상품 삭제 실패",
-        description: "상품을 삭제할 수 없습니다.",
+        description: error.message || "서버 오류가 발생했습니다. 관리자에게 문의하세요.",
         variant: "destructive"
       })
     }
