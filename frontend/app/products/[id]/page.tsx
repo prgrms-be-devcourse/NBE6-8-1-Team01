@@ -113,7 +113,7 @@ export default function ProductDetailPage() {
       
       const response = await orderApi.createOrder(orderData)
       
-      if (response.success) {
+      if (response.resultCode === '200-OK') {
         toast({
           title: "주문 완료",
           description: "주문이 성공적으로 접수되었습니다.",

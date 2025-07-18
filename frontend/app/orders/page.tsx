@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Navigation } from "@/components/Navigation"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Package, Clock, CheckCircle, Truck, Coffee, CalendarDays, ChevronRight, Loader2 } from "lucide-react"
+import { Package, Clock, CheckCircle, Truck, Coffee, CalendarDays, ChevronRight, Loader2, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import Image from "next/image"
@@ -116,7 +116,7 @@ export default function OrdersPage() {
       setCancellingOrder(orderId)
       const response = await orderApi.cancelOrder(orderId)
       
-      if (response.success) {
+      if (response.resultCode === '200-OK') {
         toast({
           title: "주문 취소 완료",
           description: "주문이 성공적으로 취소되었습니다.",
@@ -124,7 +124,7 @@ export default function OrdersPage() {
         
         // 주문 목록 새로고침
         const refreshResponse = await orderApi.getMyOrders(user?.email || '')
-        if (refreshResponse.success) {
+        if (refreshResponse.resultCode === 'SUCCESS') {
           setOrders(refreshResponse.data)
         }
       }
