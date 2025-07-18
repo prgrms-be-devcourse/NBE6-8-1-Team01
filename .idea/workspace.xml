@@ -5,8 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2b8a75de-aa0b-4060-af65-9c566b0484cb" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/back/teamcoffee/global/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/back/teamcoffee/global/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/app/products/[id]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/products/[id]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/components/Navigation.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/components/Navigation.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/next.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/next.config.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,6 +46,10 @@
               <option name="branches">
                 <list>
                   <RecentBranch>
+                    <option name="branchName" value="bug/#69" />
+                    <option name="lastUsedInstant" value="1752810427" />
+                  </RecentBranch>
+                  <RecentBranch>
                     <option name="branchName" value="enhancement/#45" />
                     <option name="lastUsedInstant" value="1752735892" />
                   </RecentBranch>
@@ -71,7 +79,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "bug/#69",
     "last_opened_file_path": "C:/Users/qortk/IdeaProjects/NBE6-8-1-Team01",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -116,7 +124,7 @@
       <option name="presentableId" value="Default" />
       <updated>1752734983402</updated>
       <workItem from="1752734984685" duration="24389000" />
-      <workItem from="1752803270583" duration="6924000" />
+      <workItem from="1752803270583" duration="11220000" />
     </task>
     <servers />
   </component>
