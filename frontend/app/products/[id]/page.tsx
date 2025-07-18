@@ -41,10 +41,10 @@ export default function ProductDetailPage() {
         setLoading(true)
         const id = Array.isArray(params.id) ? params.id[0] : params.id
         const response = await productApi.getProduct(Number(id))
-        if (response.resultCode === 'SUCCESS') {
+        if (response.resultCode === 'SUCCESS' || response.resultCode === '200-OK') {
           setProduct(response.data)
         } else {
-          throw new Error(response.msg)
+          throw new Error(response.msg || '상품 조회 실패')
         }
       } catch (err) {
         setError('상품 정보를 불러오는데 실패했습니다.')
