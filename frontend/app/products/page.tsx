@@ -35,6 +35,7 @@ import { useToast } from "@/hooks/use-toast"
 import { useWishlist } from "@/contexts/WishlistContext"
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { VideoBackground } from "@/components/VideoBackground"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -334,15 +335,22 @@ export default function ProductsPage() {
       <Navigation />
       
       {/* Hero Section - Mediterranean Style */}
-      <section className="relative py-20 bg-gradient-to-br from-mediterranean-sky/20 via-background to-mediterranean-sand/10">
-        <div className="max-w-screen-xl mx-auto px-4 text-center">
+      <section className="relative py-20 overflow-hidden">
+        {/* Video Background */}
+        <VideoBackground 
+          src="/videos/espresso-pour.mp4"
+          poster="/images/coffee-farm-poster.jpg"
+          overlayOpacity={0.7}
+          className="z-0"
+        />
+        <div className="relative z-10 max-w-screen-xl mx-auto px-4 text-center">
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-5xl font-bold mb-4"
             style={{ fontFamily: 'var(--font-playfair), Playfair Display, serif' }}
           >
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-mediterranean-blue to-mediterranean-terracotta">
+            <span className="text-white drop-shadow-2xl">
               전체 원두 컬렉션
             </span>
           </motion.h1>
@@ -350,7 +358,7 @@ export default function ProductsPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-lg text-gray-700 font-medium"
+            className="text-lg text-white font-medium drop-shadow-lg"
             style={{ fontFamily: 'var(--font-noto), Noto Sans KR, sans-serif' }}
           >
             지중해의 햇살을 담은 프리미엄 스페셜티 커피

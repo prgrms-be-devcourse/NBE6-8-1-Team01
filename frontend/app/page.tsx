@@ -267,8 +267,15 @@ export default function HomePage() {
       </section>
 
       {/* Premium Products Section */}
-      <section className="py-24 px-4 bg-gradient-to-b from-mediterranean-sky/10 via-background to-mediterranean-sand/10">
-        <div className="max-w-7xl mx-auto">
+      <section className="relative py-24 px-4 overflow-hidden">
+        {/* Video Background */}
+        <VideoBackground 
+          src="/videos/coffee-beans-slow.mp4"
+          poster="/images/coffee-beans-poster.jpg"
+          overlayOpacity={0.85}
+          className="z-0"
+        />
+        <div className="relative z-10 max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
