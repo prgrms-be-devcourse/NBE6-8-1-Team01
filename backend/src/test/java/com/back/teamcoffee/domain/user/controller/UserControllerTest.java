@@ -395,7 +395,9 @@ public class UserControllerTest {
         Cookie refreshToken = loginResult.getResponse().getCookie("RefreshToken");
 
         mockMvc.perform(post("/products")
-                        .cookie(accessToken, refreshToken))
+                        .cookie(accessToken, refreshToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.resultCode").value("403-FORBIDDEN"))
                 .andExpect(jsonPath("$.msg").value("접근 권한이 없습니다."));

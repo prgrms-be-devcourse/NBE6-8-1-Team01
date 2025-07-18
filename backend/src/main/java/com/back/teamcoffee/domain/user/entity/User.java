@@ -40,6 +40,7 @@ public class User {
     private LocalDateTime created_at;
 
     // 연관관계 추가: Order.email 기준
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = {PERSIST, REMOVE}, orphanRemoval = true)
     private List<Order> orders = new ArrayList<>();
 
