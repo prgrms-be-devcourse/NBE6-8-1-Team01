@@ -86,6 +86,7 @@ export interface WishList {
   productId: number
   productName: string
   productPrice: number
+  productImage?: string
   email: string
   quantity: number
 }

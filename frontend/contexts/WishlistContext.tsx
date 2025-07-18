@@ -77,41 +77,55 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     if (!user?.email) {
       toast({
         title: "로그인 필요",
-        description: "위시리스트를 사용하려면 로그인이 필요합니다.",
+        description: "장바구니를 사용하려면 로그인이 필요합니다.",
         variant: "destructive"
       })
       return
     }
 
     try {
-      const response = await wishlistApi.addToWishlist(user.email, {
-        productId,
-        quantity
-      })
-      console.log('Add to wishlist response:', response)
+      // 이미 장바구니에 있는 상품인지 확인
+      const existingItem = wishlist.find(item => item.productId === productId)
       
-      if (response.resultCode === 'SUCCESS' || response.resultCode === '201-CREATED' || response.resultCode === '200-OK') {
-        await fetchWishlist()  // 목록 새로고침
+      if (existingItem) {
+        // 이미 있으면 수량만 업데이트
+        const newQuantity = existingItem.quantity + quantity
+        await updateQuantity(existingItem.wishId, newQuantity)
         toast({
-          title: "추가 완료",
-          description: "장바구니에 추가되었습니다.",
+          title: "수량 업데이트",
+          description: `장바구니의 수량이 ${newQuantity}개로 변경되었습니다.`,
         })
       } else {
-        console.warn('Unexpected add to wishlist response:', response)
-        // 데이터가 있으면 성공으로 처리
-        if (response.data) {
-          await fetchWishlist()
+        // 새로 추가
+        const response = await wishlistApi.addToWishlist(user.email, {
+          productId,
+          quantity
+        })
+        console.log('Add to wishlist response:', response)
+        
+        if (response.resultCode === 'SUCCESS' || response.resultCode === '201-CREATED' || response.resultCode === '200-OK') {
+          await fetchWishlist()  // 목록 새로고침
           toast({
             title: "추가 완료",
             description: "장바구니에 추가되었습니다.",
           })
+        } else {
+          console.warn('Unexpected add to wishlist response:', response)
+          // 데이터가 있으면 성공으로 처리
+          if (response.data) {
+            await fetchWishlist()
+            toast({
+              title: "추가 완료",
+              description: "장바구니에 추가되었습니다.",
+            })
+          }
         }
       }
     } catch (error) {
-      console.error('위시리스트 추가 실패:', error)
+      console.error('장바구니 추가 실패:', error)
       toast({
         title: "오류",
-        description: "위시리스트 추가에 실패했습니다.",
+        description: "장바구니 추가에 실패했습니다.",
         variant: "destructive"
       })
     }

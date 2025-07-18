@@ -134,7 +134,7 @@ export default function WishlistPage() {
                   >
                 <div className="relative">
                   <Image
-                    src={"https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&q=80"}
+                    src={item.productImage || "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&q=80"}
                     alt={item.productName}
                     width={300}
                     height={300}

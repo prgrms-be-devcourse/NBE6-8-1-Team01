@@ -86,15 +86,32 @@ export default function OrdersPage() {
         setIsLoading(true)
         const response = await orderApi.getMyOrders(user?.email || '')
         
-        if (response.resultCode === 'SUCCESS' || response.resultCode === '200-OK') {
+        console.log('주문 목록 API 응답:', response)
+        
+        if (response.resultCode === 'SUCCESS' || response.resultCode === '200-OK' || response.resultCode === 'S-1') {
           // 주문 데이터 검증 및 기본값 설정
           const ordersData = response.data || []
-          const validatedOrders = ordersData.map((order: Order) => ({
-            ...order,
-            items: order.items || [],
-            totalAmount: order.totalAmount || 0,
-            deliveryAddress: order.deliveryAddress || '주소 정보 없음'
-          }))
+          const validatedOrders = ordersData.map((order: any) => {
+            // 각 필드를 명시적으로 검증
+            return {
+              orderId: order.orderId || order.id || 0,
+              userEmail: order.userEmail || order.email || user?.email || '',
+              orderDate: order.orderDate || order.createdAt || new Date().toISOString(),
+              totalAmount: order.totalAmount || order.totalPrice || 0,
+              status: order.status || order.orderStatus || 'PENDING',
+              deliveryAddress: order.deliveryAddress || order.address || '주소 정보 없음',
+              createdAt: order.createdAt || order.orderDate || new Date().toISOString(),
+              items: Array.isArray(order.items) ? order.items.map((item: any) => ({
+                orderItemId: item.orderItemId || item.id || 0,
+                productId: item.productId || 0,
+                productName: item.productName || item.name || '상품명 없음',
+                productImage: item.productImage || item.image || null,
+                quantity: item.quantity || item.count || 1,
+                price: item.price || item.productPrice || 0
+              })) : []
+            }
+          })
+          console.log('검증된 주문 데이터:', validatedOrders)
           setOrders(validatedOrders)
         } else {
           throw new Error(response.msg || '주문 목록 조회 실패')
@@ -237,11 +254,11 @@ export default function OrdersPage() {
                             <div className="flex items-center gap-3 mt-1">
                               <p className="text-sm text-gray-600 flex items-center gap-1">
                                 <CalendarDays className="w-4 h-4" />
-                                {new Date(order.createdAt).toLocaleDateString('ko-KR', {
+                                {order.createdAt ? new Date(order.createdAt).toLocaleDateString('ko-KR', {
                                   year: 'numeric',
                                   month: 'long',
                                   day: 'numeric'
-                                })}
+                                }) : '날짜 정보 없음'}
                               </p>
                               <Badge className={`${statusDisplay.color} text-xs px-2 py-1`}>
                                 {statusDisplay.label}
