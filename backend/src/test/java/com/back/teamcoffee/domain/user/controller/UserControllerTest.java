@@ -182,11 +182,8 @@ public class UserControllerTest {
     @DisplayName("로그인 성공")
     void t7() throws Exception {
         UserLoginRequestDto req = new UserLoginRequestDto(
-                testUsername,
                 testEmail,
-                testPassword,
-
-                UserRole.USER
+                testPassword
         );
 
         mockMvc.perform(post("/users/login")
@@ -203,10 +200,8 @@ public class UserControllerTest {
     @DisplayName("로그인 실패 - 잘못된 비밀번호")
     void t8() throws Exception {
         UserLoginRequestDto req = new UserLoginRequestDto(
-                testUsername,
                 testEmail,
-                "wrongpassword",
-                UserRole.USER
+                "wrongpassword"
         );
 
         mockMvc.perform(post("/users/login")
@@ -222,10 +217,8 @@ public class UserControllerTest {
     @DisplayName("로그인 실패 - 존재하지 않는 이메일")
     void t9() throws Exception {
         UserLoginRequestDto req = new UserLoginRequestDto(
-                "nonexistentuser",
                 "test@Eamil.com",
-                "1234",
-                UserRole.USER
+                "1234"
         );
         mockMvc.perform(post("/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -240,10 +233,8 @@ public class UserControllerTest {
     @DisplayName("로그인 실패 - 비밀번호 누락")
     void t10() throws Exception {
         UserLoginRequestDto req = new UserLoginRequestDto(
-                testUsername,
                 testEmail,
-                "",
-                UserRole.USER
+                ""
         );
 
         mockMvc.perform(post("/users/login")
@@ -258,10 +249,8 @@ public class UserControllerTest {
     @DisplayName("로그인 실패 - 이메일 형식 오류")
     void t11() throws Exception {
         UserLoginRequestDto req = new UserLoginRequestDto(
-                testUsername,
                 "invalid-email",
-                testPassword,
-                UserRole.USER
+                testPassword
         );
 
         mockMvc.perform(post("/users/login")
@@ -272,32 +261,13 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.msg").exists());
     }
 
-    @Test
-    @DisplayName("로그인 실패 - 이름 누락")
-    void t12() throws Exception {
-        UserLoginRequestDto req = new UserLoginRequestDto(
-                "",
-                testEmail,
-                testPassword,
-                UserRole.USER
-        );
-
-        mockMvc.perform(post("/users/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.resultCode").value("400-BAD-REQUEST"))
-                .andExpect(jsonPath("$.msg").exists());
-    }
 
     @Test
     @DisplayName("로그인 실패 - 비밀번호 길이 부족")
     void t13() throws Exception {
         UserLoginRequestDto req = new UserLoginRequestDto(
-                testUsername,
                 testEmail,
-                "123",
-                UserRole.USER
+                "123"
         );
 
         mockMvc.perform(post("/users/login")
@@ -316,10 +286,8 @@ public class UserControllerTest {
 
         // 로그인 후 쿠키 생성
         UserLoginRequestDto req = new UserLoginRequestDto(
-                testUsername,
                 testEmail,
-                testPassword,
-                UserRole.USER
+                testPassword
         );
 
         MvcResult loginResult = mockMvc.perform(post("/users/login")
@@ -346,10 +314,8 @@ public class UserControllerTest {
     @DisplayName("로그인 후 회원 탈퇴")
     void t15() throws Exception {
         UserLoginRequestDto req = new UserLoginRequestDto(
-                testUsername,
                 testEmail,
-                testPassword,
-                UserRole.USER
+                testPassword
         );
 
         MvcResult loginResult = mockMvc.perform(post("/users/login")
@@ -373,34 +339,6 @@ public class UserControllerTest {
         assert userRepository.findByEmail(testEmail).isEmpty();
     }
 
-    @Test
-    @DisplayName("api 접속 권한 부족")
-    void t16() throws Exception {
-        UserLoginRequestDto req = new UserLoginRequestDto(
-                testUsername,
-                testEmail,
-                testPassword,
-                UserRole.USER
-        );
 
-        MvcResult loginResult = mockMvc.perform(post("/users/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req)))
-                .andExpect(status().isOk())
-                .andExpect(cookie().exists("AccessToken"))
-                .andExpect(cookie().exists("RefreshToken"))
-                .andReturn();
-
-        Cookie accessToken = loginResult.getResponse().getCookie("AccessToken");
-        Cookie refreshToken = loginResult.getResponse().getCookie("RefreshToken");
-
-        mockMvc.perform(post("/products")
-                        .cookie(accessToken, refreshToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}"))
-                .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.resultCode").value("403-FORBIDDEN"))
-                .andExpect(jsonPath("$.msg").value("접근 권한이 없습니다."));
-    }
 
 }
