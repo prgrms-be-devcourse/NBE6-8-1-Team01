@@ -1,5 +1,6 @@
 package com.back.teamcoffee.domain.wishlist.entity;
 
+import com.back.teamcoffee.domain.product.entity.Product;
 import com.back.teamcoffee.domain.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -34,4 +35,9 @@ public class WishList {
     @JoinColumn(name = "email", referencedColumnName = "email", insertable = false, updatable = false)
     @JsonBackReference
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", referencedColumnName = "product_id", insertable = false, updatable = false)
+    @JsonBackReference
+    private Product product;
 }

@@ -27,9 +27,9 @@ public class OrderItem {
   @JsonBackReference
   private Order order;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "product_id", referencedColumnName = "product_id", insertable = false, updatable = false)
   private Product product;
-
 
   @Builder
   public OrderItem(int orderCount, int productPrice, int totalPrice, Order order, Product product) {

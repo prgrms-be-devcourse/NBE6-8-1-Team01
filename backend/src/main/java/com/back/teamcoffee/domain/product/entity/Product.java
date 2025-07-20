@@ -1,9 +1,17 @@
 package com.back.teamcoffee.domain.product.entity;
 
+import com.back.teamcoffee.domain.order.orderItem.entity.OrderItem;
+import com.back.teamcoffee.domain.wishlist.entity.WishList;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.CascadeType.REMOVE;
+import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
@@ -34,6 +42,12 @@ public class Product {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "product", fetch = LAZY, cascade = {PERSIST, REMOVE}, orphanRemoval = true)
+    private List<OrderItem> orderItems = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product", fetch = LAZY, cascade = {PERSIST, REMOVE}, orphanRemoval = true)
+    private List<WishList> wishLists = new ArrayList<>();
 
     @Builder
     public Product(String productName, int price, String description, int orderCount, String productImage, int stock, LocalDateTime createdAt) {
