@@ -43,8 +43,8 @@
 <br>ex) ``
 git clone project-url .``
 
-2. 받은 프로젝트를 인텔리제이로 열어 gradle 빌드를 한 후 실행
-3. 실행한 후 동봉된 caddy폴더에 caddy.bat 파일 실행
+2. ngrok을 사용해 로컬을 외부와 연결
+3. 받은 프로젝트를 인텔리제이로 열어 gradle 빌드를 한 후 실행 
 4. 프론트엔드 서버를 vercel을 통해 열어 접속한다
 
 #### 주의사항
